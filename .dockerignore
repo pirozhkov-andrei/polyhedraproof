@@ -1,0 +1,32 @@
+# An image is built from the source in this repository and nothing else. Without this file,
+# `COPY . /src` in docker/release/Dockerfile copies whatever a working copy has accumulated,
+# above all `results/`, which holds journals and can be gigabytes, into the build of an image
+# that is reproducible from the source alone. Patterns are relative to the root of the
+# context; `**/` matches at any depth.
+results/
+dist/
+**/build/
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+**/__pycache__/
+**/*.py[cod]
+**/*.egg-info/
+**/.pytest_cache/
+**/.ruff_cache/
+**/.mypy_cache/
+**/.coverage
+**/.coverage.*
+htmlcov/
+
+# Hidden files and directories at the root (the git directory, virtual environments, tool
+# and editor state) stay out of the context, except the three configuration files the
+# repository tracks.
+.*
+!.gitignore
+!.gitattributes
+!.dockerignore

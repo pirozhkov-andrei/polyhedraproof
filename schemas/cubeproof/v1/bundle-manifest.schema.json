@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-bundle-1 manifest (SPECIFICATION §4.2)",
+  "description": "manifest.json of a bundle directory that also holds formula.cnf and the optional side files. Hash/count agreement with formula.cnf, pool order and side-file order are requirements bundle.*.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-bundle-1"
+    },
+    "formula_sha256": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "variables": {
+      "$ref": "common.schema.json#/$defs/NonNegative"
+    },
+    "clauses": {
+      "$ref": "common.schema.json#/$defs/NonNegative"
+    },
+    "pools": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9_-]{0,63}(?![\\s\\S])"
+      },
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "common.schema.json#/$defs/Positive"
+        }
+      }
+    },
+    "producer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "parameters": {
+          "$ref": "common.schema.json#/$defs/OpenObject"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "parameters"
+      ],
+      "additionalProperties": false
+    },
+    "side_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "enum": [
+              "names.tsv",
+              "tags.tsv"
+            ]
+          },
+          "sha256": {
+            "$ref": "common.schema.json#/$defs/Hash"
+          },
+          "bytes": {
+            "$ref": "common.schema.json#/$defs/NonNegative"
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "bytes"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "format",
+    "formula_sha256",
+    "variables",
+    "clauses",
+    "pools",
+    "producer",
+    "side_files"
+  ],
+  "additionalProperties": false
+}

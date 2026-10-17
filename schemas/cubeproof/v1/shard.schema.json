@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-shard-1 (SPECIFICATION §4.5)",
+  "description": "Shard ID = SHA256(J(shard)). Node order and pairwise incompatibility are requirement shard.nodes; campaign membership is checked where the campaign is known.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-shard-1"
+    },
+    "campaign": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "name": {
+      "$ref": "common.schema.json#/$defs/Name"
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "common.schema.json#/$defs/Node"
+      }
+    }
+  },
+  "required": [
+    "format",
+    "campaign",
+    "name",
+    "nodes"
+  ],
+  "additionalProperties": false
+}

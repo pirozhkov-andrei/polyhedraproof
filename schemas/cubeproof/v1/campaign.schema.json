@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-campaign-1 (SPECIFICATION §4.4)",
+  "description": "Campaign ID = SHA256(J(campaign)), not stored inside. Order, uniqueness, incompatibility, split well-formedness, argv and admission rules are requirements campaign.*, split.*, cube.* and policy.*; a violation is an input error.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-campaign-1"
+    },
+    "created_utc": {
+      "$ref": "common.schema.json#/$defs/UTC"
+    },
+    "author": {
+      "type": "string",
+      "minLength": 1
+    },
+    "formulas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "$ref": "common.schema.json#/$defs/Name"
+          },
+          "formula_sha256": {
+            "$ref": "common.schema.json#/$defs/Hash"
+          },
+          "bundle": {
+            "$ref": "common.schema.json#/$defs/RelPath"
+          }
+        },
+        "required": [
+          "key",
+          "formula_sha256",
+          "bundle"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "roots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "common.schema.json#/$defs/Node"
+      }
+    },
+    "root_splits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "node": {
+            "$ref": "common.schema.json#/$defs/Node"
+          },
+          "variables": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/Positive"
+            }
+          },
+          "splitter": {
+            "$ref": "common.schema.json#/$defs/Splitter"
+          }
+        },
+        "required": [
+          "node",
+          "variables",
+          "splitter"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "policy": {
+      "$ref": "policy.schema.json"
+    },
+    "tools": {
+      "type": "object",
+      "properties": {
+        "solver": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "cadical"
+            },
+            "sha256": {
+              "$ref": "common.schema.json#/$defs/Hash"
+            },
+            "argv": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "name",
+            "sha256",
+            "argv"
+          ],
+          "additionalProperties": false
+        },
+        "checker": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "cake_lpr"
+            },
+            "sha256": {
+              "$ref": "common.schema.json#/$defs/Hash"
+            }
+          },
+          "required": [
+            "name",
+            "sha256"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "solver",
+        "checker"
+      ],
+      "additionalProperties": false
+    },
+    "admit": {
+      "type": "object",
+      "properties": {
+        "checker_sha256": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "common.schema.json#/$defs/Hash"
+          }
+        },
+        "solvers": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "sha256": {
+                    "$ref": "common.schema.json#/$defs/Hash"
+                  },
+                  "argv": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "sha256",
+                  "argv"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "checker_sha256",
+        "solvers"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "format",
+    "created_utc",
+    "author",
+    "formulas",
+    "roots",
+    "root_splits",
+    "policy",
+    "tools",
+    "admit"
+  ],
+  "additionalProperties": false
+}

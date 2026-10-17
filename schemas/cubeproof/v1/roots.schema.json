@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-roots-1 (SPECIFICATION §12.1)",
+  "description": "Requested roots with the constraints of SPECIFICATION §4.4 (requirement roots.nodes).",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-roots-1"
+    },
+    "roots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "common.schema.json#/$defs/Node"
+      }
+    }
+  },
+  "required": [
+    "format",
+    "roots"
+  ],
+  "additionalProperties": false
+}

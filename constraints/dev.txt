@@ -1,0 +1,38 @@
+# Tested development tool set (SPECIFICATION §14).
+#
+# Used as a pip constraints file by `make install-dev` and by the installed-artifact tests:
+#   python3 -m pip install -c constraints/dev.txt -e ".[dev]" ...
+# Every line is an exact pin. Runtime code of the three packages has no third-party
+# dependency; nothing here is a runtime requirement. Tested with CPython 3.12 on Linux.
+# The lines with a python_version marker apply only to CPython 3.10.
+#
+# After changing a pin, rerun `make lint`, `make test-architecture`, `make test-fast` and
+# `make test-installed` with the changed set.
+
+# test runner
+pytest==9.1.1
+pluggy==1.6.0
+iniconfig==2.3.0
+packaging==26.3
+Pygments==2.21.0
+pytest-xdist==3.8.0
+execnet==2.1.2
+exceptiongroup==1.2.2 ; python_version < "3.11"
+tomli==2.2.1 ; python_version < "3.11"
+
+# coverage
+coverage==7.16.2
+
+# lint and types
+ruff==0.16.10
+mypy==2.4.0
+mypy_extensions==1.1.0
+typing_extensions==4.16.0
+pathspec==1.1.1
+librt==0.16.0
+ast_serialize==0.11.2
+
+# building wheels and source distributions
+setuptools==84.0.0
+build==1.6.1
+pyproject_hooks==1.2.0

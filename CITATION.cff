@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "Please cite the exact release and, for any computation, the campaign document it used."
+type: software
+title: "Polyhedraproof: a checked SAT pipeline for twelve pairwise-adjacent planar faces"
+authors:
+  - family-names: Pirozhkov
+    given-names: Andrei
+    orcid: "https://orcid.org/0009-0008-6901-7843"
+version: 1.0.0rc1
+date-released: 2026-10-17
+license: MIT
+repository-code: "https://github.com/pirozhkov-andrei/polyhedraproof"
+abstract: >-
+  Whether a polyhedron with twelve pairwise adjacent planar faces exists is an open question;
+  the tetrahedron and the Szilassi polyhedron are the only known polyhedra with every two
+  faces adjacent. A necessary-condition SAT encoding of polyhedra with twelve pairwise adjacent planar
+  faces under the accompanying article's surface and face-intersection hypotheses.
+  Given the article's reduction, checked refutations of all 59 CNF formulas would prove
+  nonexistence in that class. The pipeline has every refuted case checked by the verified
+  LRAT checker cake_lpr.
+  This release does not include, and does not claim, the completed computation.
+keywords:
+  - polyhedra
+  - oriented matroids
+  - SAT
+  - LRAT
+  - formal verification
+# At publication: the DOI of the archived release
+# (docs/RELEASE.md, "Publishing"); the article's arXiv identifier once it has one.
+references:
+  - type: article
+    title: "Twelve pairwise adjacent faces: a chirotope reduction to Boolean unsatisfiability"
+    authors:
+      - family-names: Pirozhkov
+        given-names: Andrei
+        orcid: "https://orcid.org/0009-0008-6901-7843"
+    notes: "The accompanying article, paper/faces12-en.tex of this release (CC BY 4.0)."

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "faces12-campaign"
+version = "1.0.0rc1"
+description = "The twelve pairwise-adjacent faces campaign: 59 formulas, claim gate and release integration"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Andrei Pirozhkov" }]
+keywords = ["polyhedra", "SAT", "LRAT", "formal verification"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Typing :: Typed",
+]
+# Exactly the two libraries of the same release (specification §2.1).
+dependencies = [
+    "cubeproof==1.0.0rc1",
+    "neighbourly==1.0.0rc1",
+]
+
+[project.urls]
+Homepage = "https://github.com/pirozhkov-andrei/polyhedraproof"
+Source = "https://github.com/pirozhkov-andrei/polyhedraproof/tree/main/packages/faces12-campaign"
+Issues = "https://github.com/pirozhkov-andrei/polyhedraproof/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+faces12_campaign = ["py.typed"]

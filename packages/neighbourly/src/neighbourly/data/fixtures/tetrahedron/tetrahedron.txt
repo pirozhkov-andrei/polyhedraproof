@@ -1,0 +1,6 @@
+# The tetrahedron as a neighbourly map on n = 4 faces: one row per vertex, one column per face.
+# Its four vertices are the four 3-subsets of {1, 2, 3, 4}.
+1 1 1 0
+1 1 0 1
+1 0 1 1
+0 1 1 1

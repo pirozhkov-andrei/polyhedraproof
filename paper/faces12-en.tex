@@ -1,0 +1,1822 @@
+% Twelve pairwise adjacent faces: a chirotope reduction to Boolean unsatisfiability.
+% Build:  pdflatex faces12-en && pdflatex faces12-en
+\pdfoutput=1 % arXiv: build with pdfLaTeX
+\documentclass[11pt,reqno]{amsart}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[a4paper,margin=3.1cm]{geometry}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{hyperref}
+\usepackage{url}
+\hypersetup{
+  pdftitle={Twelve pairwise adjacent faces: a chirotope reduction to Boolean unsatisfiability},
+  pdfauthor={Andrei Pirozhkov},
+  pdfsubject={A conditional reduction for neighbourly polyhedral surfaces},
+  pdfkeywords={polyhedral surfaces, oriented matroids, SAT, LRAT, reproducibility}
+}
+\emergencystretch=1em
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{convention}[theorem]{Convention}
+
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\FF}{\mathbb{F}_2}
+\newcommand{\bra}[1]{[#1]}
+\newcommand{\sgn}{\operatorname{sgn}}
+\newcommand{\Ends}{\operatorname{Ends}}
+\newcommand{\Aut}{\operatorname{Aut}}
+\newcommand{\link}{\operatorname{lk}}
+\newcommand{\relint}{\operatorname{relint}}
+\newcommand{\OnB}{\mathrm{OnB}}
+\newcommand{\Ord}{\mathrm{Ord}}
+\newcommand{\refl}{\mathrm{refl}}
+\newcommand{\xor}{\oplus}
+\DeclareMathOperator{\dett}{det}
+
+\begin{document}
+
+\title[Twelve pairwise adjacent faces]{Twelve pairwise adjacent faces:\\ a chirotope reduction to Boolean unsatisfiability}
+
+\author[Twelve pairwise adjacent faces]{Andrei Pirozhkov}
+\thanks{Email: \href{mailto:pirozhkov.andrey.u@gmail.com}{\texttt{pirozhkov.andrey.u@gmail.com}}.
+  ORCID: \href{https://orcid.org/0009-0008-6901-7843}{0009-0008-6901-7843}.}
+\date{17 October 2026}
+
+\subjclass[2020]{Primary 52B70; Secondary 52C40, 05C10, 68V15}
+\keywords{neighbourly polyhedra, oriented matroids, chirotopes, polyhedral realizability, SAT, verified proof checking}
+
+\begin{abstract}
+Can twelve planar faces form a closed surface in three-dimensional space with every
+pair sharing an edge? We turn this geometric existence question into explicit finite
+proof obligations and provide a workflow for checking a distributed computation.
+We require an embedded surface in $\RR^3$. Faces are simple planar disks with distinct supporting planes, and any two
+faces intersect in precisely one common edge. Such a surface is trivalent and has
+genus $6$. We reduce its existence to the satisfiability of one of $59$ explicit
+Boolean formulas, one for each orientable neighbourly map on twelve faces.
+
+The reduction first puts a realization into general position without changing its
+combinatorics. The twelve supporting planes and the plane at infinity then define
+a uniform rank-$4$ chirotope on $13$ elements. Bracket signs encode necessary
+conditions for face simplicity, boundary-crossing parity and local vertex geometry.
+A reorientation gauge removes redundant signs. Each resulting formula has
+$5\,257$ variables and $52\,177$ clauses.
+
+We give the necessity proofs, recompute the $59$ combinatorial types, and describe
+exact geometric controls and a separate reference encoder. We prove that refuting
+every leaf of a finite tree of case splits rooted at the unrestricted formula refutes
+the formula. We also specify a protocol for producing LRAT refutations of such leaves,
+checking them with a formally verified checker, and verifying the computation
+independently by rechecking or recomputing its leaves.
+Unsatisfiability of all $59$ formulas would exclude a surface in the
+stated model. A complete set of refutations has not been obtained, so this
+non-existence conclusion remains conditional. Conversely, a satisfying assignment
+would not by itself establish geometric realizability.
+\end{abstract}
+
+\maketitle
+\raggedbottom
+\enlargethispage{3pt}
+
+\section{Introduction}\label{sec:intro}
+
+\subsection{The question}
+Call a closed surface in $\RR^3$ that is a finite union of planar polygons a \emph{polyhedral
+surface}, and call it \emph{neighbourly} when every two of its faces share an edge. The tetrahedron
+is neighbourly with four faces. Szilassi's toroidal polyhedron \cite{Szilassi1986} is neighbourly
+with seven. These are the only examples reported in \cite{ArsenevaEtAl2024}.
+We study the next combinatorially admissible case within the model specified below:
+
+\begin{quote}
+\textbf{Question.} Is there a closed embedded polyhedral surface in $\RR^3$ satisfying
+\textup{(H1)--(H3)} below, with twelve faces, every two of which share an edge?
+\end{quote}
+
+The restriction to twelve is not arbitrary. Pairwise adjacency forces $E=\binom{n}{2}$ edges and, as
+we show in Lemma~\ref{lem:trivalent}, every vertex of such a surface has degree three, whence
+$V=n(n-1)/3$ and
+\[
+   g \;=\; \frac{2-\chi}{2} \;=\; \frac{(n-3)(n-4)}{12}.
+\]
+A closed surface embedded in $\RR^3$ is orientable, so $g$ must be a non-negative integer, which
+happens exactly for $n\equiv 0,3,4,7\pmod{12}$. After $4$ and $7$ the next admissible value is
+$n=12$, with $V=44$, $E=66$ and genus $6$. That the corresponding \emph{combinatorial} objects exist
+in abundance is classical: by the Ringel--Youngs solution of the Heawood problem
+\cite{RingelYoungs1968,Ringel1974}, the complete graph $K_n$ embeds in the orientable surface of genus
+$\lceil (n-3)(n-4)/12\rceil$, and when the unrounded quotient $(n-3)(n-4)/12$ is an integer --- exactly for
+these $n$ --- the embedding is a triangulation. The
+question is whether one of those combinatorial objects can be realized by flat faces in space
+without self-intersection.
+
+\subsection{What is known}
+Dualizing a neighbourly polyhedron with $12$ faces gives a triangulation of the orientable surface of
+genus $6$ with $12$ vertices in which every two vertices are joined by an edge; $12$ is the minimum
+number of vertices for that surface: a triangulation with $v$ vertices has $3(v+10)$ edges,
+at most $\binom v2$, which forces $v\ge12$ (see \cite{JungermanRingel1980} for the general
+minimum-vertex theorem). Altshuler, Bokowski and Schuchert
+\cite{AltshulerBokowskiSchuchert1996} classified these: there are exactly $59$ combinatorial types,
+all orientable of genus $6$. They also proved several properties that a polyhedral realization would
+have to have, and left realizability open. Schewe \cite{Schewe2010} settled the realizability of the
+dual objects negatively: no triangulation of the genus-$6$ surface with $12$ vertices has a
+polyhedral realization in $\RR^3$. His Theorem~1.1 follows from Proposition~1.2: none of the $59$
+types admits an acyclic uniform rank-$4$ oriented matroid \emph{admissible for that triangulation}.
+Admissibility excludes circuits witnessing an intersection of a triangle with a disjoint edge
+(\cite[Section~2]{Schewe2010}); a SAT solver discharges this constrained combinatorial problem.
+
+Schewe's theorem does not answer our Question. Polyhedral realizability is not preserved by
+combinatorial duality: his objects are $12$ \emph{points} carrying $44$ triangular faces, ours are
+$12$ \emph{planes} carrying $44$ trivalent vertices, and a realization of either does not provide a realization
+of the other by combinatorial duality alone. The general question --- which complete graphs occur as face-adjacency graphs of closed
+polyhedral surfaces --- is recorded as open in \cite{ArsenevaEtAl2024}, where the tetrahedron and the
+Szilassi polyhedron are named as the only known instances.
+
+\subsection{Contribution}
+This paper gives an explicit reduction of the Question to a finite Boolean computation.
+The geometric necessity arguments are proved below; the topological and oriented-matroid
+facts used in them are identified by references. Specifically:
+
+\begin{enumerate}[label=(\arabic*),leftmargin=2.2em]
+\item \textbf{Case list.} Every neighbourly polyhedron with twelve faces realizes one of exactly $59$
+   neighbourly maps (Theorem~\ref{thm:59}). We recompute the list by an exhaustive search
+   over oriented triple systems; its size agrees with \cite{AltshulerBokowskiSchuchert1996}, and
+   its classes are, one by one, those of the published list \cite{LutzManifoldPage}.
+\item \textbf{General position.} Every realization may be perturbed into one in which no four of the
+   thirteen covectors (twelve face planes and the plane at infinity) are linearly dependent
+   (Theorem~\ref{thm:genpos}). The signs of the $\binom{13}{4}=715$ brackets are then defined and form a
+   uniform rank-$4$ chirotope.
+\item \textbf{A sign dictionary.} Every geometric predicate the argument needs --- the order of the
+   points marked on a line, betweenness inside an edge, the
+   turn at a corner, the parity of boundary crossings along a ray --- is an explicit Boolean
+   combination of bracket signs (Section~\ref{sec:dictionary}). The identities are exact, not
+   approximations.
+\item \textbf{Five layers of necessary conditions.} We define a CNF formula $\Phi_T$ for each map $T$
+   as the conjunction of five layers $S,H,A,B,I$ and a gauge, and prove that every general-position
+   realization of $T$, after the gauge normalization of Corollary~\ref{cor:gauge}, satisfies all of
+   them (Theorem~\ref{thm:necessity}). Layers $S$, $H$ and $A$ are
+   exactly the statement that the bracket signs form a uniform rank-$4$ chirotope, encoded through
+   $78$ linear orders rather than through $411\,840$ six-literal clauses; layers $B$ and $I$ are
+   geometric: the boundary polygon of each face is simple, the traversal orientation of each face is
+   the one its crossing parity forces, and no vertex carries two reflex corners.
+\item \textbf{Conditional non-existence.} If all $59$ formulas are unsatisfiable, the Question has a
+   negative answer (Corollary~\ref{cor:conditional}).
+\item \textbf{Coverage by cube trees.} A formula is unsatisfiable as soon as every leaf of a finite
+   tree of case splits rooted at the empty cube is refuted (Theorem~\ref{thm:coverage}); a refuted
+   tree rooted at a nonempty cube settles only that region (Remark~\ref{rem:pilotroot}).
+\item \textbf{Verification protocol.} We describe the discipline under which the refutations are to be
+   produced and checked, so that the eventual computational claim rests on a formally verified proof
+   checker \cite{TanHeuleMyreen2023} rather than on a solver's word, and so that a third party can
+   verify it by rechecking retained proofs or, without access to stored proofs, by recomputing any
+   or all of its leaves (Section~\ref{sec:protocol}).
+\end{enumerate}
+
+\subsection{What is not claimed}\label{sub:notclaimed}
+The Boolean computation has \emph{not} been carried out. Theorem~\ref{thm:necessity} and
+Corollary~\ref{cor:conditional} are a reduction and a conditional statement; the Question remains
+open. Two further limitations are worth stating at the outset. First, only necessity is encoded: a
+satisfying assignment of some $\Phi_T$ would not produce a polyhedron, because the layers are
+necessary conditions and because a uniform chirotope need not be realizable over $\RR$. Second, the
+reduction is stated under the hypotheses (H1)--(H3) of Section~\ref{sec:polyhedra}, which are the
+regular polygonal-cell conventions used throughout this paper; dropping them --- allowing faces with holes, two faces to
+meet in more than one edge, or additional contacts between faces --- changes the object under study,
+and those variants are not settled by these $59$ formulas.
+
+A numerical search for the same twelve-face objects is described by Bokowski and
+Kevin~H.\ (CodeParade) \cite[Sections~4 and~8.3]{BokowskiKevin2025}. It found no embedded
+realization among the $59$ dual types and presents an intersecting example in Figure~38;
+this is a search result, not a non-existence proof. The associated
+\textsf{NeighborlyPolyhedra} repository \cite{HackerPoet} documents the search and further
+near-misses. Our approach instead gives finite necessary conditions whose certified
+unsatisfiability would imply non-existence. The cited 2025 paper leaves the twelve-face
+question unresolved.
+
+\subsection{Organization}
+Section~\ref{sec:polyhedra} fixes the hypotheses and proves the local facts: trivalence, the Euler
+count, and the vertex lemma that at most one of the three corners at a vertex is reflex.
+Section~\ref{sec:maps} defines neighbourly maps and realizations and proves the case list.
+Section~\ref{sec:genpos} proves the general-position theorem. Section~\ref{sec:dictionary} develops
+the sign dictionary. Sections~\ref{sec:chirotope} and \ref{sec:geometric} define and justify the five
+layers, Section~\ref{sec:gauge} the gauge. Section~\ref{sec:formula} assembles the formula, states the
+reduction and proves that refuted trees of cases cover the formula, and Section~\ref{sec:protocol}
+describes the verification protocol.
+Section~\ref{sec:status} states precisely what remains to be done. Appendix~\ref{app:numbers} contains
+the numerical data, and
+Appendix~\ref{app:software} describes the accompanying software.
+
+\subsection*{Acknowledgement of tooling}
+The accompanying implementation is written in Python with no runtime dependencies beyond the standard
+library; it uses CaDiCaL \cite{BiereEtAl2024} as a proposing solver and \texttt{cake\_lpr} \cite{TanHeuleMyreen2023} as the
+accepting checker. The partition heuristic follows \cite{BattlemanReevesHeule2025}.
+
+\section{Polyhedra, hypotheses and local structure}\label{sec:polyhedra}
+
+\begin{definition}\label{def:polyhedron}
+A \emph{polyhedron} is a compact closed surface $\Sigma\subset\RR^3$ without self-intersections that
+is a finite union of closed planar polygons, its \emph{faces}. Each face is a closed simple polygonal
+disk and is the closure in $\Sigma$ of a maximal connected relatively open subset of $\Sigma$
+contained in an affine plane. \emph{Edges} are the maximal
+straight segments of the union of face boundaries; degree-two subdivision points are suppressed, so
+faces and edges form a finite regular cell decomposition of $\Sigma$. Two faces \emph{share an edge}
+when their intersection is an edge of both. The polyhedron is \emph{neighbourly} when every two faces
+share an edge.
+\end{definition}
+
+Three hypotheses are used throughout. Each is a standard convention, and each marks a place where a
+wider reading of the word \emph{polyhedron} would leave a case uncovered.
+
+\begin{hypothesis}\label{hyp:H}\leavevmode
+\begin{enumerate}[label=\textup{(H\arabic*)},leftmargin=3.2em]
+\item The intersection of two faces is a common face of both: empty, a single common vertex, or a
+   single common edge. This is our polygonal-cell intersection convention; it forces \emph{exactly} one shared
+   edge per pair and, with Lemma~\ref{lem:trivalent}, trivalent vertices.
+\item Each face is a simple polygon: one boundary cycle, no holes.
+\item Distinct faces have distinct supporting planes.
+\end{enumerate}
+\end{hypothesis}
+
+\begin{remark}
+Within the closed embedded polygonal-cell model of Definition~\ref{def:polyhedron},
+maximality of faces is equivalent to requiring that no two edge-adjacent faces be coplanar.
+Indeed, two
+coplanar faces sharing an edge would have interiors joined through an interior point of that edge
+inside a connected relatively open planar subset of $\Sigma$, contradicting maximality.
+Conversely, if adjacent faces are noncoplanar, no relatively open planar subset of $\Sigma$
+can contain an edge-interior point: its neighbourhood contains open portions of both
+incident faces. Nor can such a subset contain a vertex, since any neighbourhood of the
+vertex contains edge-interior points. Thus the connected relatively open planar patches
+are contained in individual face interiors, whose closures are the faces.
+For a neighbourly surface every pair is edge-adjacent, so this condition is precisely (H3).
+
+The model in \cite[Section~1, pp.~1430--1431]{ArsenevaEtAl2024} is broader: its polygonal
+complexes may have boundary and may have coplanar cells (indeed, Proposition~3.2 constructs
+flat complexes). It imposes neither our maximality convention nor (H3).
+The equivalence just proved applies after restricting to a closed embedded surface with
+our cell conventions and excluding coplanar adjacent cells; it is not an equivalence with
+that broader model. We cite its Section~2, p.~1435, for the open question about closed surfaces.
+\end{remark}
+
+\begin{lemma}[Trivalence]\label{lem:trivalent}
+In a neighbourly polyhedron satisfying \textup{(H1)}, every vertex has degree three.
+\end{lemma}
+
+\begin{proof}
+Let $v$ be a vertex. Because $\Sigma$ is a surface with a regular cell decomposition, the faces
+incident to $v$ occur in a cyclic order around $v$, consecutive ones sharing an edge through $v$;
+a degree-two vertex would make its two incident faces share both incident edges, contrary to (H1).
+Thus the degree $d$ of $v$ is at least three. Suppose $d\ge 4$ and let
+$F^i,F^j$ be two incident faces that are not consecutive in that cyclic order. Their closed sectors at
+$v$ meet only in $v$, so no edge through $v$ is common to both. By neighbourliness they share an edge
+$E$, necessarily not incident to $v$. Then $F^i\cap F^j$ contains the edge $E$ and also the point
+$v\notin E$. By (H1) it is a single common face of both --- empty, a vertex or an edge --- and,
+containing $E$, it would have to be an edge containing $E$, that is $E$ itself, since distinct edges
+meet at most in endpoints. But $E$ does not contain $v$, contradicting (H1).
+\end{proof}
+
+\begin{proposition}[Euler count]\label{prop:euler}
+Let $\Sigma$ be a neighbourly polyhedron with $n\ge 4$ faces satisfying \textup{(H1)}. Then
+\[
+  E=\binom{n}{2},\qquad V=\frac{n(n-1)}{3},\qquad
+  \chi=n-\frac{n(n-1)}{6},\qquad g=\frac{(n-3)(n-4)}{12},
+\]
+and $g$ is a non-negative integer, so $n\equiv 0,3,4,7\pmod{12}$. For $n=12$: $V=44$, $E=66$,
+$\chi=-10$ and $g=6$.
+\end{proposition}
+
+\begin{proof}
+Each pair of faces shares exactly one edge and each edge lies in exactly two faces, so
+$E=\binom{n}{2}$. By Lemma~\ref{lem:trivalent} every vertex has degree three, and counting
+vertex--edge incidences gives $3V=2E$, whence $V=n(n-1)/3$. Then $\chi=V-E+F=n-n(n-1)/6$ and
+$2-\chi=(n-3)(n-4)/6$. A compact closed surface embedded in $\RR^3$ is orientable --- a closed
+non-orientable surface has torsion in $H_1(-;\mathbb{Z})$, which Alexander duality forbids for a
+subspace of $\RR^3$; see \cite[\S3.3, Corollary 3.46 and the remarks following it]{Hatcher2002} ---
+and it is connected, because any two faces share an edge;
+so $\chi=2-2g$ with $g\in\mathbb{Z}_{\ge0}$, and $g=(n-3)(n-4)/12$. Finally $12\mid (n-3)(n-4)$ holds
+exactly for $n\equiv0,3,4,7\pmod{12}$, as one checks on the twelve residues.
+\end{proof}
+
+The last local fact we need is about reflex corners. Let $v$ be a vertex of a neighbourly polyhedron,
+incident to the three faces $F^f,F^g,F^h$. Near $v$ each of them is a plane wedge, and the corner of
+$F^f$ at $v$ is \emph{reflex} when its interior angle exceeds $\pi$.
+
+\begin{lemma}[At most one reflex corner]\label{lem:onereflex}
+At every vertex of degree three of a polyhedron satisfying \textup{(H1)}--\textup{(H3)}, at most one
+of the three corners is reflex.
+\end{lemma}
+
+\begin{proof}
+Let $v$ be incident to $F^f,F^g,F^h$ and suppose the corners of $F^f$ and $F^g$ at $v$ are both
+reflex. Both faces contain the edge $E(f,g)$, which lies on the line $L=h_f\cap h_g$ and has $v$ as an
+endpoint; let $R$ be the ray of $L$ issuing from $v$ opposite to $E(f,g)$. Note first that
+$F^f\cap F^g=E(f,g)$: by (H1) that intersection is a common face of both --- empty, a vertex or an
+edge --- and it contains the edge $E(f,g)$.
+
+Near $v$ the face $F^f$ is the wedge bounded by the germs of $E(f,g)$ and $E(f,h)$. A plane wedge has
+interior angle exceeding $\pi$ if and only if its interior contains the ray opposite to each of its
+two bounding rays; in particular a reflex corner of $F^f$ at $v$ puts a germ of $R$ in the interior of
+$F^f$. The same applies to $F^g$. Hence $F^f\cap F^g$ contains points of $R$ other than $v$, while $E(f,g)$ meets $R$ only in $v$; a
+contradiction.
+\end{proof}
+
+\begin{remark}\label{rem:octants}
+The software additionally checks the local conclusion by enumerating the $256$ unions of
+the eight octants cut out by three independent planes. The admissible sector-size profiles
+are $(1,1,1)$ and $(1,1,3)$, occurring $16$ and $48$ times respectively; an entry $3$
+means a reflex corner. The enumeration and its incidence conventions are documented with
+the code. It is a supplementary check; the reduction uses the proof above.
+\end{remark}
+
+\section{Maps, realizations and the case list}\label{sec:maps}
+
+\subsection{Neighbourly maps}
+
+\begin{definition}\label{def:map}
+A \emph{neighbourly map} on $n\ge4$ faces is a set $T$ of $3$-element subsets of $\{1,\dots,n\}$,
+called \emph{vertices}, such that
+\begin{enumerate}[label=\textup{(M\arabic*)},leftmargin=3.2em]
+\item every pair $\{i,j\}$ lies in exactly two members of $T$, written $\Ends(i,j)=\{k,l\}$ where
+   $\{i,j,k\},\{i,j,l\}\in T$; and
+\item for every $f$ the \emph{link} $\link(f)$ --- the graph on $\{1,\dots,n\}\setminus\{f\}$ with
+   $a\sim b$ iff $\{f,a,b\}\in T$ --- is a single cycle of length $n-1$.
+\end{enumerate}
+The map is \emph{orientable} when the $|T|=n(n-1)/3$ triples can be cyclically oriented so that every
+ordered pair $(a,b)$ with $a\ne b$ occurs in exactly one oriented triple.
+\end{definition}
+
+Condition (M1) says $|T|=n(n-1)/3$ and makes $T$ the triangle set of a two-dimensional simplicial
+complex on the labels $1,\dots,n$ in which every two labels span an edge and every edge lies in
+exactly two triangles. Each link $\link(f)$ is then $2$-regular, a disjoint union of cycles, and a
+label whose link has more than one cycle would be a singular point of the complex. Condition (M2)
+excludes such points: it makes the complex a triangulation of a closed surface. The following lemma
+is what lets us pass from geometry to $T$.
+
+\begin{lemma}\label{lem:inducedmap}
+Let $\Sigma$ be a neighbourly polyhedron with $n$ faces satisfying \textup{(H1)}--\textup{(H2)}, its
+faces labelled $1,\dots,n$. Then the set $T$ of triples of faces meeting at a vertex is a neighbourly
+map on $n$ faces, and distinct vertices give distinct triples.
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:trivalent} each vertex is incident to exactly three faces, so each vertex gives a
+$3$-subset. Each pair $\{i,j\}$ shares exactly one edge, and that edge has exactly two endpoints, so
+$\{i,j\}$ lies in exactly two triples counted with multiplicity: (M1) holds once we know the triples
+of distinct vertices are distinct. Suppose $v\ne w$ were vertices with the same incident faces
+$\{f,g,h\}$. Then $v$ and $w$ are both endpoints of the edge $E(f,g)$, and likewise of $E(f,h)$ and
+of $E(g,h)$. Three distinct straight segments cannot have the same pair of endpoints, so two of these
+edges coincide, contradicting the regularity of the cell decomposition. Finally (M2) is the statement
+that the faces around a fixed face $f$ close up into one cycle, which holds because the boundary of
+the disk $F^f$ is a single closed polygon whose edges are $E(f,u)$, $u\ne f$, each consecutive pair
+meeting at a vertex.
+\end{proof}
+
+\subsection{Realizations}
+Write a plane as its covector: $h=\{x\in\RR^3: q\cdot(x,1)=0\}$ with
+$q=(a,b,c,d)\in\RR^4$, $(a,b,c)\ne 0$; its \emph{normal} is $n(q)=(a,b,c)$. Adjoin the
+\emph{plane at infinity} $q_0=(0,0,0,1)$, which no affine point satisfies. For a $4$-subset
+$S\subseteq\{0,1,\dots,n\}$ let
+\[
+  \bra{S} \;=\; \dett\big(q_s\big)_{s\in S}
+\]
+with the rows taken in increasing order of the labels; for an ordered tuple the bracket changes sign
+with the parity of the permutation. Write $P_{ijk}=h_i\cap h_j\cap h_k$ when that intersection is a
+single point and $L_{ij}=h_i\cap h_j$ when that intersection is a line.
+
+\begin{definition}\label{def:realization}
+A \emph{realization} of a neighbourly map $T$ on $n$ faces is a tuple $q=(q_1,\dots,q_n)$ of covectors
+such that, writing $E(i,j)$ for the segment of $L_{ij}$ between $P_{ij k}$ and $P_{ij l}$ with
+$\{k,l\}=\Ends(i,j)$, and $F^f$ for the closed region bounded in $h_f$ by the closed polygon with
+vertex sequence $\big(P_{f,u,\,\link\text{-successor of }u}\big)_{u\in\link(f)}$:
+\begin{enumerate}[label=\textup{(R\arabic*)},leftmargin=3.2em]
+\item for every $\{i,j,k\}\in T$ the normals $n(q_i),n(q_j),n(q_k)$ are linearly independent, so
+  $P_{ijk}$ exists, and the $n(n-1)/3$ points so obtained are pairwise distinct;
+\item for every $f$ the polygon above is simple, so $F^f$ is a closed disk;
+\item $F^i\cap F^j=E(i,j)$ for all $i\ne j$; and
+\item the planes $h_1,\dots,h_n$ are pairwise distinct.
+\end{enumerate}
+\end{definition}
+
+\begin{lemma}\label{lem:bridge}
+The union $\Sigma=\bigcup_f F^f$ of the faces of a realization of a neighbourly map $T$ is a
+neighbourly polyhedron with $n$ faces satisfying \textup{(H1)}--\textup{(H3)}, whose induced map is
+$T$. Conversely every such polyhedron, with its faces labelled, arises this way from the tuple of its
+supporting covectors.
+\end{lemma}
+
+\begin{proof}
+Let $q$ be a realization. Each $F^f$ is a closed disk by (R2), and two of them meet exactly in the
+common edge $E(i,j)$ by (R3), which is an edge of both by construction.
+No fourth face $F^i$ contains a vertex $P_{fgh}$: by (R3) this point would lie on the three distinct
+boundary edges $E(i,f),E(i,g),E(i,h)$ of the simple polygon $F^i$, whereas a point of a simple polygon
+belongs to at most two of its edges. At $P_{fgh}$ the three incident edge lines are distinct by
+(R1), so no two incident segments join into one straight edge; consequently the edges are exactly
+the segments $E(i,j)$. Thus (H1) holds and the faces are pairwise adjacent.
+Nor can a third face $F^k$ meet the relative interior of $E(i,j)$: by (R3) the point would lie
+on both $E(k,i)$ and $E(k,j)$, which by (R2) can meet only at their common polygon vertex
+$P_{ijk}$, an endpoint of $E(i,j)$.
+(H2) is (R2) and (H3) is (R4). $\Sigma$ is compact and closed as a finite union
+of disks whose boundary edges are each shared by exactly two of them. It is a $2$-manifold: an
+interior point of a face has a disk neighbourhood; a point in the relative interior of $E(i,j)$ has a
+neighbourhood consisting of two half-disks glued along a segment; and at a vertex $P_{fgh}$ the three
+wedges of $F^f,F^g,F^h$ meet pairwise in the germs of $E(f,g),E(f,h),E(g,h)$, so the link of the
+vertex in $\Sigma$ is a triangle, that is, a circle. The relative interior of each $F^f$ is a
+connected relatively open planar subset of $\Sigma$. Every relatively open neighbourhood in
+$\Sigma$ of a point of $\partial F^f$ contains two-dimensional pieces of two incident faces with
+distinct supporting planes, by (R4), and therefore is not planar. Thus this interior is maximal
+among connected relatively open planar subsets of $\Sigma$, and its closure is $F^f$.
+Conversely, a neighbourly polyhedron with labelled faces gives covectors $q_i$ of its supporting
+planes, and Lemma~\ref{lem:inducedmap} gives the map. At an incident triple,
+the three normals are linearly independent. Indeed, otherwise their rank is two:
+the planes are distinct and pass through the same vertex. Their pairwise intersection
+lines would then coincide. The three distinct incident edge germs would lie on the
+two rays of that line, forcing two germs to overlap, contrary to the regular embedded
+cell structure. Thus each incident triple meets at a unique point, and the vertex of $\Sigma$ with
+incident faces $\{i,j,k\}$ is $P_{ijk}$; by Lemma~\ref{lem:inducedmap} these $n(n-1)/3$ vertices are
+distinct, which is (R1). The common edge of $F^i$ and $F^j$ lies on $L_{ij}$ and its endpoints are the
+two vertices whose triples contain $\{i,j\}$, so it is the segment $E(i,j)$ of
+Definition~\ref{def:realization}. As in the proof of Lemma~\ref{lem:inducedmap}, the boundary of the
+face $F^f$ consists of the edges $E(f,u)$, $u\ne f$, consecutive ones meeting at the vertices
+$P_{f,u,\mathrm{succ}(u)}$ in the order of $\link(f)$; it is therefore the polygon of
+Definition~\ref{def:realization}, which is simple by (H2), and the face, a closed disk in $h_f$, is the
+region that polygon bounds. This is (R2), and the regions $F^f$ of the definition are the faces of
+$\Sigma$. By (H1) the intersection $F^i\cap F^j$ is a single common face of both; it contains the edge
+$E(i,j)$, and distinct edges meet at most in endpoints, so $F^i\cap F^j=E(i,j)$, which is (R3).
+Finally (R4) is (H3).
+\end{proof}
+
+\subsection{The case list}
+
+\begin{lemma}[Oriented form]\label{lem:oriented}
+Let $\vec T$ be a set of $n(n-1)/3$ cyclically ordered triples containing every ordered pair $(a,b)$,
+$a\ne b$, in exactly one triple. Then the underlying sets of $\vec T$ satisfy \textup{(M1)} and
+\textup{(M2)} if and only if for every $v$ the map $\sigma_v\colon b\mapsto c$, where
+$(v,b,c)\in\vec T$, is an $(n-1)$-cycle on $\{1,\dots,n\}\setminus\{v\}$. The orientable
+neighbourly maps on $n$ faces are exactly the sets of underlying sets of such $\vec T$.
+\end{lemma}
+
+\begin{proof}
+In both directions, $\sigma_v$ is a permutation of the $n-1$ elements other than $v$, because each
+ordered pair $(v,b)$ lies in exactly one member of $\vec T$.
+
+Suppose every $\sigma_v$ is an $(n-1)$-cycle. Then no $\sigma_v$ has a $2$-cycle, so no triple occurs
+in $\vec T$ with both of its cyclic orders: from $(a,b,c)$ and $(a,c,b)$ we would get $\sigma_a(b)=c$
+and $\sigma_a(c)=b$. Hence the $n(n-1)/3$ underlying sets are distinct, and because the two ordered
+versions of an unordered pair lie in two different members of $\vec T$, every unordered pair lies in
+exactly two of those sets: that is (M1). The cycles of $\sigma_v$ are the connected components of
+$\link(v)$, so (M2) holds as well.
+
+Conversely, suppose the underlying sets satisfy (M1) and (M2). Counting pair--triple incidences, (M1)
+forces exactly $n(n-1)/3$ underlying sets, so no triple occurs in $\vec T$ twice and no $\sigma_v$
+has a $2$-cycle; the cycles of $\sigma_v$ are then the components of $\link(v)$, and (M2) says
+precisely that $\sigma_v$ is an $(n-1)$-cycle.
+
+Finally, a coherent orientation of the triangles of a triangulated closed surface induces on each edge
+the two opposite directions from its two incident triangles, which is exactly the condition that every
+ordered pair occurs once; conversely such a set of oriented triples orients the dual surface. So the
+orientable neighbourly maps are exactly those obtained this way.
+\end{proof}
+
+\begin{lemma}[Framing count]\label{lem:framing}
+Let $\mathcal{N}_n$ be the set of \emph{orientable} neighbourly maps on the label set
+$\{0,1,\dots,n-1\}$ whose link at $0$ is exactly the cycle $(1,2,\dots,n-1)$. Then
+\[
+  |\mathcal{N}_n| \;=\; \sum_{C}\frac{2n(n-1)}{|\Aut(C)|},
+\]
+the sum being over isomorphism classes $C$ of orientable neighbourly maps on $n$ faces. Moreover any isomorphism
+between two members of $\mathcal{N}_n$ is determined by the image of the label $0$ together with the
+rotation or reflection it induces on the link of $0$, so at most $2n(n-1)$ relabellings have to be
+tried to decide isomorphism.
+\end{lemma}
+
+\begin{proof}
+Orientability is invariant under relabelling, so it is enough to argue inside one class. Fix a class
+$C$ with representative $M_0$ and $a=|\Aut(C)|$. The labelled maps in $C$ are the
+$M_0^{\sigma}$, $\sigma\in S_n$, and $M_0^{\sigma}=M_0^{\tau}$ exactly when $\sigma\tau^{-1}\in\Aut$.
+Because the map is neighbourly, the link of a vertex $v$ of $M_0$ consists of all other $n-1$
+vertices, so a relabelling $\sigma$ with $M_0^\sigma\in\mathcal N_n$ is determined by the vertex
+$v=\sigma^{-1}(0)$ --- $n$ choices --- together with a bijection from $\link(v)$ to
+$\{1,\dots,n-1\}$ carrying the link cycle of $v$ to $(1,2,\dots,n-1)$, of which there are exactly
+$2(n-1)$, one for each starting point and direction. Hence $2n(n-1)$ relabellings, and the members of
+$\mathcal N_n$ they produce are counted $a$ times each. The last claim is the same computation read
+backwards.
+\end{proof}
+
+\begin{remark}
+Non-orientable neighbourly maps on twelve faces also exist:
+\cite[Theorem~4]{EllinghamStephens2005} enumerates triangular embeddings of $K_{12}$
+on the non-orientable surface of the same Euler characteristic.
+This is why orientability is part of the definition of $\mathcal{N}_n$. They are
+irrelevant here, because the surface of a polyhedron is orientable
+(Proposition~\ref{prop:euler}).
+\end{remark}
+
+\begin{theorem}[Case list]\label{thm:59}
+Every neighbourly polyhedron with twelve faces satisfying \textup{(H1)}--\textup{(H3)} induces one of
+exactly $59$ pairwise non-isomorphic orientable neighbourly maps on twelve faces.
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:inducedmap} the polyhedron induces a neighbourly map $T$.
+Its dual is a triangulation with twelve vertices and complete edge graph $K_{12}$.
+It is orientable of genus $6$ by Proposition~\ref{prop:euler}, since it carries the
+dual cell structure of the same surface. The classification of
+\cite{AltshulerBokowskiSchuchert1996}, also reproduced in
+\cite[Theorem 4]{EllinghamStephens2005}, gives exactly $59$ isomorphism classes
+of these orientable triangulations. Taking their combinatorial duals gives the claim.
+\end{proof}
+
+\paragraph{Recomputing the representatives.}
+The implementation enumerates these maps without reading an external list.
+Lemma~\ref{lem:oriented} reduces the search to cyclically oriented triples covering
+each ordered pair once. Fix the oriented link of one label to $(1,2,\dots,11)$,
+as allowed by Lemma~\ref{lem:framing}; this fixes eleven of the forty-four triples.
+At each step choose an uncovered ordered pair $(a,b)$ and try every third label $c$
+for which $(b,c)$ and $(c,a)$ are also uncovered. Reject an addition if it closes
+any partial link permutation into a cycle shorter than $11$.
+
+These rejections lose no completion: an ordered pair cannot be covered twice,
+and a closed proper link cycle cannot later be extended to a single $11$-cycle.
+Conversely, every completed branch covers every ordered pair and has a single
+cycle at every label, so Lemma~\ref{lem:oriented} makes it an orientable map.
+Every target map has a labelling with the fixed link and a unique coherent
+orientation extending that link; at each chosen pair its next triple is among
+the candidates. Induction therefore shows that the search visits every such
+map. At most forty-four triples are placed, so the search is finite.
+Canonicalization tries the $264$ relabellings of Lemma~\ref{lem:framing}.
+The implemented search returns $12\,144$ framed maps in $59$ classes and checks
+that their canonical forms are exactly those of the shipped matrices.
+Appendix~\ref{app:numbers} gives the automorphism counts as reproducibility checks.
+
+\paragraph{Identification with the published list.}
+The formulas use the $59$ matrices shipped with this project, in the project's
+own numbering. Their duals are also exactly the $59$ triangulations listed by
+Lutz \cite{LutzManifoldPage}. For each entry of that list, the accompanying data
+give a bijection of the twelve labels taking one shipped map to that entry;
+every map is used once. Applying these bijections reproduces the published facet
+lists, whose normalized SHA-256 is recorded with the comparison. This check
+uses the explicit bijections, not the enumeration's canonicalization algorithm.
+The Manifold Page cites \cite{SulankeLutz2009,EllinghamStephens2005} for its
+twelve-vertex enumerations. No external list is needed to generate the formulas
+or to rerun the census.
+
+Thus the classification supplies the completeness theorem, the search supplies
+a reproducible recomputation, and the explicit correspondence identifies the
+concrete input data with a published list. Agreement of counts alone would not
+identify the maps. The orbit identity and the small-size controls test the
+implementation; they are not the completeness argument. The classification
+itself is an existing computational classification, not a new classification
+proved by the SAT computation proposed here.
+
+\section{General position}\label{sec:genpos}
+
+Everything that follows reads a realization through the signs of its brackets, which requires those
+signs to be non-zero.
+
+\begin{hypothesis}[General position]\label{hyp:G}\leavevmode
+\begin{enumerate}[label=\textup{(G)},leftmargin=3.2em]
+\item $\bra{S}\ne0$ for every $4$-subset $S\subseteq\{0,1,\dots,n\}$.
+\end{enumerate}
+\end{hypothesis}
+
+Geometrically: no four of the $n+1$ covectors are linearly dependent. The brackets containing $0$ say
+that any three of the planes $h_1,\dots,h_n$ meet in exactly one affine point, because
+$\bra{0,i,j,k}=-\dett(n_i,n_j,n_k)$ by Lemma~\ref{lem:cofactor}; the brackets not containing $0$ say
+that no four of the planes share a point of projective space --- no four pass through a common affine
+point, and no four are parallel to a common direction. For $n=12$ that is $220$ conditions of the
+first kind and $495$ of the second.
+
+\begin{theorem}[Reduction to general position]\label{thm:genpos}
+Every neighbourly map admitting a realization satisfying \textup{(R1)}--\textup{(R4)} also admits
+one satisfying \textup{(G)}.
+\end{theorem}
+
+The main point is to preserve the embedded surface when its supporting planes move. We use an
+auxiliary triangulation and the following elementary stability fact; compare
+\cite[Section 2, Lemmas 2.1--2.2]{Lazarus2020}. The triangulation is used only in this proof and
+does not change the faces of the map or the Boolean encoding.
+
+\begin{lemma}[Stability of a finite triangulation]\label{lem:plstability}
+Let $K$ be a finite geometric simplicial complex in $\RR^d$. Every sufficiently small displacement
+of its vertices extends, affinely on each simplex, to an embedding $F\colon |K|\to\RR^d$.
+\end{lemma}
+
+\begin{proof}
+First, such a map is injective if the images of every two simplices with disjoint vertex sets
+are disjoint. To see this, suppose $F(x)=F(y)$ for distinct $x,y\in |K|$. Write their barycentric
+coordinates as $(\alpha_v)$ and $(\beta_v)$ over the vertices of $K$, with zero coefficients
+outside their supporting simplices. The coefficients $c_v=\alpha_v-\beta_v$ are not all zero
+and satisfy
+\[
+  \sum_v c_v=0,\qquad \sum_v c_v F(v)=0.
+\]
+The positive coefficients are supported on a face of the simplex supporting $x$, and the
+negative coefficients on a face of the simplex supporting $y$. These two faces have disjoint
+vertex sets. Dividing by $\sum_{c_v>0}c_v=-\sum_{c_v<0}c_v>0$ gives a point in both images,
+a contradiction.
+
+In the original geometric complex, any two simplices with disjoint vertex sets are disjoint
+compact sets, hence at positive distance. If there are such pairs, let $\delta>0$ be the minimum
+of their finitely many distances. Move every vertex by less than $\delta/3$. A point of any
+simplex, expressed as a convex combination of its vertices, moves by less than $\delta/3$;
+therefore the images of each such pair remain disjoint. The criterion above proves injectivity.
+If there are no such pairs, the criterion applies without a distance bound. The affine pieces
+agree on common faces, so $F$ is continuous; compactness of $|K|$ makes it an embedding.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:genpos}]
+Fix a realization $q^*=(q_1^*,\dots,q_n^*)$. Triangulate each of its simple polygonal faces by
+diagonals, using its existing vertices and nondegenerate triangles. Such a triangulation exists
+also for nonconvex simple polygons \cite{Meisters1975}. By (R3), the triangulations fit together
+along the original edges to form a finite geometric simplicial complex $K$: two faces $i\ne j$ meet
+only in the segment $E(i,j)$, an edge of both polygons that no triangulation subdivides, and a
+triangle of either face meets that segment in the empty set, in one endpoint, or in the whole
+segment as one of its edges; so a triangle of face $i$ and a triangle of face $j$ meet in a common
+face. Let $K_f$ be the subcomplex triangulating face $f$.
+
+For $q$ close to $q^*$, move each original vertex $v=\{i,j,k\}\in T$ to
+\[
+  p_v(q)=P_{ijk}(q)=h_i(q)\cap h_j(q)\cap h_k(q).
+\]
+These points exist and depend continuously on $q$: the incident normal determinants are nonzero
+at $q^*$ by (R1), and Cramer's rule applies in a neighbourhood. There are finitely many vertices,
+so Lemma~\ref{lem:plstability} shows that the resulting affine map $F_q$ on $K$ is an embedding
+for all sufficiently close $q$.
+
+Every vertex of $K_f$ lies in $h_f(q)$ after the displacement. Thus $F_q(|K_f|)$ is an embedded
+planar disk with the prescribed boundary polygon, and equals the closed region bounded by that
+polygon. Indeed, $F_q$ maps the boundary circle of $|K_f|$ injectively onto that polygon, which is
+therefore simple, and by invariance of domain it maps the interior of $|K_f|$ onto an open subset
+of the plane $h_f(q)$; this set is connected, bounded and closed in the complement of the
+polygon, so it is the bounded component of that complement. In particular, (R2) holds.
+Injectivity gives, for $i\ne j$,
+\[
+  F_q(|K_i|)\cap F_q(|K_j|)
+  =F_q\bigl(|K_i|\cap |K_j|\bigr)=E(i,j)(q),
+\]
+which is (R3). The incident normal determinants remain nonzero, and distinct vertices remain
+distinct by injectivity, giving (R1). The normals remain nonzero and the supporting planes
+remain pairwise distinct by continuity, giving (R4). Hence a whole neighbourhood of $q^*$ in
+$Q=(\RR^4)^n$ consists of realizations of the same map.
+
+For each $4$-subset $S\subseteq\{0,1,\dots,n\}$, the bracket $\bra{S}$ is a nonzero polynomial
+on $Q$, with $q_0=(0,0,0,1)$ fixed. Indeed, its value can be made nonzero by choosing the four
+rows to be a basis of $\RR^4$; when $0\in S$, choose the other rows to be $e_1,e_2,e_3$.
+The product of these finitely many polynomials is nonzero, so its zero set contains no open ball.
+The neighbourhood just obtained therefore contains a realization at which all brackets are
+nonzero, as required.
+\end{proof}
+
+\begin{remark}
+The argument also shows that the new realization can be chosen arbitrarily close to the original
+one. It moves the supporting planes and derives the vertices from their intersections; arbitrary
+independent vertex displacements would not preserve the planarity of the original faces.
+\end{remark}
+
+We record two local geometric facts used in the sign dictionary below; in them $q^{*}$ is any
+realization of $T$.
+
+\begin{lemma}[Nondegeneracy is open]\label{lem:step1}
+At $q^{*}$ the normals $n(q_i),n(q_j),n(q_k)$ are independent for every $\{i,j,k\}\in T$ and
+$n(q_i),n(q_j)$ are independent for every $i\ne j$. Consequently, on a neighbourhood of $q^{*}$ the
+vertex maps $q\mapsto P_{ijk}(q)$ and the line maps $q\mapsto L_{ij}(q)$ are real-analytic, and all
+vertices stay inside one fixed ball.
+\end{lemma}
+
+\begin{proof}
+Independence at a vertex is (R1). For a pair, if $n(q_i)$ and $n(q_j)$ were parallel the planes
+would be equal, excluded by (R4), or disjoint, and then $E(i,j)\subseteq h_i\cap h_j$ could not be a
+segment. Both conditions are the non-vanishing of a determinant, hence open, and on the set where they
+hold Cramer's rule expresses $P_{ijk}$ and a direction vector and base point of $L_{ij}$ as rational
+functions of $q$ with non-vanishing denominators.
+\end{proof}
+
+\begin{lemma}[No straight angles]\label{lem:step2}
+At $q^{*}$ no three consecutive vertices of a face polygon are collinear. Hence on a neighbourhood the
+turn at every corner is non-zero and of constant sign.
+\end{lemma}
+
+\begin{proof}
+Three consecutive vertices of the polygon of $f$ are $P_{f,a,x}$, $P_{f,a,b}$, $P_{f,b,y}$ with $a,b$
+consecutive in $\link(f)$. The first two lie on $L_{fa}$ and are distinct by (R1); the last two lie on
+$L_{fb}$ and are distinct. If the three were collinear, the line through them would equal both
+$L_{fa}$ and $L_{fb}$, so $h_f,h_a,h_b$ would share a line and their normals would be dependent,
+contradicting Lemma~\ref{lem:step1}. The turn at a corner is a continuous function of $q$ which is
+non-zero at $q^{*}$, hence of constant sign nearby.
+\end{proof}
+
+\begin{convention}\label{conv:genpos}
+From now on all realizations are assumed to satisfy \textup{(G)}. By Theorem~\ref{thm:genpos} this
+loses no map: if some map is realizable at all, it is realizable in general position.
+\end{convention}
+
+\section{The sign dictionary}\label{sec:dictionary}
+
+Throughout this section $q$ is a realization of a neighbourly map $T$ on $n$ faces satisfying (G). For
+a covector $q_u$ write $h_u(x)=q_u\cdot(x,1)$ for the affine form whose zero set is the plane, and
+$n_u=n(q_u)$ for its normal. For $S$ a $4$-subset of $\{0,1,\dots,n\}$ put
+\[
+  X_S=\begin{cases}1,&\bra{S}<0,\\ 0,&\bra{S}>0,\end{cases}
+\]
+which is defined by (G); for an ordered tuple, $X$ changes by the parity of the permutation, so
+$X_{\sigma(S)}=X_S\xor\operatorname{par}(\sigma)$. All the identities below are exact, and all of them
+express a geometric predicate as an $\FF$-linear or small Boolean function of the $\binom{n+1}{4}$
+bits $X_S$.
+
+\subsection{Two cofactor identities}
+
+\begin{lemma}\label{lem:cofactor}
+For distinct $i,j,k,l\in\{1,\dots,n\}$ with $n_i,n_j,n_k$ independent,
+\[
+  \bra{0,i,j,k}=-\dett(n_i,n_j,n_k),
+  \qquad
+  \bra{i,j,k,l}=\dett(n_i,n_j,n_k)\,h_l(P_{ijk}).
+\]
+\end{lemma}
+
+\begin{proof}
+The first is the expansion of the determinant along the row $q_0=(0,0,0,1)$, whose only non-zero entry
+sits in the last column with sign $(-1)^{1+4}$. For the second, change affine coordinates by
+$y=x-P_{ijk}$. A covector $q_u=(n_u,d_u)$ becomes $(n_u,h_u(P_{ijk}))$, because
+$q_u\cdot(x,1)=n_u\cdot y+h_u(P_{ijk})$; this is right multiplication of the row by a unipotent matrix,
+so the $4\times4$ determinant is unchanged. In the new coordinates the first three rows have last
+entry $0$, and expanding along the last column leaves
+$h_l(P_{ijk})\cdot\dett(n_i,n_j,n_k)$.
+\end{proof}
+
+\subsection{Order along a line}
+Fix $i\ne j$ and orient the line $L_{ij}$ by the direction $d_{ij}=n_i\times n_j$, which is non-zero by
+Lemma~\ref{lem:step1}. The other $n-2$ planes mark $n-2$ points $P_{ijk}$ on it, pairwise distinct by
+(G). Let $\Ord(i,j;k,l)=1$ when $P_{ijk}$ precedes $P_{ijl}$ in that direction, and $0$ otherwise.
+
+\begin{theorem}[Order bits]\label{thm:order}
+For all distinct $i,j,k,l\in\{1,\dots,n\}$,
+\[
+   \Ord(i,j;k,l)\;=\;X_{0ijk}\xor X_{0ijl}\xor X_{ijkl}.
+\]
+\end{theorem}
+
+\begin{proof}
+Write $D_{ijk}=\dett(n_i,n_j,n_k)$ and $P_{ijl}-P_{ijk}=t\,d_{ij}$; then $\Ord(i,j;k,l)=[t>0]$. Since
+$h_l(P_{ijl})=0$ and $n_l\cdot d_{ij}=\dett(n_l,n_i,n_j)=D_{ijl}$,
+\[
+  h_l(P_{ijk})=h_l\big(P_{ijl}-t\,d_{ij}\big)=-t\,D_{ijl},
+\]
+so Lemma~\ref{lem:cofactor} gives $\bra{i,j,k,l}=-t\,D_{ijk}D_{ijl}$ and
+$\bra{0,i,j,k}=-D_{ijk}$, $\bra{0,i,j,l}=-D_{ijl}$. All factors are non-zero by (G). Writing
+$\alpha=[D_{ijk}<0]$, $\beta=[D_{ijl}<0]$ and $\gamma=[t<0]$ we get $X_{0ijk}=1\xor\alpha$,
+$X_{0ijl}=1\xor\beta$ and $X_{ijkl}=(1\xor\gamma)\xor\alpha\xor\beta$, because the sign bit of a
+product is the sum of the sign bits. Adding the three gives $1\xor\gamma=[t>0]$.
+\end{proof}
+
+\begin{remark}[Why a $0$ appears]\label{rem:cut}
+A projective line carries no linear order; what a rank-$4$ chirotope gives on $L_{ij}$ is a
+\emph{circular} order of the marked points. Removing one point turns it into a linear order, and the
+point removed in Theorem~\ref{thm:order} is the line's own point at infinity, $P_{0ij}$. This is why
+the element $0$ occurs in the formula, and recognizing it is what makes Layer $A$ of
+Section~\ref{sec:chirotope} possible.
+\end{remark}
+
+\subsection{Betweenness inside an edge}
+
+\begin{definition}\label{def:onb}
+For $i\ne j$ with $\Ends(i,j)=\{z_0,z_1\}$ and $u\notin\{i,j,z_0,z_1\}$ put
+\[
+   \OnB(i,j;u)\;=\;\Ord(i,j;z_0,u)\xor\Ord(i,j;z_1,u).
+\]
+\end{definition}
+
+\begin{lemma}\label{lem:onb}
+$\OnB(i,j;u)=1$ if and only if $P_{iju}$ lies in the relative interior of the edge $E(i,j)$.
+\end{lemma}
+
+\begin{proof}
+$E(i,j)$ is the segment of $L_{ij}$ between $P_{ijz_0}$ and $P_{ijz_1}$. In a strict total order,
+exactly one of the two endpoints precedes a given point precisely when that point lies strictly
+between them; by (G) the point $P_{iju}$ coincides with neither endpoint, since that would make four
+planes concurrent.
+\end{proof}
+
+\begin{lemma}[Cyclic adjacency]\label{lem:adjacency}
+Two edges $E(f,a)$ and $E(f,b)$ of the face $f$ are consecutive in the boundary polygon of $F^f$ if
+and only if $\{f,a,b\}\in T$, and then they meet exactly at the vertex $P_{fab}$.
+\end{lemma}
+
+\begin{proof}
+By construction the boundary polygon of $F^f$ visits the faces of $\link(f)$ in the cyclic order of
+that link, and $a,b$ are adjacent in $\link(f)$ exactly when $\{f,a,b\}\in T$
+(Definition~\ref{def:map}). Consecutive edges meet at the corresponding vertex, and only there by
+simplicity of the polygon.
+\end{proof}
+
+\subsection{Turns, orientation and reflex corners}
+Let $a,b$ be consecutive in $\link(f)$, in the direction of a fixed traversal of the link cycle, and
+let $v=P_{fab}$ be the corner between the edges $E(f,a)$ and $E(f,b)$. Let $x$ be the third face at the
+other endpoint of $E(f,a)$ and $y$ the third face at the other endpoint of $E(f,b)$, that is
+$\Ends(f,a)=\{b,x\}$ and $\Ends(f,b)=\{a,y\}$. Put
+\[
+   u_{\mathrm{in}}=v-P_{fax},\qquad u_{\mathrm{out}}=P_{fby}-v,\qquad
+   w(f;a,b)=\big(u_{\mathrm{in}}\times u_{\mathrm{out}}\big)\cdot n_f .
+\]
+By Lemma~\ref{lem:step2}, $w(f;a,b)\ne0$.
+
+\begin{lemma}[Turn bits]\label{lem:turn}
+$\big[w(f;a,b)<0\big]\;=\;1\xor\Ord(f,a;x,b)\xor\Ord(f,b;a,y)\xor X_{0fab}$.
+\end{lemma}
+
+\begin{proof}
+Orient $L_{fa}$ by $d_{fa}=n_f\times n_a$, the direction used in Theorem~\ref{thm:order}. Then
+$u_{\mathrm{in}}=s\,d_{fa}$ with $[s<0]=1\xor\Ord(f,a;x,b)$, because $\Ord(f,a;x,b)=[P_{fax}<P_{fab}]$
+and $u_{\mathrm{in}}=P_{fab}-P_{fax}$. Likewise $u_{\mathrm{out}}=t\,d_{fb}$ with
+$[t<0]=1\xor\Ord(f,b;a,y)$. From the identity $(A\times B)\times(A\times C)=\dett(A,B,C)\,A$,
+\[
+  \big(d_{fa}\times d_{fb}\big)\cdot n_f=\big((n_f\times n_a)\times(n_f\times n_b)\big)\cdot n_f
+  =\dett(n_f,n_a,n_b)\,\lVert n_f\rVert^{2},
+\]
+and $\dett(n_f,n_a,n_b)=-\bra{0,f,a,b}$ by Lemma~\ref{lem:cofactor}, so
+$[\dett(n_f,n_a,n_b)<0]=1\xor X_{0fab}$. Since $w=s\,t\,(d_{fa}\times d_{fb})\cdot n_f$ and the sign
+bit of a product is the sum of the sign bits,
+\[
+ [w<0]=(1\xor\Ord(f,a;x,b))\xor(1\xor\Ord(f,b;a,y))\xor(1\xor X_{0fab}),
+\]
+which is the claim.
+\end{proof}
+
+\begin{lemma}[One orientation bit per face]\label{lem:sf}
+For each face $f$ there is $s_f\in\FF$, depending on $f$ and the chosen traversal only, such that for
+every corner $(a,b)$ of $f$
+\[
+   \refl(f;a,b)\;:=\;\big[w(f;a,b)<0\big]\xor s_f
+\]
+equals $1$ exactly when the interior angle of $F^f$ at $P_{fab}$ exceeds $\pi$. We write
+$\refl(f;a,b)$ also when the pair is given in the opposite order, meaning the same bit: the pair is
+normalized to link-cycle order before the formula of Lemma~\ref{lem:turn} is applied.
+\end{lemma}
+
+\begin{proof}
+Orient the plane $h_f$ by $n_f$. A simple closed polygon in an oriented plane is traversed either
+positively or negatively; let $s_f=0$ in the first case and $s_f=1$ in the second. For a positively
+traversed simple polygon the interior angle at a corner exceeds $\pi$ exactly when the turn from the
+incoming to the outgoing direction is negative, that is when $w<0$; for a negatively traversed one the
+condition is $w>0$. Both cases are summarized by $[w<0]\xor s_f$. The bit $s_f$ does not depend on the
+corner, because the traversal direction is a property of the polygon.
+\end{proof}
+
+\begin{remark}[An easy way to get this wrong]\label{rem:order-matters}
+Both sides of Lemma~\ref{lem:turn} change under exchanging $a$ and $b$: the corner is the same, but the
+formula computes the complement. The predicate ``this corner is reflex'' is symmetric while its
+expression is antisymmetric, and the two are reconciled only by always writing the pair in the
+direction of the link traversal. An implementation that reaches a corner in the other order produces a
+well-formed formula that encodes something else.
+\end{remark}
+
+\begin{lemma}[Crossing parity fixes the orientation]\label{lem:parity}
+Let $f$ be a face, $g\in\link(f)$, $\Ends(f,g)=\{z_0,z_1\}$ and $V=P_{f,g,z_1}$. For
+$v\notin\{f,g,z_0,z_1\}$ put
+\[
+   C_v=\OnB(f,v;g),\qquad B_v=\Ord(f,g;z_1,z_0)\xor\Ord(f,g;z_1,v).
+\]
+Then the corner of $F^f$ at $V$ is reflex if and only if $\bigoplus_{v} C_v\wedge B_v=1$.
+\end{lemma}
+
+\begin{proof}
+Let $R$ be the open ray of $L_{fg}$ issuing from $V$ in the direction opposite to the edge $E(f,g)$;
+thus $B_v=1$ says exactly that the point $P_{fgv}$, which is where the line $L_{fv}$ meets $L_{fg}$,
+lies on $R$: indeed $B_v$ is the exclusive or of $[V<P_{fgz_0}]$ and $[V<P_{fgv}]$, which says that
+$P_{fgv}$ and the other endpoint $P_{fgz_0}$ of $E(f,g)$ lie on opposite sides of $V$.
+
+A plane wedge contains the ray opposite to each of its bounding rays if and only if its angle exceeds
+$\pi$. Near $V$ the region $F^f$ is the wedge bounded by the germs of $E(f,g)$ and $E(f,z_1)$, and $R$
+is opposite to the first of those germs, so a point $V+\varepsilon\,d\in R$ with $\varepsilon>0$ small
+lies in $F^f$ exactly when the corner at $V$ is reflex.
+
+Now follow $R$ from $V$ to infinity. Far enough out it leaves the bounded region $F^f$; membership in
+$F^f$ changes exactly at transverse crossings of $\partial F^f$, and by (G) the ray meets no vertex of
+the polygon --- a vertex of $\partial F^f$ on $L_{fg}$ would make four planes concurrent --- and meets
+no edge non-transversally except the edge $E(f,g)$ itself, which lies on $L_{fg}$ and on the far side
+of $V$. Hence the membership bit at $V+\varepsilon d$ is the parity of the number of edges of
+$\partial F^f$ that $R$ crosses.
+
+Which edges are those? Edge $E(f,g)$ is behind $V$. Edge $E(f,z_1)$ has $V$ as an endpoint and its
+supporting line meets $L_{fg}$ only at $V$, which is not on the open ray. Edge $E(f,z_0)$ has the
+other endpoint $P_{fgz_0}$ of $E(f,g)$ as an endpoint, and its supporting line meets $L_{fg}$ exactly
+there, again not on $R$. For every other $v$, the edge $E(f,v)$ lies on $L_{fv}$, which is not parallel to $L_{fg}$ --- that
+would make $h_f,h_g,h_v$ share a direction and $\bra{0,f,g,v}$ vanish, against (G) --- and therefore
+meets $L_{fg}$ in exactly the point $P_{fgv}$, and that point belongs to $R$ exactly when $B_v=1$ and to the relative interior
+of $E(f,v)$ exactly when $C_v=1$ (Lemma~\ref{lem:onb}). At such a point the two supporting lines
+are distinct, so the intersection is transverse; by (G) it lies in the interior of a single
+boundary edge, not at a polygon vertex. Thus $R$ crosses $E(f,v)$ if and only if
+$C_v\wedge B_v=1$, and the parity of the crossings is $\bigoplus_v C_v\wedge B_v$.
+\end{proof}
+
+\begin{remark}
+Lemma~\ref{lem:parity} is what removes the last free bit from the encoding. By Lemma~\ref{lem:sf} the
+reflexness of a corner is a bracket expression \emph{up to} the unknown $s_f$; Lemma~\ref{lem:parity}
+computes one particular corner's reflexness from brackets alone, which determines $s_f$ and hence all
+eleven corners of that face. Without it, a formula could satisfy every other layer by flipping a
+face's orientation bit, and the encoded condition would be strictly weaker.
+\end{remark}
+
+\section{The chirotope layers \texorpdfstring{$S$, $H$ and $A$}{S, H and A}}\label{sec:chirotope}
+
+\subsection{Contractions and the cut order}
+For a pair $\{i,j\}\subseteq\{0,1,\dots,n\}$ let $\chi_{ij}(x,y)=X_{ijxy}$ on the remaining $n-1$
+elements. Each $\chi_{ij}$ is a \emph{tournament}: $\chi_{ij}(y,x)=1\xor\chi_{ij}(x,y)$. There are
+$\binom{n+1}{2}=78$ such contractions for $n=12$. The three-term Grassmann--Plücker sign condition for
+the rank-$4$ bracket function on a $4$-subset $\{a,b,c,d\}$ of the complement of $\{i,j\}$ is exactly
+the rank-$2$ condition for $\chi_{ij}$ on that subset:
+
+\begin{quote}
+\textbf{(GP)} the three products $\bra{ijab}\bra{ijcd}$, $-\bra{ijac}\bra{ijbd}$, $\bra{ijad}\bra{ijbc}$
+do not all have the same sign.
+\end{quote}
+
+This is the content of the Plücker relation
+$\bra{ijab}\bra{ijcd}-\bra{ijac}\bra{ijbd}+\bra{ijad}\bra{ijbc}=0$: three non-zero reals summing to
+zero cannot share a sign.
+
+\begin{lemma}[Cut order]\label{lem:cutorder}
+Let $\chi$ be a tournament on a finite set $X$ with $|X|\ge4$, let $r\in X$, and define for
+$x,y\in X\setminus\{r\}$
+\[
+    d(x,y)\;=\;\chi(x,y)\xor\chi(r,x)\xor\chi(r,y).
+\]
+Then $\chi$ satisfies \textup{(GP)} on every $4$-subset of $X$ if and only if $d$ is a strict total
+order on $X\setminus\{r\}$.
+\end{lemma}
+
+\begin{proof}
+Reorient every $x\ne r$ by $t_x=1\xor\chi(r,x)$, leaving $r$ unchanged; that is, replace $\chi$ by
+$\chi'(u,v)=\chi(u,v)\xor t_u\xor t_v$ with $t_r=0$. Then $\chi'(r,x)=1$ for all $x\ne r$ and
+$\chi'(x,y)=d(x,y)$. Reorientation multiplies each of the three products in (GP) by the same sign, so
+it preserves (GP).
+
+Suppose (GP) holds. Apply it to a $4$-subset $\{r,x,y,z\}$: the sign bits of the three products are
+$1\xor d(y,z)$, $d(x,z)$ and $1\xor d(x,y)$, and they are all equal exactly when
+$d(x,y)=d(y,z)=1\xor d(x,z)$, which is precisely one of the two directed $3$-cycles on $\{x,y,z\}$.
+Hence $d$ has no directed $3$-cycle. A tournament without directed $3$-cycles is transitive --- if
+$x<y$ and $y<z$ but not $x<z$, then $x,y,z$ form one --- so $d$ is a strict total order.
+
+Conversely, suppose $d$ is a strict total order. Choose reals $t_x$ strictly decreasing along it and
+put $v_r=(0,1)$ and $v_x=(1,t_x)$ in $\RR^2$. Then $\dett(v_r,v_x)=-1<0$ and
+$\dett(v_x,v_y)=t_y-t_x$, so the negativity bits of these $2\times2$ determinants are exactly
+$\chi'$. Two-by-two determinants of vectors in the plane satisfy the Plücker identity, so (GP) holds
+for $\chi'$ on every $4$-subset, hence for $\chi$.
+\end{proof}
+
+\begin{remark}[Why transitivity of the raw tournament would be wrong]\label{rem:counts}
+It is tempting to impose transitivity on $\chi_{ij}$ itself. That is false: eleven vectors in a plane
+have a \emph{circular} order, and three at $120^{\circ}$ form a directed $3$-cycle. Among the
+$2^{\binom{m}{2}}$ tournaments on $m$ elements, exactly $(m-1)!\,2^{\,m-1}$ satisfy (GP) on all
+$4$-subsets while only $m!$ are transitive; the ratio is $2^{\,m-1}/m$, which at $m=11$ is
+$1024/11\approx93$. Imposing transitivity would delete realizations. Cutting the circle at one element
+--- passing from $\chi$ to $d$ --- is what turns the circular order into a linear one, and
+Lemma~\ref{lem:cutorder} says nothing is lost or gained by doing so.
+\end{remark}
+
+\subsection{The three layers}
+Fix a neighbourly map $T$ on $n=12$ faces. The formula has one Boolean variable $X_S$ for each of the
+$\binom{13}{4}=715$ brackets, together with the auxiliary variables introduced below.
+
+\begin{description}[leftmargin=2.4em,style=nextline]
+\item[Layer $S$ (definitions)] For each of the $66$ pairs $\{i,j\}\subseteq\{1,\dots,12\}$ and each
+  pair $\{k,l\}$ of the ten remaining faces, a variable $o^{ij}_{kl}$ with the defining clauses of
+  \[
+     o^{ij}_{kl}\;=\;X_{0ijk}\xor X_{0ijl}\xor X_{ijkl}.
+  \]
+  By Theorem~\ref{thm:order} this is the order of $P_{ijk}$ and $P_{ijl}$ along $L_{ij}$; by
+  Remark~\ref{rem:cut} it is the cut order of the contraction $\chi_{ij}$ with cut point $0$. Being a
+  definition, this layer excludes no assignment of the bracket bits.
+\item[Layer $H$ (transitivity on the $66$ affine lines)] For each such pair and each triple $k,l,m$ of
+  the remaining faces, the two clauses expressing
+  $o^{ij}_{kl}\wedge o^{ij}_{lm}\rightarrow o^{ij}_{km}$ and its converse orientation.
+\item[Layer $A$ (transitivity on the $12$ lines at infinity)] For each face $b$ let $r_b$ be the
+  smallest face other than $b$. For each pair $\{x,y\}$ of the ten faces other than $b,r_b$ a variable
+  \[
+      d^{b}_{xy}\;=\;X_{0bxy}\xor X_{0b r_b x}\xor X_{0b r_b y},
+  \]
+  and for each triple the two transitivity clauses.
+\end{description}
+
+Layer $A$ needs the separate treatment because for a pair $\{0,b\}$ the element $0$ is already one of
+the two defining labels and cannot serve as the cut point; a different cut point $r_b$ is chosen.
+Geometrically, $\bra{0,b,x,y}=-\dett(n_b,n_x,n_y)$ by Lemma~\ref{lem:cofactor}, so the contraction at
+$\{0,b\}$ is the chirotope of the eleven other normals modulo $n_b$: eleven vectors in a plane, and
+$d^b$ is their cut order.
+
+\begin{theorem}[What $S$, $H$ and $A$ say]\label{thm:chirotope}
+An assignment of the $715$ bits $X_S$ extends to a satisfying assignment of $S\wedge H\wedge A$ if and
+only if the map $S\mapsto(-1)^{X_S}$, extended by alternation and set to zero on tuples with
+repeated labels, is a uniform
+chirotope of rank $4$ on the $13$ elements $\{0,1,\dots,12\}$. Moreover every realization in general
+position gives such an assignment.
+\end{theorem}
+
+\begin{proof}
+The auxiliary variables of $S$ and $A$ are defined by their layers, so an assignment of the $X_S$
+extends in exactly one way; what $H$ and $A$ then require is that, for each of the $78$ contractions,
+the cut order derived from $\chi_{ij}$ --- with cut point $0$ for the $66$ pairs of finite labels and
+cut point $r_b$ for the $12$ pairs containing $0$ --- is a strict total order. By
+Lemma~\ref{lem:cutorder} this holds for a given contraction if and only if that contraction satisfies
+(GP) on all its $4$-subsets. Ranging over the contractions, $S\wedge H\wedge A$ is satisfiable over a
+given bracket assignment if and only if all three-term Grassmann--Plücker sign conditions hold.
+The alternating extension has every $4$-subset as a basis, so its support is the uniform matroid
+$U_{4,13}$. This supplies the matroid-support hypothesis (B1$'$) of
+\cite[Theorem 3.6.2, p.~138]{BLSWZ1999}; it must not be omitted for sign maps with zeros.
+With $(x_1,x_2,x_3,x_4,y_1,y_2)=(a,b,i,j,c,d)$, condition (B2$''$) of that theorem excludes
+the all-negative triple of products in (GP), and interchanging $a,b$ excludes the all-positive
+triple. Conversely, (GP) implies this condition; repeated-label instances follow from alternation.
+Thus the theorem identifies precisely these conditions with the rank-$4$ chirotope axioms,
+proving the first claim.
+
+For the second, let $q$ be a realization in general position. Its brackets are the $4\times4$ minors
+of the $13\times4$ matrix of covectors, all non-zero by (G), so they form a uniform rank-$4$ chirotope
+and satisfy every Plücker relation. Hence each contraction satisfies (GP), and
+Lemma~\ref{lem:cutorder} gives a strict total order for every chosen cut point.
+For the finite pairs this is the order of Theorem~\ref{thm:order}, satisfying $S$ and $H$;
+for the pairs $\{0,b\}$ it is the cut order $d^b$, satisfying $A$.
+This necessary direction uses only determinant identities and Lemma~\ref{lem:cutorder},
+not the abstract chirotope characterization of \cite{BLSWZ1999}.
+\end{proof}
+
+\begin{remark}
+The relational form of the same condition --- one clause of width six per Plücker relation and per
+sign pattern --- would need $411\,840$ clauses for $n=12$. The formulation through $78$ cut orders
+uses $46\,800$ clauses of width three and four (Appendix~\ref{app:numbers}).
+This reduces the clause count; its effect on solving time requires measurement.
+The broader use of SAT to study oriented-matroid realizability has precedents in
+\cite{Schewe2010,Scheucher2023}. Those references motivate the SAT approach; the
+cut-order encoding used here is established by the preceding lemmas.
+\end{remark}
+
+\section{The geometric layers \texorpdfstring{$B$ and $I$}{B and I}}\label{sec:geometric}
+
+\subsection{Layer \texorpdfstring{$B$}{B}: face boundaries are simple}
+For a face $f$ and two faces $a,b$ that are \emph{not} adjacent in $\link(f)$ --- equivalently, by
+Lemma~\ref{lem:adjacency}, with $\{f,a,b\}\notin T$ --- the edges $E(f,a)$ and $E(f,b)$ are non-consecutive
+edges of the boundary polygon of $F^f$, and their supporting lines meet at the single point $P_{fab}$.
+Layer $B$ consists of the clauses
+\[
+    \neg\,\OnB(f,a;b)\;\vee\;\neg\,\OnB(f,b;a)
+\]
+for all such triples, where $\OnB$ is as in Definition~\ref{def:onb}, together with the defining
+clauses of the $\OnB$ variables.
+
+\begin{lemma}\label{lem:B}
+Every realization in general position satisfies Layer $B$.
+\end{lemma}
+
+\begin{proof}
+If both bits were $1$ then, by Lemma~\ref{lem:onb}, $P_{fab}$ would be interior to both $E(f,a)$ and
+$E(f,b)$, so two non-consecutive closed edges of the boundary polygon of $F^f$ would meet, and the
+polygon would not be simple, contradicting (R2).
+\end{proof}
+
+\subsection{Layer \texorpdfstring{$I$}{I}: orientation and reflex corners}
+Layer $I$ has two parts. For each face $f$ it contains the defining clauses of the corner bits
+$\refl(f;a,b)$ of Lemma~\ref{lem:sf} --- one auxiliary variable $s_f$ per face and, per corner, one
+turn variable and the one helper variable that splitting its four-term exclusive-or introduces
+(Appendix~\ref{app:numbers}) --- together with the \emph{orientation equation} of Lemma~\ref{lem:parity},
+\[
+   \refl(f;g,z_1)\;=\;\bigoplus_{v\notin\{f,g,z_0,z_1\}} \big(C_v\wedge B_v\big),
+\]
+where $g$ is the first face of $\link(f)$ and $\{z_0,z_1\}=\Ends(f,g)$.
+Either element of $\Ends(f,g)$ may play the role of $z_1$ --- Lemma~\ref{lem:parity} holds for
+both, with $B_v$ read relative to the chosen one --- while the corner bit on the left, being attached
+to the corner at $P_{f,g,z_1}$, is written with its pair normalized to link-cycle order as in
+Lemma~\ref{lem:sf} and Remark~\ref{rem:order-matters}. The two choices give different clause sets, so
+one is fixed once and for all, like the emission order, and belongs to the formula's identity; the
+implementation takes $z_1$ to be the larger of the two labels. Layer $I$ contains further,
+for each of the $44$ vertices $\{f,g,h\}\in T$, the three clauses
+\[
+   \neg\refl(f;g,h)\vee\neg\refl(g;f,h),\quad
+   \neg\refl(f;g,h)\vee\neg\refl(h;f,g),\quad
+   \neg\refl(g;f,h)\vee\neg\refl(h;f,g),
+\]
+each corner bit being written with its pair in link-cycle order as in Remark~\ref{rem:order-matters}.
+
+\begin{lemma}\label{lem:I}
+Every realization in general position satisfies Layer $I$, with $s_f$ given by
+Lemma~\ref{lem:sf}.
+\end{lemma}
+
+\begin{proof}
+With $s_f$ the traversal bit of Lemma~\ref{lem:sf}, the variable $\refl(f;a,b)$ takes the value ``the
+corner of $F^f$ at $P_{fab}$ is reflex''. The orientation equation then holds by
+Lemma~\ref{lem:parity}, and the three clauses at each vertex hold by Lemma~\ref{lem:onereflex}.
+\end{proof}
+
+\begin{remark}
+The vertex clauses couple the corners of three different faces. They encode the local
+intersection restriction of Lemma~\ref{lem:onereflex}; the other geometric clauses concern
+one face polygon at a time.
+\end{remark}
+
+\section{The gauge}\label{sec:gauge}
+
+The bracket bits of a realization are not unique: two operations change them without changing the
+polyhedron.
+
+\begin{lemma}[The reorientation group]\label{lem:gaugegroup}
+Let $G=\FF^{\,n+1}$ with coordinates $(\gamma,\epsilon_1,\dots,\epsilon_n)$ act on sign vectors by
+\[
+   X_S\;\longmapsto\;X_S\;\xor\;\Big(\gamma\;\xor\bigoplus_{i\in S,\ i\ge1}\epsilon_i\Big).
+\]
+Then $G$ maps the bracket vector of a realization to the bracket vector of a realization of the same
+map, and the $\binom{n+1}{4}$ functionals $\varphi_S(\gamma,\epsilon)=\gamma\xor\bigoplus_{i\in S,
+i\ge1}\epsilon_i$ span the dual of $G$.
+\end{lemma}
+
+\begin{proof}
+Replacing $q_i$ by $-q_i$ changes no plane, hence no realization, and flips exactly the brackets
+containing $i$: this is $\epsilon_i$. For $\gamma$, let $\tau(x)=Ax+b$ be an orientation-reversing
+affine map of $\RR^3$ and $M=\left(\begin{smallmatrix}A&b\\0&1\end{smallmatrix}\right)$, so that a covector $q$
+is carried to $qM^{-1}$. The image of a realization is a realization of the same map, since $\tau$ is
+a homeomorphism of $\RR^3$ carrying planes to planes. All four rows transform by the same matrix, so
+every bracket is multiplied by $\dett(M^{-1})=1/\dett A<0$ and every bit flips. Moreover the last row
+of $M^{-1}$ is $(0,0,0,1)$, so $q_0M^{-1}=q_0$: the plane at infinity is fixed, as the action above
+assumes.
+
+For the span, suppose a vector $(\gamma,\epsilon)$ is annihilated by every $\varphi_S$, i.e.\
+$\varphi_S(\gamma,\epsilon)=0$ for all $S$. Comparing $S=\{i,j,k,l\}$ with $i,j,k,l\ge1$ and
+$S'=\{0,j,k,l\}$, which exists because $n\ge4$, gives $\epsilon_i=0$; as $i$ was arbitrary all
+$\epsilon_i$ vanish, and then $\gamma=\varphi_S(\gamma,0)=0$. Hence the functionals span the dual.
+\end{proof}
+
+\begin{corollary}[Gauge]\label{cor:gauge}
+There are brackets $S_k$, for $1\le k\le n+1$, whose functionals $\varphi_{S_k}$
+form a basis of the dual of $G$. The action of $G$ on their sign patterns is
+simply transitive. Thus every realization can be moved by a unique element of $G$
+to one in which all these brackets are positive. Adding a unit clause
+$\neg X_{S_k}$ for each $k=1,\dots,n+1$ therefore preserves the property that a realization yields a
+satisfying assignment.
+\end{corollary}
+
+\begin{proof}
+A spanning set contains a basis, which gives the $S_k$; a basis of the dual of a finite-dimensional
+$\FF$-vector space makes the action of $G$ on the vector of values simply transitive. Given a
+realization, apply the unique group element taking its pattern on $S_1,\dots,S_{n+1}$ to $0$; by
+Lemma~\ref{lem:gaugegroup} the result is again a realization of the same map, now satisfying the unit
+clauses.
+\end{proof}
+
+\begin{remark}
+The gauge is a symmetry quotient, not a geometric restriction: it removes $2^{n+1}$-fold redundancy
+from the search space. In the implementation the basis is chosen greedily among the brackets that
+contain a designated \emph{gauge face} $\varphi$, completed by one bracket that does not contain it.
+The completion is necessary, not cosmetic: the functionals of the $\binom{n}{3}$ brackets through a
+fixed element $\varphi$ all annihilate $(\gamma,\epsilon)=(1,\epsilon_\varphi{=}1,0,\dots,0)$, so they
+span only an $n$-dimensional space and can never form a basis. Twelve of the thirteen pinned brackets
+may contain $\varphi$; the thirteenth may not. Which basis is chosen affects the shape of the search
+but not the theorem. The gauge is recorded as part of the
+formula's identity, because a formula with a different gauge is a different formula.
+\end{remark}
+
+\section{The formula and the reduction}\label{sec:formula}
+
+\begin{definition}[The formula]\label{def:formula}
+For a neighbourly map $T$ on $n=12$ faces and a gauge face $\varphi$, let $\Phi_T$ --- the gauge face
+being fixed once and for all and suppressed from the notation --- be the CNF formula
+in the variables
+\[
+  \underbrace{X_S}_{715}\;,\quad
+  \underbrace{o^{ij}_{kl}}_{2\,970}\;,\quad
+  \underbrace{d^{b}_{xy}}_{540}\;,\quad
+  \underbrace{\OnB(i,j;u)}_{528}\;,\quad
+  \underbrace{s_f,\ \text{turn and parity auxiliaries}}_{504}
+\]
+consisting of the layers $S$, $H$, $A$ (Section~\ref{sec:chirotope}), $B$ and $I$
+(Section~\ref{sec:geometric}) emitted in that order, followed by the $13$ gauge clauses of
+Corollary~\ref{cor:gauge}. Its size is
+\[
+\begin{array}{lrr}
+\toprule
+\text{layer} & \text{clauses} & \text{variables}\\
+\midrule
+\text{brackets} & 0 & 715\\
+S & 23\,760 & 2\,970\\
+H & 15\,840 & 0\\
+A & 7\,200 & 540\\
+B & 2\,640 & 528\\
+I & 2\,724 & 504\\
+\text{gauge} & 13 & 0\\
+\midrule
+\Phi_T & 52\,177 & 5\,257\\
+\bottomrule
+\end{array}
+\]
+\end{definition}
+
+The emission order is part of the formula's identity: it fixes the numbering of the variables, and a
+case or a cube in Section~\ref{sub:cases} names a region of the search space only relative to a fixed
+numbering.
+
+\begin{theorem}[Necessity]\label{thm:necessity}
+Let $T$ be a neighbourly map on twelve faces and let $q$ be a realization of $T$. Then $\Phi_T$ is
+satisfiable.
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:genpos} we may assume $q$ satisfies (G), and by Corollary~\ref{cor:gauge} we may
+assume in addition that the $13$ gauge brackets are positive, both replacements producing another
+realization of the same $T$. Assign to $X_S$ the negativity bit of $\bra{S}$, to $o^{ij}_{kl}$ and
+$d^b_{xy}$ the values forced by their defining clauses, to $\OnB(i,j;u)$ the value forced by
+Definition~\ref{def:onb}, to $s_f$ the traversal bit of Lemma~\ref{lem:sf} and to each turn and parity
+auxiliary the value forced by its definition. Layer $S$ and the definitional clauses of $A$, $B$ and
+$I$ hold by construction; layers $H$ and $A$ hold by Theorem~\ref{thm:chirotope}; layer $B$ by
+Lemma~\ref{lem:B}; layer $I$ by Lemma~\ref{lem:I}; the gauge clauses by the choice of representative.
+\end{proof}
+
+\begin{corollary}[Conditional non-existence]\label{cor:conditional}
+Suppose that for each of the $59$ neighbourly maps $T$ of Theorem~\ref{thm:59} the formula $\Phi_T$ is
+unsatisfiable. Then there is no neighbourly polyhedron with twelve faces satisfying
+\textup{(H1)}--\textup{(H3)}; that is, the Question of Section~\ref{sec:intro} has a negative answer
+within these conventions.
+\end{corollary}
+
+\begin{proof}
+Such a polyhedron has trivalent vertices (Lemma~\ref{lem:trivalent}) and its induced map is
+isomorphic to one of the $59$ representatives $T$ (Theorem~\ref{thm:59}). Relabel its faces by
+that isomorphism, so that its induced map is exactly $T$. Lemma~\ref{lem:bridge} then gives a
+realization of this representative, and Theorem~\ref{thm:necessity} makes $\Phi_T$ satisfiable,
+contrary to hypothesis. Only the necessary direction of Theorem~\ref{thm:chirotope} is used;
+this corollary therefore does not depend on the abstract characterization in \cite{BLSWZ1999}.
+\end{proof}
+
+\begin{remark}[No realizability conclusion]\label{rem:noconverse}
+Satisfiability of some $\Phi_T$ would \emph{not} produce a polyhedron. Two gaps separate a model from
+a realization: the layers are necessary conditions and are not claimed to be sufficient, and even a
+complete uniform chirotope need not be realizable by real vectors --- non-realizable uniform oriented
+matroids exist (see \cite[Sections~2--3]{Scheucher2023} for examples and discussion,
+and \cite{BokowskiSturmfels1989} for general realizability methods).
+This does not assert that any of our $59$ formulas has a non-realizable model.
+A model would be a candidate to be examined, not a geometric counterexample.
+\end{remark}
+
+\subsection{Case decomposition and cube trees}\label{sub:cases}
+Case decomposition permits parallel execution and bounded, resumable attempts.
+It is optional for correctness; the unsplit formula corresponds to depth $d=0$.
+We first state the decomposition into the $2^d$ cases of one fixed depth $d$, and then its
+generalization to finite trees of cases, which is what the accompanying implementation records.
+
+\begin{proposition}\label{prop:cases}
+Let $p_1,\dots,p_d$ be distinct variables of $\Phi_T$ and, for $0\le c<2^{d}$, let $U_c$ be the
+conjunction of the $d$ unit clauses assigning $p_m$ the $m$-th bit of $c$. If $\Phi_T\wedge U_c$ is
+unsatisfiable for every $c$, then $\Phi_T$ is unsatisfiable.
+\end{proposition}
+
+\begin{proof}
+A satisfying assignment of $\Phi_T$ satisfies $U_c$ for exactly one $c$, namely the one read off its
+values at $p_1,\dots,p_d$.
+\end{proof}
+
+A fixed-depth partition can be refined locally: a case that exceeds the available time,
+proof size or checker memory can be split again while the other cases are left unchanged.
+Cube trees record precisely these successive refinements, so the implementation lets the
+tree grow where it is needed. For the rest of this subsection $\Phi$ is any CNF formula in the variables
+$1,\dots,V$, and an \emph{assignment} is a map $\alpha\colon\{1,\dots,V\}\to\{0,1\}$; it satisfies
+the literal $x$ when $\alpha(x)=1$ and the literal $\neg x$ when $\alpha(x)=0$.
+
+\begin{definition}[Cubes and splits]\label{def:cube}
+A \emph{cube} is a set $C$ of literals in which no variable occurs twice; $\varnothing$ is the
+\emph{empty cube}. An assignment satisfies $C$ when it satisfies every literal of $C$, and
+$\Phi\wedge C$ denotes $\Phi$ together with one unit clause for each literal of $C$. A \emph{split}
+of a cube $C$ is a sequence $W=(w_1,\dots,w_k)$, $k\ge1$, of distinct variables none of which
+occurs in $C$. Its $2^k$ \emph{children} are the cubes $C\cup\{\ell_1,\dots,\ell_k\}$ with
+$\ell_j\in\{w_j,\neg w_j\}$ for each $j$; each of them contains $C$ and has $|C|+k$ literals.
+\end{definition}
+
+\begin{lemma}[A split partitions its cube]\label{lem:split}
+Let $W$ be a split of a cube $C$. Every assignment that satisfies $C$ satisfies exactly one child
+of $C$ under $W$. Hence, if $\Phi\wedge C'$ is unsatisfiable for every child $C'$, then
+$\Phi\wedge C$ is unsatisfiable.
+\end{lemma}
+
+\begin{proof}
+Let $\alpha$ satisfy $C$. Then $\alpha$ satisfies the child $C\cup\{\ell_1,\dots,\ell_k\}$ if and
+only if it satisfies each $\ell_j$, and for each $j$ it satisfies exactly one of $w_j$ and
+$\neg w_j$. So it satisfies exactly one child: the one with $\ell_j=w_j$ when $\alpha(w_j)=1$ and
+$\ell_j=\neg w_j$ when $\alpha(w_j)=0$. If $\alpha$ satisfied $\Phi\wedge C$, it would therefore
+satisfy $\Phi\wedge C'$ for that child $C'$.
+\end{proof}
+
+\begin{definition}[Cube tree]\label{def:cubetree}
+A \emph{cube tree} with root $C_0$ is a rooted tree whose nodes are labelled by cubes, such that
+the root is labelled $C_0$ and each node that is not a leaf, say labelled $C$, carries a split $W$
+of $C$ and has exactly $2^{|W|}$ children, one for each child of $C$ under $W$ and labelled by it. It
+is \emph{refuted} for $\Phi$ when $\Phi\wedge L$ is unsatisfiable for the label $L$ of every leaf.
+\end{definition}
+
+A cube tree is finite. Along every path down from the root the labels gain at least one literal
+at each step, and no cube has more than $V$ literals, so the height is at most $V-|C_0|$; and each
+node has finitely many children.
+
+\begin{theorem}[Coverage]\label{thm:coverage}
+Let $\mathcal{T}$ be a cube tree with root $C_0$.
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.4em]
+\item Every assignment that satisfies $C_0$ satisfies the label of exactly one leaf of
+  $\mathcal{T}$.
+\item If $\mathcal{T}$ is refuted for $\Phi$, then $\Phi\wedge C_0$ is unsatisfiable. In
+  particular, a cube tree with the empty root that is refuted for $\Phi$ shows that $\Phi$ is
+  unsatisfiable.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) By induction on the height of $\mathcal{T}$. If the root is a leaf, it is the only leaf and
+the claim holds. Otherwise let $W$ be the split at the root, let $C_1,\dots,C_m$, $m=2^{|W|}$, be
+the children of $C_0$ under $W$, and let $\mathcal{T}_t$ be the subtree below the child labelled
+$C_t$. Each $\mathcal{T}_t$ is a cube tree with root $C_t$ and smaller height, and the leaves of
+$\mathcal{T}$ are those of $\mathcal{T}_1,\dots,\mathcal{T}_m$. Let $\alpha$ satisfy $C_0$. By
+Lemma~\ref{lem:split}, $\alpha$ satisfies exactly one $C_t$, and by induction it satisfies the
+label of exactly one leaf of $\mathcal{T}_t$. For $s\ne t$ every label in $\mathcal{T}_s$ contains
+$C_s$, because each label contains the label of its parent; as $\alpha$ does not satisfy $C_s$, it
+satisfies no leaf label of $\mathcal{T}_s$.
+
+(b) If an assignment satisfied $\Phi\wedge C_0$, then by (a) it would satisfy the label $L$ of
+some leaf, hence $\Phi\wedge L$, which is unsatisfiable by hypothesis. For the empty root,
+$\Phi\wedge\varnothing$ is $\Phi$.
+\end{proof}
+
+Part (a) says that the leaves of a cube tree divide the region of its root into disjoint regions,
+with nothing left over; only part (b) is used below. Proposition~\ref{prop:cases} is the special
+case of a tree with at most one split: for $d\ge1$ its cases $U_c$ are the children of the empty
+cube under the split $(p_1,\dots,p_d)$, and for $d=0$ the tree consists of its root.
+
+The implementation does not store a tree but everything that was done: possibly several
+refutation attempts of one cube, and possibly several splits of one cube recorded by different
+machines. The following lemma shows that this is harmless.
+
+\begin{lemma}[Closed cubes]\label{lem:closure}
+Let $\mathcal{R}$ be a set of cubes $C$ for which $\Phi\wedge C$ is unsatisfiable, and let
+$\mathcal{S}$ be a set of pairs $(C,W)$ of a cube $C$ and a split $W$ of $C$. Define, by induction
+on $V-|C|$, a cube $C$ to be \emph{closed} if $C\in\mathcal{R}$, or if there is
+$(C,W)\in\mathcal{S}$ such that every child of $C$ under $W$ is closed; the children have more
+literals than $C$, so this is already defined for them. Then every closed cube $C$ is the root of
+a cube tree, refuted for $\Phi$, whose leaf labels lie in $\mathcal{R}$ and whose splits come from
+$\mathcal{S}$. In particular $\Phi\wedge C$ is unsatisfiable for every closed cube $C$.
+\end{lemma}
+
+\begin{proof}
+By the same induction. If $C\in\mathcal{R}$, the tree with the single node $C$ is refuted.
+Otherwise choose $(C,W)\in\mathcal{S}$ whose children are all closed, take for each child a
+refuted cube tree with that child as root, which exists by induction, and attach these trees below
+a root labelled $C$ carrying the split $W$. The last claim is Theorem~\ref{thm:coverage}(b).
+\end{proof}
+
+In the implementation the role of $\mathcal{R}$ is played by the cubes with an admitted record of a
+checked refutation, so the lemma applies to the extent that these records are true
+(Remark~\ref{rem:attestation}), and that of $\mathcal{S}$ by the recorded splits
+(Section~\ref{sec:protocol}). To make its result
+reproducible it also selects one tree: at a closed cube it takes a refutation if there is one, and
+otherwise the first split in a fixed order whose children are all closed. Every such choice is a
+tree as in the proof, and which one is chosen does not affect the conclusion. A cube counts as
+closed only through a refutation of that cube or a split of it. The certifier does not
+infer closure of $C$ from closure of a proper subset $D\subset C$ of its literals,
+although that inference would also be sound because $\Phi\wedge C$ implies $\Phi\wedge D$.
+
+\begin{corollary}[Conditional non-existence from cube trees]\label{cor:treecover}
+Suppose that for each of the $59$ neighbourly maps $T$ of Theorem~\ref{thm:59} there is a cube tree
+with the empty root that is refuted for $\Phi_T$. Then there is no neighbourly polyhedron with
+twelve faces satisfying \textup{(H1)--(H3)}.
+\end{corollary}
+
+\begin{proof}
+By Theorem~\ref{thm:coverage}(b) each $\Phi_T$ is unsatisfiable, and Corollary~\ref{cor:conditional}
+applies.
+\end{proof}
+
+\begin{remark}[A closed nonempty root settles only its region]\label{rem:pilotroot}
+For a nonempty cube $C_0$, a refuted cube tree with root $C_0$ shows only that no satisfying
+assignment of $\Phi$ satisfies $C_0$: a statement about one region of the search space. Pilot
+computations are of this kind. A pilot may, for instance, take as its root one case $U_c$ of a
+fixed decomposition, written as a cube, and refute a tree below it. That settles one of the $2^d$
+cases and says nothing about the others; in particular it does not prove the formula. The
+implementation combines closed cubes into a refutation of $\Phi$ only as the leaves of a cube tree
+with the empty root --- for example all $2^d$ cases of one decomposition --- and then by
+Theorem~\ref{thm:coverage} for that tree. Corollary~\ref{cor:treecover} needs, for every one of
+the $59$ formulas, a refuted tree whose root is the empty cube.
+\end{remark}
+
+The choice of splitting variables affects cost only, never correctness. The default
+campaign first splits the empty cube of each formula on twelve order variables selected
+by an adaptation of the proof-prefix heuristic of \cite{BattlemanReevesHeule2025}: bounded
+solver runs count occurrences of variables in added clauses. This gives $2^{12}=4\,096$
+initial cubes per formula. Subsequent splits use a bounded look-ahead heuristic, with four
+variables per split by default, or fewer when the candidate pool or probe budget requires it. The initial depth
+can be changed, including to zero; none of these policy choices is a hypothesis of the
+reduction. Because Lemma~\ref{lem:split} and
+Theorem~\ref{thm:coverage} hold for any choice, the heuristics need no correctness argument of
+their own --- but the splits must be recorded, since coverage is a statement about one tree.
+
+\section{The verification protocol}\label{sec:protocol}
+
+A statement of the form ``for each of the $59$ formulas, every leaf of a cube tree with the empty
+root is unsatisfiable'' is only as good as the evidence that each leaf was decided, and decided
+about the right formula. We state the discipline the accompanying implementation enforces, since
+it is part of what would have to be reproduced.
+
+The package \texttt{neighbourly} builds the formulas.
+\texttt{cubeproof} runs, records and certifies computations on fixed formulas;
+\texttt{faces12-campaign} binds these operations to the $59$ maps and their pinned
+formula hashes. A campaign fixes the formulas, requested roots and tool identities.
+Workers can process disjoint shards, resume from their journals and transfer open
+cubes through recorded handoffs. Ownership determines who works on a region;
+only the admitted refutations and splits determine whether that region is closed.
+An unfinished or undelivered region remains open.
+
+Three proof modes implement the same acceptance rule. In \texttt{transient} mode
+(the default), a proof is written, checked and deleted after its result is committed.
+In \texttt{retain} mode, accepted proofs are kept for later checking.
+In \texttt{stream} mode, a relay sends proof bytes directly to the checker and hashes
+the byte stream; it does not keep a proof file. If a resource limit prevents a check
+from completing, the leaf remains open and can be retried or subdivided. These
+execution choices do not change $\Phi_T$ or the coverage theorem.
+
+\begin{description}[leftmargin=1.6em,style=nextline]
+\item[Two programs, one of them trusted] A CDCL solver (CaDiCaL) is used only as a \emph{proposer}:
+  for a leaf cube $L$ it emits an LRAT refutation of $\Phi_T\wedge L$, which \texttt{cake\_lpr}
+  \cite{TanHeuleMyreen2023} checks, either from a proof file written once and sealed or streamed
+  through a pipe. The correctness of \texttt{cake\_lpr} is a machine-checked theorem carried down to
+  machine code by the verified CakeML compiler. A leaf counts as refuted only when the checker's
+  standard output is exactly the line \texttt{s VERIFIED UNSAT} followed by a newline,
+  the process exits with code zero without a signal, and the CNF it
+  read is the one regenerated from the formula and the cube. A leaf that unit propagation alone
+  refutes gets a proof generated for it, which passes through the same checker. A solver's own
+  claim of unsatisfiability is never accepted.
+\item[Identity of the object] A formula is identified by the SHA-256 of its DIMACS text, and the
+  bundle that carries it records the map, the layer string and the gauge face from which it was
+  generated, so that it can be regenerated and compared byte for byte. A cube is written as its
+  literals sorted by variable, so that its identity does not depend on the order in which it was
+  reached. The CNF of a leaf is the DIMACS text of the formula, with the clause count in its header
+  raised by the number of literals of the cube and one unit clause per literal of the cube appended
+  in that order; every record names the hashes of the formula and of this CNF. Evidence about
+  different formulas is never merged.
+\item[Attestation] Each machine appends what it does to its own journal, a file of JSON records each
+  of which carries its own hash and that of its predecessor: refutation attempts with their
+  outcomes, splits, and satisfying assignments. A record of a refuted leaf is an
+  \emph{attestation}: it states that the checker accepted a proof with a given hash for a CNF with
+  a given hash. By default the proof itself is deleted after the check. The hashes detect
+  accidental damage and reordering inside a journal; they do not authenticate its writer, and they
+  do not detect the replacement of a whole journal or the removal of its last records. The final
+  head of each journal that a result relies on must therefore be published independently of the
+  file.
+\item[Certification] A certifier, which runs neither solver nor checker, reads the journals,
+  recomputes the hash of every leaf CNF that a record names from the formula and the cube, admits
+  only refutations checked by a checker binary that the campaign names by its hash, and evaluates
+  closure as in Lemma~\ref{lem:closure}. A formula counts as proved exactly when its empty cube is
+  closed; a closed nonempty root is reported as such (Remark~\ref{rem:pilotroot}). A recorded
+  satisfying assignment, which is checked against the clauses, is reported as an inconsistency
+  if the empty cube of its formula is closed: by Lemma~\ref{lem:closure} and
+  Theorem~\ref{thm:coverage} both cannot be true,
+  so one of the attestations or the implementation is at fault. The certificate names the selected tree's refutations, the cubes
+  that remain open and one hash over the selected leaves. A second certifier, written independently
+  from the specification, must produce the same result from the same journals. Agreement of two
+  certifiers checks the evaluation of closure and the selection, not the honesty of the journals.
+\item[Independent verification] The default mode does not retain proofs. Their total size
+  depends on the eventual tree and solver runs; no storage estimate for a complete
+  computation is claimed. An attested leaf is verified again in one of two ways. Where a proof was retained,
+  the checker checks it again against the regenerated CNF, without the solver. Otherwise a second
+  party recomputes the leaf: it regenerates the CNF and compares its hash with the record, runs the
+  recorded solver again (or, for a leaf refuted by unit propagation, generates its proof again),
+  has the checker verify the new proof, and compares the new proof's hash with the recorded one. Strict reproduction requires identical proof bytes under the recorded binary, options
+  and execution profile; a difference fails that reproduction check. Determinism is tested
+  on small workloads, not assumed as a mathematical theorem. A different checked proof
+  still refutes the same leaf, but does not reproduce the recorded proof bytes. Either way
+  the leaf is established anew, independently of the journal. Verifying a random sample of leaves
+  tests the journals statistically and verifies only the leaves in the sample; verifying every
+  selected leaf of every formula repeats the computation and verifies it completely. Neither a
+  journal nor a proof is accepted without the corresponding check.
+\item[Exact controls and a reference encoder] The identities of Section~\ref{sec:dictionary} are
+  checked against exact rational arithmetic on explicit plane configurations: random ones in general
+  position for Theorem~\ref{thm:order}, Lemma~\ref{lem:onb} and Lemma~\ref{lem:turn}, and, for Layers
+  $B$ and $I$, which hold only for realizations, the tetrahedron and an exact rational realization of
+  the Szilassi polyhedron \cite{GrunbaumSzilassi2009} perturbed into general position, for which the
+  predicates have separately computed truth values. Two reference checks serve different purposes.
+  The package reference encoder shares the production encoder's conventions and compares clauses,
+  detecting transcription errors. The additional reference in \texttt{tests/reference} is written
+  from this article with its own bracket numbering and sign calculations. It reads the emitted
+  clauses and the names of their variables, recognizes the auxiliary definitions by their truth
+  tables, and compares the resulting Boolean polynomials over $\FF$ with the predicates defined
+  here. It also checks the substantive clauses, the gauge rank and reorientation invariance.
+  This symbolic comparison covers all assignments of the bracket bits for each of the $59$
+  fixed maps; separate rational tests check geometric interpretations on sampled arrangements
+  and on the two known realizations, including relabellings and changes of gauge face.
+  The reference reads the encoder's choices of link traversal and pinned corner and checks
+  their admissibility; the pinned formula hashes fix the exact choices. Both references are
+  maintained by this project. Neither constitutes external peer review or proves the geometric
+  lemmas from agreement between programs.
+\end{description}
+
+The assurance argument has three distinct levels. The geometric reduction and the
+completeness of the case list are mathematical obligations. Correct encoding, formula
+identity and complete coverage are implementation obligations, supported here by exact
+controls and separate computations; coverage itself is Theorem~\ref{thm:coverage}, and the
+certifiers only evaluate its hypothesis on recorded evidence. Finally, the checker establishes
+unsatisfiability of the concrete CNF it reads, subject to the execution assumptions of its
+verification theorem; the small C layer through which the verified machine code reads its input
+files, and, when a proof is streamed, the pipe through which it arrives, lie outside that theorem;
+they are identified by the hashes recorded with each result. Formal verification of the checker does not discharge the
+first two levels. The solver need not be trusted to assert unsatisfiability: its proposed
+refutation is checked independently. The resulting theorem would nevertheless depend on the whole
+chain from geometry to the checked formulas.
+
+\begin{remark}[Attestation and verification are different guarantees]\label{rem:attestation}
+The splits of a cube tree need no trust: whether a recorded split is a split in the sense of
+Definition~\ref{def:cube} is decided by reading it, and its children are determined by it. Only the
+leaves carry computational content. A certificate that a formula is proved establishes the
+hypothesis of Theorem~\ref{thm:coverage}(b) for the selected tree at the level of attestation: each
+leaf is covered by a record of an accepted check. It does not show that the writer of an admitted
+record actually ran the checker on that CNF; a journal is not a proof. That a leaf is
+unsatisfiable is established independently of the journals only by checking a retained proof
+again or by recomputing the leaf. An independent verification of the whole computation therefore
+verifies every selected leaf of every one of the $59$ formulas; a sample verifies only the leaves
+it selects.
+\end{remark}
+
+\section{Status, scope and what remains}\label{sec:status}
+
+\subsection{What has been done}
+The geometric and encoding lemmas, the reduction and the coverage statements are
+proved here. The case-list theorem uses the published classification, whose concrete
+representatives are also recomputed and compared with the published data. The enumeration of
+Theorem~\ref{thm:59} has been carried out and agrees in number with
+\cite{AltshulerBokowskiSchuchert1996} and class by class with \cite{LutzManifoldPage}. The encoder produces the $59$ formulas of
+Definition~\ref{def:formula}, and the finite identities are tested by machine:
+Theorem~\ref{thm:order}, Lemma~\ref{lem:onb} and Lemma~\ref{lem:turn} against exact arithmetic on
+random rational configurations, Lemma~\ref{lem:cutorder} exhaustively on all tournaments with at most
+seven elements, which also reproduces the counts of Appendix~\ref{app:numbers},
+Lemma~\ref{lem:onereflex} through the supplementary check of Remark~\ref{rem:octants}, and
+the gauge of Corollary~\ref{cor:gauge} by running all $2^{13}$ group elements and observing that they
+give the thirteen pinned brackets all $8\,192$ possible sign patterns within each orbit. The gauge
+selects one representative from each orbit; it does not identify the $8\,192$ patterns with
+different orbits. The tests of Lemmas~\ref{lem:onb} and~\ref{lem:turn} evaluate the encoder's own
+literals; the others check the identities independently of it. None of them replaces a proof given
+here.
+
+\subsection{What has not been done}
+A complete set of checked refutations has not been obtained: for none of the $59$ formulas has a
+refuted cube tree with the empty root been recorded, let alone verified independently.
+Corollaries~\ref{cor:conditional} and~\ref{cor:treecover} therefore remain conditional: this paper
+does not settle the Question. Bounded pilot computations on restricted roots are not partial
+proofs of it beyond the regions they close (Remark~\ref{rem:pilotroot}). This version is a preprint
+of the reduction and of the protocol, released before the computation; the computation, and its
+independent verification, will be reported in a revised version. Clause counts and bounded tests do
+not provide a reliable estimate of the cost of all $59$ instances. Cube trees support parallel and
+resumable attempts, but timeouts, resource limits and unrefuted leaves must remain explicitly open
+in any campaign report.
+
+\subsection{Scope}
+The reduction is stated for polyhedra satisfying (H1)--(H3). Dropping (H1) to allow two faces to meet
+in more than one edge or in an isolated additional point, dropping (H2) to allow faces with holes, or
+allowing self-intersections, changes the object: vertices of degree exceeding three become possible,
+the case list of Theorem~\ref{thm:59} no longer applies, and the $59$ formulas say nothing about those
+variants. Statements made here for general $n$, such as Proposition~\ref{prop:euler} and
+Lemma~\ref{lem:framing}, are proved; the computations, and the tests of the implementation on maps
+with other numbers of faces, are finite checks of particular instances and establish nothing about
+polyhedra with other numbers of faces. We also note again the difference from the dual problem: Schewe's theorem
+\cite{Schewe2010} excludes polyhedral realizations of the $12$-vertex genus-$6$ triangulations, which
+are combinatorially dual to our maps; realizability is not preserved by that duality, so it does not transfer
+a non-realizability result from one problem to the other.
+
+\appendix
+
+\section{Numerical data}\label{app:numbers}
+
+\subsection{The case list}
+The enumeration of Theorem~\ref{thm:59} returns, for $n=12$ with the link of one face fixed,
+$12\,144$ labelled orientable maps in $59$ isomorphism classes. Their automorphism orders are
+\[
+\begin{array}{lrrrrrr}
+\toprule
+|\Aut| & 1 & 2 & 3 & 4 & 6 & 12\\
+\text{classes} & 39 & 9 & 1 & 7 & 2 & 1\\
+\bottomrule
+\end{array}
+\qquad
+\sum_{C}\frac{264}{|\Aut(C)|}=12\,144 .
+\]
+On the smaller sizes the same program returns one class for $n=4$ ($|\Aut|=24$), one for
+$n=7$ ($|\Aut|=42$, the Császár torus) and none for $n=10$.
+
+The automorphism orders are those stated in \cite{EllinghamStephens2005}, Theorem~4. The $59$
+classes are those of the list of \cite{LutzManifoldPage} for genus $6$ and twelve vertices. The full correspondence, including all twelve-label bijections, is stored in
+\texttt{data/fixtures/lutz\_correspondence.json}. The test applies them and compares
+the normalized file hash with the published file; the source URL, retrieval date
+and both raw and normalized hashes are recorded in \texttt{docs/SOURCES.md}.
+Keeping the correspondence with the data avoids a second, manually maintained
+numbering table in the article.
+
+\subsection{Tournaments}
+The counts behind Remark~\ref{rem:counts}, obtained by exhaustive enumeration of all tournaments
+(the accompanying test suite recomputes them):
+\[
+\begin{array}{lrrrr}
+\toprule
+m & 4 & 5 & 6 & 7\\
+\midrule
+\text{tournaments satisfying (GP)} & 48 & 384 & 3\,840 & 46\,080\\
+\text{transitive tournaments} & 24 & 120 & 720 & 5\,040\\
+\bottomrule
+\end{array}
+\]
+matching $(m-1)!\,2^{\,m-1}$ and $m!$ respectively.
+
+\subsection{The formula}
+Sizes are as in Definition~\ref{def:formula}; the distribution of clause widths, counted from the
+emitted formula of the first map, is
+\[
+\begin{array}{lrrrrr}
+\toprule
+\text{width} & 1 & 2 & 3 & 4 & \text{total}\\
+\midrule
+S      &   &     & & 23\,760 & 23\,760\\
+H      &   &     & 15\,840 & & 15\,840\\
+A      &   &     & 2\,880 & 4\,320 & 7\,200\\
+B      &   & 528 & 2\,112 & & 2\,640\\
+I      &   & 324 & 1\,056 & 1\,344 & 2\,724\\
+\text{gauge} & 13 & & & & 13\\
+\midrule
+\Phi_T & 13 & 852 & 21\,888 & 29\,424 & 52\,177\\
+\bottomrule
+\end{array}
+\]
+The pattern behind the table: a three-term exclusive-or definition contributes eight clauses of width
+four, a two-term one contributes four clauses of width three, a conjunction contributes one clause of
+width three and two of width two, transitivity contributes clauses of width three, and the boundary
+clauses of $B$ and the vertex clauses of $I$ have width two. Exclusive-ors of more than three terms,
+which occur only in the orientation equation and in the four-term exclusive-or that defines each
+corner bit, are split into three-term ones with fresh variables; any assignment of the inputs extends uniquely to the fresh variables, so
+splitting changes neither the models nor the necessity argument. For the first map of the shipped list
+the DIMACS text has $5\,257$ variables and $52\,177$ clauses.
+
+\section{The accompanying software}\label{app:software}
+
+The software is published in the repository
+\begin{center}
+\url{https://github.com/pirozhkov-andrei/polyhedraproof}
+\end{center}
+This revision of the article was released with version 1.0.0rc1 of the software, under the tag
+\texttt{v1.0.0rc1}; the source archive of that release holds the article, the code, the data and the
+tests referred to here. The implementation is written in Python, needs nothing beyond the standard
+library at run time,
+and runs CaDiCaL and \texttt{cake\_lpr} as external programs. Its code
+refers to the statements of this paper by their \LaTeX{}
+labels --- \texttt{lem:parity} for Lemma~\ref{lem:parity}, for instance --- which do not change when
+the numbering does. The correspondence itself, statement by statement, with the code that implements
+each one and the tests that check it, is the file \texttt{docs/THEORY\_MAP.md} of the repository. It
+is generated from this paper's source and from a register of claims kept with the code, and a test
+fails when it is out of date or names a statement, a function or a test that does not exist; so it
+is kept there rather than copied here, where it could only go stale.
+
+\section*{Use of generative artificial intelligence}
+Generative AI tools assisted with reviewing mathematical arguments, developing and checking the
+accompanying code, and drafting and revising the English exposition. These activities were part of
+the development process; AI-generated suggestions and reviews are not evidence of mathematical
+correctness, independent peer review, or formal verification. The author takes responsibility for
+the mathematical claims, the software, and the final text. The verification protocol described in
+Section~\ref{sec:protocol} uses the published source code and the LRAT checker, not AI judgements.
+
+\begin{thebibliography}{99}
+
+\bibitem{AltshulerBokowskiSchuchert1996}
+A.~Altshuler, J.~Bokowski and P.~Schuchert,
+\emph{Neighborly 2-manifolds with 12 vertices},
+J. Combin. Theory Ser. A \textbf{75} (1996), no.~1, 148--162.
+\href{https://doi.org/10.1006/jcta.1996.0069}{doi:10.1006/jcta.1996.0069}.
+
+\bibitem{ArsenevaEtAl2024}
+E.~Arseneva, L.~Kleist, B.~Klemz, M.~Löffler, A.~Schulz, B.~Vogtenhuber and A.~Wolff,
+\emph{Adjacency graphs of polyhedral surfaces},
+Discrete Comput. Geom. \textbf{71} (2024), no.~4, 1429--1455.
+\href{https://doi.org/10.1007/s00454-023-00537-6}{doi:10.1007/s00454-023-00537-6};
+preliminary version in \emph{Proc. 37th Int. Symp. on Computational Geometry (SoCG 2021)},
+LIPIcs \textbf{189}, 11:1--11:17.
+
+\bibitem{BattlemanReevesHeule2025}
+Z.~Battleman, J.~E.~Reeves and M.~J.~H.~Heule,
+\emph{Problem partitioning via proof prefixes},
+in \emph{Proc. 28th Int. Conf. on Theory and Applications of Satisfiability Testing (SAT 2025)},
+LIPIcs \textbf{341}, 3:1--3:18.
+\href{https://doi.org/10.4230/LIPIcs.SAT.2025.3}{doi:10.4230/LIPIcs.SAT.2025.3}.
+
+\bibitem{BiereEtAl2024}
+A.~Biere, T.~Faller, K.~Fazekas, M.~Fleury, N.~Froleyks and F.~Pollitt,
+\emph{CaDiCaL 2.0},
+in \emph{Computer Aided Verification (CAV 2024)}, LNCS \textbf{14681}, Springer, 2024, 133--152.
+\href{https://doi.org/10.1007/978-3-031-65627-9_7}{doi:10.1007/978-3-031-65627-9\_7}.
+
+\bibitem{BLSWZ1999}
+A.~Björner, M.~Las~Vergnas, B.~Sturmfels, N.~White and G.~M.~Ziegler,
+\emph{Oriented Matroids}, 2nd ed.,
+Encyclopedia of Mathematics and its Applications \textbf{46}, Cambridge University Press, 1999.
+\href{https://doi.org/10.1017/CBO9780511586507}{doi:10.1017/CBO9780511586507}.
+
+\bibitem{BokowskiKevin2025}
+J.~Bokowski and Kevin~H.,
+\emph{Polyhedral embeddings of triangular regular maps of genus $g$, $2\le g\le14$,
+and neighborly spatial polyhedra},
+Symmetry \textbf{17} (2025), no.~4, article~622.
+\href{https://doi.org/10.3390/sym17040622}{doi:10.3390/sym17040622}.
+
+\bibitem{BokowskiSturmfels1989}
+J.~Bokowski and B.~Sturmfels,
+\emph{Computational Synthetic Geometry},
+Lecture Notes in Mathematics \textbf{1355}, Springer, 1989.
+\href{https://doi.org/10.1007/BFb0089253}{doi:10.1007/BFb0089253}.
+
+\bibitem{EllinghamStephens2005}
+M.~N.~Ellingham and C.~Stephens,
+\emph{Triangular embeddings of complete graphs (neighborly maps) with 12 and 13 vertices},
+J. Combin. Des. \textbf{13} (2005), no.~5, 336--344.
+\href{https://doi.org/10.1002/jcd.20048}{doi:10.1002/jcd.20048}.
+
+\bibitem{GrunbaumSzilassi2009}
+B.~Grünbaum and L.~Szilassi,
+\emph{Geometric realizations of special toroidal complexes},
+Contrib. Discrete Math. \textbf{4} (2009), no.~1, 21--39.
+\href{https://doi.org/10.55016/ojs/cdm.v4i1.61986}{doi:10.55016/ojs/cdm.v4i1.61986}.
+
+\bibitem{HackerPoet}
+HackerPoet (CodeParade), \emph{NeighborlyPolyhedra}, software repository,\newline
+\url{https://github.com/HackerPoet/NeighborlyPolyhedra}.
+Accessed 15 October 2026. Related published account: \cite{BokowskiKevin2025}.
+
+\bibitem{Hatcher2002}
+A.~Hatcher, \emph{Algebraic Topology}, Cambridge University Press, 2002.
+Author's online edition: \url{https://pi.math.cornell.edu/~hatcher/AT/ATpage.html}.
+
+\bibitem{JungermanRingel1980}
+M.~Jungerman and G.~Ringel,
+\emph{Minimal triangulations on orientable surfaces},
+Acta Math. \textbf{145} (1980), no.~1, 121--154.
+\href{https://doi.org/10.1007/BF02414187}{doi:10.1007/BF02414187}.
+
+\bibitem{Lazarus2020}
+F.~Lazarus, \emph{Linear Embeddings}, lecture notes, 2020, Section~2.
+\url{https://pagesperso.g-scop.grenoble-inp.fr/~lazarusf/Enseignement/effectiveGeom3.pdf}.
+
+\bibitem{LutzManifoldPage}
+F.~H.~Lutz, \emph{The Manifold Page}, section \emph{Surfaces}.
+\url{https://www3.math.tu-berlin.de/IfM/Nachrufe/Frank_Lutz/stellar/surfaces.html}.
+Retrieved 13 October 2026.
+
+\bibitem{Meisters1975}
+G.~H.~Meisters, \emph{Polygons have ears},
+Amer. Math. Monthly \textbf{82} (1975), no.~6, 648--651.
+\href{https://doi.org/10.1080/00029890.1975.11993898}{doi:10.1080/\allowbreak 00029890.1975.11993898}.
+
+\bibitem{Ringel1974}
+G.~Ringel, \emph{Map Color Theorem},
+Grundlehren der mathematischen Wissenschaften \textbf{209}, Springer, 1974.
+\href{https://doi.org/10.1007/978-3-642-65759-7}{doi:10.1007/978-3-642-65759-7}.
+
+\bibitem{RingelYoungs1968}
+G.~Ringel and J.~W.~T.~Youngs,
+\emph{Solution of the Heawood map-coloring problem},
+Proc. Nat. Acad. Sci. U.S.A. \textbf{60} (1968), no.~2, 438--445.
+\href{https://doi.org/10.1073/pnas.60.2.438}{doi:10.1073/pnas.60.2.438}.
+
+\bibitem{Scheucher2023}
+M.~Scheucher,
+\emph{A SAT attack on Erd\H{o}s--Szekeres numbers in $\RR^d$ and the empty hexagon theorem},
+Comput. Geom. Topol. \textbf{2} (2023), no.~1, 2:1--2:13.
+\href{https://doi.org/10.57717/cgt.v2i1.12}{doi:10.57717/cgt.v2i1.12}.
+
+\bibitem{Schewe2010}
+L.~Schewe,
+\emph{Nonrealizable minimal vertex triangulations of surfaces: showing nonrealizability using oriented
+matroids and satisfiability solvers},
+Discrete Comput. Geom. \textbf{43} (2010), no.~2, 289--302.
+\href{https://doi.org/10.1007/s00454-009-9222-y}{doi:10.1007/s00454-009-9222-y};
+\href{https://arxiv.org/abs/0801.2582}{arXiv:0801.2582}.
+
+\bibitem{SulankeLutz2009}
+T.~Sulanke and F.~H.~Lutz,
+\emph{Isomorphism-free lexicographic enumeration of triangulated surfaces and 3-manifolds},
+European J. Combin. \textbf{30} (2009), 1965--1979.
+\href{https://doi.org/10.1016/j.ejc.2008.12.016}{doi:10.1016/j.ejc.2008.12.016};
+\href{https://arxiv.org/abs/math/0610022}{arXiv:math/0610022}.
+
+\bibitem{Szilassi1986}
+L.~Szilassi, \emph{Regular toroids}, Structural Topology \textbf{13} (1986), 69--80.
+
+\bibitem{TanHeuleMyreen2023}
+Y.~K.~Tan, M.~J.~H.~Heule and M.~O.~Myreen,
+\emph{Verified propagation redundancy and compositional UNSAT checking in CakeML},
+Int. J. Softw. Tools Technol. Transf. \textbf{25} (2023), no.~2, 167--184.
+\href{https://doi.org/10.1007/s10009-022-00690-y}{doi:10.1007/s10009-022-00690-y};
+conference version: \emph{cake\_lpr: verified propagation redundancy checking in CakeML},
+TACAS 2021, LNCS \textbf{12652}, 223--241.
+
+\end{thebibliography}
+
+\end{document}

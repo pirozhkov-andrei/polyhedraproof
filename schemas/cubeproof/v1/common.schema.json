@@ -1,0 +1,610 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof v1 shared types",
+  "description": "Primitive and shared types of SPECIFICATION §4.1, §4.6-§4.9 and §11.1. Only definitions; no document validates against the root. Cross-field and semantic rules are in requirements.json.",
+  "$defs": {
+    "Int64": {
+      "description": "A JSON integer in [-(2^63-1), 2^63-1]; never a boolean (SPECIFICATION §4.1).",
+      "type": "integer",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807
+    },
+    "NonNegative": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807
+    },
+    "Positive": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9223372036854775807
+    },
+    "Hash": {
+      "description": "Exactly 64 lowercase hexadecimal characters.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+    },
+    "Id128": {
+      "description": "Exactly 32 lowercase hexadecimal characters, generated with OS randomness.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}(?![\\s\\S])"
+    },
+    "Name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,63}(?![\\s\\S])"
+    },
+    "RelPath": {
+      "description": "Nonempty relative POSIX path: no empty, '.' or '..' component, no leading '/', no drive prefix, no NUL and (reading 7) no backslash. End of input is written (?![\\s\\S]) so that ECMA-262 and Python agree.",
+      "type": "string",
+      "pattern": "^(?![A-Za-z]:)(?!\\.\\.?(?:/|(?![\\s\\S])))[^/\\\\\\u0000]+(?:/(?!\\.\\.?(?:/|(?![\\s\\S])))[^/\\\\\\u0000]+)*(?![\\s\\S])"
+    },
+    "UTC": {
+      "description": "YYYY-MM-DDTHH:MM:SS.mmmZ; requirement utc.calendar adds that it is a valid instant.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z(?![\\s\\S])"
+    },
+    "Literal": {
+      "description": "A nonzero Int64; the range |literal| <= V is requirement cube.range.",
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9223372036854775807
+        },
+        {
+          "type": "integer",
+          "minimum": -9223372036854775807,
+          "maximum": -1
+        }
+      ]
+    },
+    "Cube": {
+      "description": "Literals; canonical order and range are requirements cube.canonical and cube.range.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Literal"
+      }
+    },
+    "Node": {
+      "type": "object",
+      "properties": {
+        "formula_sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "cube": {
+          "$ref": "#/$defs/Cube"
+        }
+      },
+      "required": [
+        "formula_sha256",
+        "cube"
+      ],
+      "additionalProperties": false
+    },
+    "Ref": {
+      "description": "A journal record: journal is the header self hash.",
+      "type": "object",
+      "properties": {
+        "journal": {
+          "$ref": "#/$defs/Hash"
+        },
+        "seq": {
+          "$ref": "#/$defs/NonNegative"
+        }
+      },
+      "required": [
+        "journal",
+        "seq"
+      ],
+      "additionalProperties": false
+    },
+    "Artifact": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/RelPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "bytes": {
+          "$ref": "#/$defs/NonNegative"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "additionalProperties": false
+    },
+    "OpenObject": {
+      "description": "Explicitly open object (info, producer parameters, diagnostics); its contents still obey the common JSON rules of SPECIFICATION §4.1.",
+      "type": "object"
+    },
+    "Splitter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "info": {
+          "$ref": "#/$defs/OpenObject"
+        }
+      },
+      "required": [
+        "name",
+        "info"
+      ],
+      "additionalProperties": false
+    },
+    "ProcessResult": {
+      "description": "SPECIFICATION §4.6. Exit/signal exclusivity, not-started and tail sizes are requirements process.*.",
+      "type": "object",
+      "properties": {
+        "started": {
+          "type": "boolean"
+        },
+        "exit": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 255
+            }
+          ]
+        },
+        "signal": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/Positive"
+            }
+          ]
+        },
+        "elapsed_ms": {
+          "$ref": "#/$defs/NonNegative"
+        },
+        "stdout_tail": {
+          "type": "string"
+        },
+        "stderr_tail": {
+          "type": "string"
+        },
+        "stdout_bytes": {
+          "$ref": "#/$defs/NonNegative"
+        },
+        "stdout_truncated": {
+          "type": "boolean"
+        },
+        "cause": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "conflicts": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/NonNegative"
+            }
+          ]
+        }
+      },
+      "required": [
+        "started",
+        "exit",
+        "signal",
+        "elapsed_ms",
+        "stdout_tail",
+        "stderr_tail",
+        "stdout_bytes",
+        "stdout_truncated",
+        "cause",
+        "conflicts"
+      ],
+      "additionalProperties": false
+    },
+    "CheckerCheck": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/ProcessResult"
+        },
+        "heap_mib": {
+          "$ref": "#/$defs/Positive"
+        },
+        "stack_mib": {
+          "$ref": "#/$defs/Positive"
+        }
+      },
+      "required": [
+        "result",
+        "heap_mib",
+        "stack_mib"
+      ],
+      "additionalProperties": false
+    },
+    "Machinery": {
+      "description": "SPECIFICATION §4.6. Manifest order and the two digests are requirements machinery.*.",
+      "type": "object",
+      "properties": {
+        "solver": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "sha256": {
+              "$ref": "#/$defs/Hash"
+            },
+            "version": {
+              "type": "string"
+            },
+            "argv": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "version",
+            "argv"
+          ],
+          "additionalProperties": false
+        },
+        "checker": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "sha256": {
+              "$ref": "#/$defs/Hash"
+            }
+          },
+          "required": [
+            "path",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "helper": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "sha256": {
+                  "$ref": "#/$defs/Hash"
+                },
+                "algorithm": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "sha256",
+                "algorithm"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "runtime": {
+          "type": "object",
+          "properties": {
+            "python": {
+              "type": "string"
+            },
+            "libc": {
+              "type": "string"
+            },
+            "platform": {
+              "type": "string"
+            },
+            "image_digest": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "required": [
+            "python",
+            "libc",
+            "platform",
+            "image_digest"
+          ],
+          "additionalProperties": false
+        },
+        "source_manifest": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/RelPath"
+              },
+              "sha256": {
+                "$ref": "#/$defs/Hash"
+              }
+            },
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "packages_sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "cubeproof_sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "unit_algorithm": {
+          "const": "unit-v1"
+        }
+      },
+      "required": [
+        "solver",
+        "checker",
+        "helper",
+        "runtime",
+        "source_manifest",
+        "packages_sha256",
+        "cubeproof_sha256",
+        "unit_algorithm"
+      ],
+      "additionalProperties": false
+    },
+    "ResourceSnapshot": {
+      "description": "SPECIFICATION §4.7: an observation, not a certificate admission condition.",
+      "type": "object",
+      "properties": {
+        "cpu_milli": {
+          "$ref": "#/$defs/Positive"
+        },
+        "memory_budget_bytes": {
+          "$ref": "#/$defs/NonNegative"
+        },
+        "filesystems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "free_bytes": {
+                "$ref": "#/$defs/NonNegative"
+              },
+              "budget_bytes": {
+                "$ref": "#/$defs/NonNegative"
+              }
+            },
+            "required": [
+              "id",
+              "paths",
+              "free_bytes",
+              "budget_bytes"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "coordinator_rss_bytes": {
+          "$ref": "#/$defs/NonNegative"
+        }
+      },
+      "required": [
+        "cpu_milli",
+        "memory_budget_bytes",
+        "filesystems",
+        "coordinator_rss_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "Limits": {
+      "type": "object",
+      "properties": {
+        "solver_time_ms": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/Positive"
+            }
+          ]
+        },
+        "proof_cap_bytes": {
+          "$ref": "#/$defs/Positive"
+        },
+        "solver_memory_bytes": {
+          "$ref": "#/$defs/Positive"
+        },
+        "check_time_ms": {
+          "$ref": "#/$defs/Positive"
+        }
+      },
+      "required": [
+        "solver_time_ms",
+        "proof_cap_bytes",
+        "solver_memory_bytes",
+        "check_time_ms"
+      ],
+      "additionalProperties": false
+    },
+    "Relay": {
+      "type": "object",
+      "properties": {
+        "bytes": {
+          "$ref": "#/$defs/NonNegative"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "solver_eof": {
+          "type": "boolean"
+        },
+        "all_written": {
+          "type": "boolean"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "required": [
+        "bytes",
+        "sha256",
+        "solver_eof",
+        "all_written",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    "AuditTarget": {
+      "description": "SPECIFICATION §11.1; its identity hash is SHA256(J(target)).",
+      "type": "object",
+      "properties": {
+        "node": {
+          "$ref": "#/$defs/Node"
+        },
+        "node_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "source": {
+          "$ref": "#/$defs/Ref"
+        },
+        "cnf_sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "proof_sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "route": {
+          "enum": [
+            "unit",
+            "cdcl"
+          ]
+        },
+        "machinery": {
+          "$ref": "#/$defs/Machinery"
+        }
+      },
+      "required": [
+        "node",
+        "node_id",
+        "source",
+        "cnf_sha256",
+        "proof_sha256",
+        "route",
+        "machinery"
+      ],
+      "additionalProperties": false
+    },
+    "Summary": {
+      "description": "SPECIFICATION §4.9; an open summary is all zero with a null root (requirement certificate.summary).",
+      "type": "object",
+      "properties": {
+        "leaves": {
+          "$ref": "#/$defs/NonNegative"
+        },
+        "splits": {
+          "$ref": "#/$defs/NonNegative"
+        },
+        "max_cube_size": {
+          "$ref": "#/$defs/NonNegative"
+        },
+        "leaf_merkle_root": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/Hash"
+            }
+          ]
+        }
+      },
+      "required": [
+        "leaves",
+        "splits",
+        "max_cube_size",
+        "leaf_merkle_root"
+      ],
+      "additionalProperties": false
+    },
+    "OpenNode": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "$ref": "#/$defs/Node"
+        },
+        "node_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "stuck",
+            "tool_blocked",
+            "resource_blocked",
+            "model"
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "required": [
+        "node",
+        "node_id",
+        "state",
+        "reason"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

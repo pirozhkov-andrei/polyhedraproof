@@ -1,0 +1,160 @@
+{
+ "cases": [
+  {
+   "leaf_hashes": [],
+   "leaves": [],
+   "levels": [],
+   "name": "empty",
+   "root": null
+  },
+  {
+   "leaf_hashes": [
+    "c96a38057b1144f466160e1c5fa91d181da4cc54ddd6326a0fa298e32014fd50"
+   ],
+   "leaves": [
+    {
+     "cnf_sha256": "f32f61f5c723298968a5a32a4c834b8789d8d6b9baaaecc027bf1599d6924f43",
+     "node_id": "6e4305356a0319457a1ccfc49f3189557a4991a26d8cca628e68925e7faafb03",
+     "proof_sha256": "4205f44b4f0f130bd5b31733abb74f3fb6d4c549e8e4937f66aef758035273b6"
+    }
+   ],
+   "levels": [
+    [
+     "c96a38057b1144f466160e1c5fa91d181da4cc54ddd6326a0fa298e32014fd50"
+    ]
+   ],
+   "name": "one",
+   "root": "c96a38057b1144f466160e1c5fa91d181da4cc54ddd6326a0fa298e32014fd50"
+  },
+  {
+   "leaf_hashes": [
+    "8b34c2634e5fc5c170548d4eaf899b6b036a01f13d70d8da9431a8c25afc7c61",
+    "f0705e8a055d8b3cd46a28ec1fbbf6343c52a310bf9f273312e85602f331bcf6"
+   ],
+   "leaves": [
+    {
+     "cnf_sha256": "4cd3e4a724be151b22d990c9c082f4c340c66e142c6a7311f271e955d4e542ab",
+     "node_id": "1ec6586c392b682b08debd0f9b3b9082d097d8f108a318eb7492a45188b7941e",
+     "proof_sha256": "bb15c9994c420925f2b3d17739ca4027b92c93ee4ea05e4592b19de2a9265337"
+    },
+    {
+     "cnf_sha256": "6561352c4dde272906c6d8dc59d14c59154e6b7e1e70e8e6cbe59dd2377d122b",
+     "node_id": "777e864f1180aa6cfde0648db5d764ad17fbb42b74caafbac6d0778556bd3351",
+     "proof_sha256": "dcea501b335eb732c3761a02225b560dd2b30d1a46b40e039daeb0daf0b1c4e3"
+    }
+   ],
+   "levels": [
+    [
+     "8b34c2634e5fc5c170548d4eaf899b6b036a01f13d70d8da9431a8c25afc7c61",
+     "f0705e8a055d8b3cd46a28ec1fbbf6343c52a310bf9f273312e85602f331bcf6"
+    ],
+    [
+     "38d7d448c5594a681c7fcbf8a52b8626d07f18966db91764e0af1e686ef52d51"
+    ]
+   ],
+   "name": "two",
+   "root": "38d7d448c5594a681c7fcbf8a52b8626d07f18966db91764e0af1e686ef52d51"
+  },
+  {
+   "leaf_hashes": [
+    "401cfb035e030254c43ba3d629e530b46740405a7e6013f46e913624f39fcbc7",
+    "3842ef90590115e62c9ede2f48daae566c47ccf7dfae88acb6c40240009f8227",
+    "d7de0bbdc7f51492868987a5390e07d97b67003fa6e8acd260d96d17362d1a75"
+   ],
+   "leaves": [
+    {
+     "cnf_sha256": "0702beb9adcc85f58ad7e51fa00823d55ae5bcda4a544ff7015c582a12a55b4c",
+     "node_id": "0f6b39085d5ec313ae4f53ac284a1cf9d85ebde74c2968fa6edd4a5ab403d0cf",
+     "proof_sha256": "81d8e53b3689a92512fdf9acbe3601d5f0688a84ff468edcbb6934b4351c1f0a"
+    },
+    {
+     "cnf_sha256": "215ed833466459e6e517bc28d77e63e1d88013242350c3bbd539c5f57bedd19c",
+     "node_id": "7d456f77c8c83ff06d5da60d4a276a914aae112344e29b567d17be1b21941fa9",
+     "proof_sha256": "2d165f0e68409d99c211d22514f78fcba70d9d9e76f2f481cee8a2d7814fb871"
+    },
+    {
+     "cnf_sha256": "bf31879d46157cfdc3d254706ef35c25231949df02cdec053591e3926e050545",
+     "node_id": "d972cd8d8a80654d6a8ed939e3ec552af1c92009b88c6dc5ba1fce216ecba34c",
+     "proof_sha256": "9bdced6655fcd20bdb8b2a2c42766f24db51938788595f03dda69a331406904f"
+    }
+   ],
+   "levels": [
+    [
+     "401cfb035e030254c43ba3d629e530b46740405a7e6013f46e913624f39fcbc7",
+     "3842ef90590115e62c9ede2f48daae566c47ccf7dfae88acb6c40240009f8227",
+     "d7de0bbdc7f51492868987a5390e07d97b67003fa6e8acd260d96d17362d1a75"
+    ],
+    [
+     "10eb54570edb2cf5da61f415bdb0287c204ef2123c10af31d41b3487787a6b66",
+     "d7de0bbdc7f51492868987a5390e07d97b67003fa6e8acd260d96d17362d1a75"
+    ],
+    [
+     "95356f6ad658da3f92dadcbd3224ae18af9a2181d6091562069246372f37eab2"
+    ]
+   ],
+   "name": "three",
+   "root": "95356f6ad658da3f92dadcbd3224ae18af9a2181d6091562069246372f37eab2"
+  },
+  {
+   "leaf_hashes": [
+    "6c65c37f3e37e60ad7e9ffea87fd9a1d88961afde8c77104248e48ecb57749bd",
+    "6c44edd3f785242216dab1c34d47853306e418504fad527cb977c2cde46da84e",
+    "9dbe404b1a75f53e14a1909af4c89af13cbcaafe600fbb16c213cbc6c489b37f",
+    "195a67a3a9183c06d9ccd3f9e5e1fbe96b56402c33dcb0970bc91cedbba965ff",
+    "72355d8b7802d7a7169e9109bc302549b3bff900e801ad8713df09fa6df8cc3f"
+   ],
+   "leaves": [
+    {
+     "cnf_sha256": "af1f4a4829d9b4743c720eb64443c85bcb0a609ddab271d1f8fae437ef9c1404",
+     "node_id": "038ff2a999148f80e0a77366d4e3e7d938d9b56296f105b33288decb390e5632",
+     "proof_sha256": "09d0f0c959fc37bcd1e298ed915e1e64a086bb9c769d47d58f68136986eaee8d"
+    },
+    {
+     "cnf_sha256": "b5d43962c23354c0640f16f8c8347698faa2500ce354f218ad56124862bc8fed",
+     "node_id": "2e956e15668a35d7607d6568152aa36bdabc6ee71b1def8337e8adf54eabec07",
+     "proof_sha256": "691de268d7dab722458d7a68d8ca91ae9e6fcc3421a149a34168cff8c548303e"
+    },
+    {
+     "cnf_sha256": "fc501031556c89e403e876d897f6931133fcea81515b7a92e1607341cb31e2c3",
+     "node_id": "2faf4866c5421c51c2bc32a1674a04ff7918f8ee5a4c6b57a4d02460f4fa332a",
+     "proof_sha256": "1aefa654c1eb5b0006cf54c77d4e331120c050c6c5948dbf9033c84c58193a47"
+    },
+    {
+     "cnf_sha256": "ceb914f74a77b639e618f8b569fde5b0e7a09017530311a3a3e0efdfe9d08ca5",
+     "node_id": "6ba704bef779aef1410ed9bffd3d53f012bfe533c0733ab10b23ced0b9ed7c6e",
+     "proof_sha256": "408fa47b55618d9eb30766d100b1511dd05b16dab85b219fccba3ac99378a006"
+    },
+    {
+     "cnf_sha256": "c7a5b727e2a4a2a08ed1748e889264dcd8f6b2dfa5d959765d762d1007eb5b81",
+     "node_id": "a5f06eb39676147adb65900c4ca2daf4b68ad04ba862e0e38b765e64a718590a",
+     "proof_sha256": "b4fc17c29df386cb2da8588ca867893ec2675a68719ae3e1e2bf2feeb97f9703"
+    }
+   ],
+   "levels": [
+    [
+     "6c65c37f3e37e60ad7e9ffea87fd9a1d88961afde8c77104248e48ecb57749bd",
+     "6c44edd3f785242216dab1c34d47853306e418504fad527cb977c2cde46da84e",
+     "9dbe404b1a75f53e14a1909af4c89af13cbcaafe600fbb16c213cbc6c489b37f",
+     "195a67a3a9183c06d9ccd3f9e5e1fbe96b56402c33dcb0970bc91cedbba965ff",
+     "72355d8b7802d7a7169e9109bc302549b3bff900e801ad8713df09fa6df8cc3f"
+    ],
+    [
+     "4c3caafaadde5bcf136e962d2ebeb788c17e345c5423d650bf1ee7eeb5a9bdea",
+     "40cb799e5ce633bf6cb71fed30634bf7da391cc0419f284cfe129b06361e95c1",
+     "72355d8b7802d7a7169e9109bc302549b3bff900e801ad8713df09fa6df8cc3f"
+    ],
+    [
+     "8a9d630857ccc32a393cacaf67d243c4bdfc1222bba845ce98c518eb96dfc164",
+     "72355d8b7802d7a7169e9109bc302549b3bff900e801ad8713df09fa6df8cc3f"
+    ],
+    [
+     "daf2f175ddd049099759a52e110c7c64b52155dea29dc83dec2eacc881d7118e"
+    ]
+   ],
+   "name": "five",
+   "root": "daf2f175ddd049099759a52e110c7c64b52155dea29dc83dec2eacc881d7118e"
+  }
+ ],
+ "format": "cubeproof-vectors-merkle-1",
+ "note": "leaf = SHA256('leaf' NUL node_id NUL cnf_sha256 NUL proof_sha256); branch = SHA256('branch' NUL left NUL right); an odd last element is carried (SPECIFICATION §10.5)."
+}

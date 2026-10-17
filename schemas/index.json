@@ -1,0 +1,114 @@
+{
+  "format": "polyhedraproof-schema-index-1",
+  "description": "Machine-readable contract descriptions (SPECIFICATION §4). Each schema is JSON Schema draft 2020-12 restricted to the subset checked by tests/contracts/contract_schema.py; rules that a schema cannot express are rows of the requirement matrix. The SHA-256 values freeze the files; a change is a specification change.",
+  "families": [
+    {
+      "name": "cubeproof",
+      "version": "v1",
+      "specification": "docs/SPECIFICATION.md",
+      "schemas": [
+        {
+          "path": "cubeproof/v1/audit-report.schema.json",
+          "format": "cubeproof-audit-report-1",
+          "title": "cubeproof-audit-report-1 (SPECIFICATION §11.2)",
+          "sha256": "7f530e4a3f49daa773051769c6e5884f4640ae555f997d54b65b2799f3dd77c5"
+        },
+        {
+          "path": "cubeproof/v1/bundle-manifest.schema.json",
+          "format": "cubeproof-bundle-1",
+          "title": "cubeproof-bundle-1 manifest (SPECIFICATION §4.2)",
+          "sha256": "773b6488d3b21cac894ff2855a756e3ea600b542f518445b775d42ca938e8475"
+        },
+        {
+          "path": "cubeproof/v1/campaign.schema.json",
+          "format": "cubeproof-campaign-1",
+          "title": "cubeproof-campaign-1 (SPECIFICATION §4.4)",
+          "sha256": "3f4d8fd27b82149c6cceee10b83cadca050c00af469c50dac4c7d52498c731a4"
+        },
+        {
+          "path": "cubeproof/v1/certificate.schema.json",
+          "format": "cubeproof-certificate-1",
+          "title": "cubeproof-certificate-1 (SPECIFICATION §4.9, §10)",
+          "sha256": "d3b5f674037a880677b1ef499ebf10b14bd123b14f8319f9f7e9c3156fc6f7a5"
+        },
+        {
+          "path": "cubeproof/v1/common.schema.json",
+          "format": null,
+          "title": "cubeproof v1 shared types",
+          "sha256": "c0377357be97f998b31141c79d7e1efec48d37e22a4f4c4759d7c19d056f1d1a"
+        },
+        {
+          "path": "cubeproof/v1/evidence-manifest.schema.json",
+          "format": "cubeproof-evidence-1",
+          "title": "cubeproof-evidence-1 (SPECIFICATION §4.9)",
+          "sha256": "0589d3fd7b8229b2e870e063f947aae432d35ef5bd77a2cf239da32095200973"
+        },
+        {
+          "path": "cubeproof/v1/handoff-request.schema.json",
+          "format": "cubeproof-handoff-request-1",
+          "title": "cubeproof-handoff-request-1 (SPECIFICATION §4.5)",
+          "sha256": "ac9ef9c71d63d6453ff95b72d3efb8f1622ad784abc45b9e136f6bd5042fb2b3"
+        },
+        {
+          "path": "cubeproof/v1/journal-record.schema.json",
+          "format": "cubeproof-journal-1",
+          "title": "cubeproof-journal-1 records (SPECIFICATION §4.7, §4.8)",
+          "sha256": "6d5570c94d12877a6bded497ecdebbdc399153d4d00822371aedfbd705dc5521"
+        },
+        {
+          "path": "cubeproof/v1/look-request.schema.json",
+          "format": "cubeproof-look-request-1",
+          "title": "cubeproof-look-request-1 (SPECIFICATION §9.3)",
+          "sha256": "630f2e4b24c6ddf85f011f8cb730b8b517709e072c9054e8ca78140af2d744f6"
+        },
+        {
+          "path": "cubeproof/v1/look-result.schema.json",
+          "format": "cubeproof-look-result-1",
+          "title": "cubeproof-look-result-1 (SPECIFICATION §9.1, §9.3)",
+          "sha256": "f8e449fe29a4a1a1e68be3b467b73ddb22d59e4a4eb2fd456b0b97faddb61928"
+        },
+        {
+          "path": "cubeproof/v1/policy.schema.json",
+          "format": null,
+          "title": "cubeproof policy (SPECIFICATION §4.3)",
+          "sha256": "633f8cabd93b057c64d281d0f7eeac2516e87a41d205083df0a8e4ce8604a74c"
+        },
+        {
+          "path": "cubeproof/v1/prefixes.schema.json",
+          "format": "cubeproof-prefixes-1",
+          "title": "cubeproof-prefixes-1 (SPECIFICATION §12.1)",
+          "sha256": "f09fefd74b3190979b94230e51de89a3889095860d96d233da9c8dc1343ff7ce"
+        },
+        {
+          "path": "cubeproof/v1/roots.schema.json",
+          "format": "cubeproof-roots-1",
+          "title": "cubeproof-roots-1 (SPECIFICATION §12.1)",
+          "sha256": "8e70667f781999cba1bb2dea25d3cfc117b056ae7968c0f3f0bf4d2a75fd6b5f"
+        },
+        {
+          "path": "cubeproof/v1/shard.schema.json",
+          "format": "cubeproof-shard-1",
+          "title": "cubeproof-shard-1 (SPECIFICATION §4.5)",
+          "sha256": "94eaa56c3a8dfeb53da14cf75beb703fe718117354e59e4605b54777268fd260"
+        },
+        {
+          "path": "cubeproof/v1/status.schema.json",
+          "format": "cubeproof-status-1",
+          "title": "cubeproof-status-1 (SPECIFICATION §12.3)",
+          "sha256": "46fe5468df948dc781cb5418bf8f18581d3d7e018aa5793230bf8a98821be607"
+        },
+        {
+          "path": "cubeproof/v1/weights.schema.json",
+          "format": "cubeproof-weights-1",
+          "title": "cubeproof-weights-1 (SPECIFICATION §12.1)",
+          "sha256": "4f5326ffaad56ab643bc34073d9a4f38513dcd06117fc982083a679f9473e16e"
+        }
+      ],
+      "requirements": {
+        "path": "cubeproof/v1/requirements.json",
+        "format": "cubeproof-requirements-1",
+        "sha256": "a96f359cc30162196a71bd47bdfcc80f14a9a20f2af1d6720c48f715491fa8dd"
+      }
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof policy (SPECIFICATION §4.3)",
+  "description": "A complete policy object; policy_sha256 = SHA256(J(policy)). Requirements policy.stack and policy.stream_heap relate fields.",
+  "type": "object",
+  "properties": {
+    "leaf_time_ms": {
+      "description": "Depth keys are canonical decimals; 'default' is required (routine reading 5).",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^(?:default|0|[1-9][0-9]*)(?![\\s\\S])"
+      },
+      "additionalProperties": {
+        "$ref": "common.schema.json#/$defs/Positive"
+      },
+      "required": [
+        "default"
+      ]
+    },
+    "proof_cap_bytes": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "solver_memory_bytes": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "checker_max_heap_mib": {
+      "type": "integer",
+      "minimum": 512,
+      "maximum": 9223372036854775807
+    },
+    "checker_stack_mib": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "checker_max_stack_mib": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "checker_slack_mib": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "checker_time_base_ms": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "checker_time_per_100mb_ms": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "heap_fit": {
+      "type": "object",
+      "properties": {
+        "coefficient_milli": {
+          "$ref": "common.schema.json#/$defs/Positive"
+        },
+        "exponent_milli": {
+          "$ref": "common.schema.json#/$defs/Positive"
+        },
+        "margin_milli": {
+          "$ref": "common.schema.json#/$defs/Positive"
+        },
+        "min_mib": {
+          "$ref": "common.schema.json#/$defs/Positive"
+        }
+      },
+      "required": [
+        "coefficient_milli",
+        "exponent_milli",
+        "margin_milli",
+        "min_mib"
+      ],
+      "additionalProperties": false
+    },
+    "split": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "lookahead-v1"
+        },
+        "vars": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "pool": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "common.schema.json#/$defs/Name"
+            }
+          ]
+        },
+        "probe_limit": {
+          "$ref": "common.schema.json#/$defs/Positive"
+        },
+        "wall_ms": {
+          "$ref": "common.schema.json#/$defs/Positive"
+        }
+      },
+      "required": [
+        "method",
+        "vars",
+        "pool",
+        "probe_limit",
+        "wall_ms"
+      ],
+      "additionalProperties": false
+    },
+    "max_cube_size": {
+      "$ref": "common.schema.json#/$defs/NonNegative"
+    },
+    "proof_mode": {
+      "enum": [
+        "transient",
+        "retain",
+        "stream"
+      ]
+    },
+    "stream_heap_mib": {
+      "type": "integer",
+      "minimum": 512,
+      "maximum": 9223372036854775807
+    },
+    "quarantine_quota_bytes": {
+      "$ref": "common.schema.json#/$defs/NonNegative"
+    },
+    "tool_retries": {
+      "$ref": "common.schema.json#/$defs/NonNegative"
+    },
+    "machine_failure_limit": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "anomaly_limit": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "term_grace_ms": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "stop_grace_ms": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    }
+  },
+  "required": [
+    "leaf_time_ms",
+    "proof_cap_bytes",
+    "solver_memory_bytes",
+    "checker_max_heap_mib",
+    "checker_stack_mib",
+    "checker_max_stack_mib",
+    "checker_slack_mib",
+    "checker_time_base_ms",
+    "checker_time_per_100mb_ms",
+    "heap_fit",
+    "split",
+    "max_cube_size",
+    "proof_mode",
+    "stream_heap_mib",
+    "quarantine_quota_bytes",
+    "tool_retries",
+    "machine_failure_limit",
+    "anomaly_limit",
+    "term_grace_ms",
+    "stop_grace_ms"
+  ],
+  "additionalProperties": false
+}

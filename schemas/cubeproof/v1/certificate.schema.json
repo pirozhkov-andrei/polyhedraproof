@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-certificate-1 (SPECIFICATION §4.9, §10)",
+  "description": "Array orders (reading 4) and the open-summary shape are requirements certificate.order and certificate.summary.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-certificate-1"
+    },
+    "campaign": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "journals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "common.schema.json#/$defs/Hash"
+          },
+          "worker": {
+            "$ref": "common.schema.json#/$defs/Name"
+          },
+          "records": {
+            "$ref": "common.schema.json#/$defs/Positive"
+          },
+          "head": {
+            "$ref": "common.schema.json#/$defs/Hash"
+          },
+          "bytes": {
+            "$ref": "common.schema.json#/$defs/Positive"
+          },
+          "torn_tail_bytes": {
+            "$ref": "common.schema.json#/$defs/NonNegative"
+          }
+        },
+        "required": [
+          "id",
+          "worker",
+          "records",
+          "head",
+          "bytes",
+          "torn_tail_bytes"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "formulas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "formula_sha256": {
+            "$ref": "common.schema.json#/$defs/Hash"
+          },
+          "key": {
+            "$ref": "common.schema.json#/$defs/Name"
+          },
+          "proved": {
+            "type": "boolean"
+          },
+          "summary": {
+            "$ref": "common.schema.json#/$defs/Summary"
+          },
+          "roots": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "cube": {
+                  "$ref": "common.schema.json#/$defs/Cube"
+                },
+                "closed": {
+                  "type": "boolean"
+                },
+                "summary": {
+                  "$ref": "common.schema.json#/$defs/Summary"
+                }
+              },
+              "required": [
+                "cube",
+                "closed",
+                "summary"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "formula_sha256",
+          "key",
+          "proved",
+          "summary",
+          "roots"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "open": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/OpenNode"
+      }
+    },
+    "formula_open": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/OpenNode"
+      }
+    },
+    "used_attempts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "node": {
+            "$ref": "common.schema.json#/$defs/Node"
+          },
+          "node_id": {
+            "$ref": "common.schema.json#/$defs/Hash"
+          },
+          "record": {
+            "$ref": "common.schema.json#/$defs/Ref"
+          },
+          "cnf_sha256": {
+            "$ref": "common.schema.json#/$defs/Hash"
+          },
+          "proof_sha256": {
+            "$ref": "common.schema.json#/$defs/Hash"
+          },
+          "route": {
+            "enum": [
+              "unit",
+              "cdcl"
+            ]
+          }
+        },
+        "required": [
+          "node",
+          "node_id",
+          "record",
+          "cnf_sha256",
+          "proof_sha256",
+          "route"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "machinery": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "journal": {
+            "$ref": "common.schema.json#/$defs/Hash"
+          },
+          "snapshot_seq": {
+            "$ref": "common.schema.json#/$defs/NonNegative"
+          },
+          "machinery": {
+            "$ref": "common.schema.json#/$defs/Machinery"
+          }
+        },
+        "required": [
+          "journal",
+          "snapshot_seq",
+          "machinery"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "not_admitted": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "record": {
+            "$ref": "common.schema.json#/$defs/Ref"
+          },
+          "reason": {
+            "enum": [
+              "checker_not_admitted",
+              "solver_not_admitted"
+            ]
+          }
+        },
+        "required": [
+          "record",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "record": {
+            "$ref": "common.schema.json#/$defs/Ref"
+          },
+          "node": {
+            "$ref": "common.schema.json#/$defs/Node"
+          },
+          "assignment": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "record",
+          "node",
+          "assignment"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "anomalies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "record": {
+            "$ref": "common.schema.json#/$defs/Ref"
+          },
+          "code": {
+            "enum": [
+              "check_rejected",
+              "invalid_model",
+              "mislabelled_model",
+              "malformed_split"
+            ]
+          },
+          "info": {
+            "$ref": "common.schema.json#/$defs/OpenObject"
+          }
+        },
+        "required": [
+          "record",
+          "code",
+          "info"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "verdict": {
+      "enum": [
+        "PROVED",
+        "OPEN",
+        "MODEL_FOUND",
+        "INCONSISTENT"
+      ]
+    }
+  },
+  "required": [
+    "format",
+    "campaign",
+    "journals",
+    "formulas",
+    "open",
+    "formula_open",
+    "used_attempts",
+    "machinery",
+    "not_admitted",
+    "models",
+    "anomalies",
+    "verdict"
+  ],
+  "additionalProperties": false
+}

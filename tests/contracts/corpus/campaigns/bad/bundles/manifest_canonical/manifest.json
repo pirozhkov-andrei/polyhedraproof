@@ -1,0 +1,15 @@
+{
+  "format": "cubeproof-bundle-1",
+  "formula_sha256": "83ef822c62746022fb52b0d52f6050c2f8a699e171512c9eb61356bda5d553d4",
+  "variables": 3,
+  "clauses": 8,
+  "pools": {},
+  "producer": {
+    "name": "spec-vectors",
+    "version": "1",
+    "parameters": {
+      "formula": "all3"
+    }
+  },
+  "side_files": []
+}

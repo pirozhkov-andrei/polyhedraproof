@@ -1,0 +1,70 @@
+{
+ "encode": [
+  {
+   "sha256": "54a65415ad370228851a1da4b31b6fd42dc58b19a50d35cae759325f7388ce64",
+   "text": "{\"a\":[true,null,\"x\"],\"b\":1}",
+   "value": {
+    "a": [
+     true,
+     null,
+     "x"
+    ],
+    "b": 1
+   }
+  },
+  {
+   "sha256": "b43c0b9d709fc5739790bf5fa504b6fd0c3bf17311689475da2d1c774bfaa665",
+   "text": "{\"e\":\"é /\"}",
+   "value": {
+    "e": "é /"
+   }
+  },
+  {
+   "sha256": "cbe722866d93b90ee39bf27c469013b968c706c37d80babbde9be565d3fdfcab",
+   "text": "{\"c\":\"\\u0001\\n\\t\\\"\\\\\"}",
+   "value": {
+    "c": "\u0001\n\t\"\\"
+   }
+  },
+  {
+   "sha256": "7e632f7218c395297861274dc401c2f56bd37dc9fe401f1f45f0a3015612e1d8",
+   "text": "{\"z\":{\"x\":{},\"y\":[]}}",
+   "value": {
+    "z": {
+     "x": {},
+     "y": []
+    }
+   }
+  },
+  {
+   "sha256": "70066790b92bd1f7e615d39043d867e3c4bd7d22a58d9d4b1dfd6153c83ebecd",
+   "text": "[-9223372036854775807,9223372036854775807,0]",
+   "value": [
+    -9223372036854775807,
+    9223372036854775807,
+    0
+   ]
+  },
+  {
+   "sha256": "b2eb13b5fbfbb315c307fbf61c6f45183997886ad2eebe7bdc36e927653f0114",
+   "text": "{\"E\":3,\"e\":2,\"é\":1}",
+   "value": {
+    "E": 3,
+    "e": 2,
+    "é": 1
+   }
+  },
+  {
+   "sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "text": "\"\"",
+   "value": ""
+  },
+  {
+   "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+   "text": "{}",
+   "value": {}
+  }
+ ],
+ "format": "cubeproof-vectors-json-1",
+ "note": "J(x) = UTF-8 of json.dumps(x, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False) (SPECIFICATION §4.1). Keys sort by code point."
+}

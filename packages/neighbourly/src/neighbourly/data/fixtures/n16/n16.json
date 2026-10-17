@@ -1,0 +1,23 @@
+{
+  "base_formula": {
+    "clauses": 210401,
+    "gauge_face": 1,
+    "layers": "S,H,A,B,I",
+    "sha256": "13a0ba43c22343ca70607b54d83d3d51205d2df47822b1d19dd892b216633841",
+    "variables": 17156
+  },
+  "euler_characteristic": -24,
+  "format": "neighbourly-map-fixture-1",
+  "map_sha256": "756ef4d203849c8a69e40beaeaeb5fdc5e0416e595fb5c66b56742886a4c8526",
+  "matrix": "n16.txt",
+  "matrix_sha256": "af134f099972105de22be7909f448e02fa26c4ed5c7705b35703f53d5952d92a",
+  "n": 16,
+  "orientable": true,
+  "provenance": {
+    "generator": "tools/neighbourly_fixtures/generate_maps.py",
+    "method": "first map of the enumerate_oriented search order (the search stopped at the first complete map); validated by CombinatorialMap, is_orientable and check_encodable",
+    "search_nodes": 44618
+  },
+  "scope": "One orientable neighbourly map for this n, used as a structural and per-face control fixture. Not a census; no existence count or theorem for this n is claimed.",
+  "vertices": 80
+}

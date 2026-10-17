@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-look-result-1 (SPECIFICATION §9.1, §9.3)",
+  "description": "Helper output: node_id and the SplitChoice fields. Choices are suggestions the coordinator validates; distinct variables are requirement look.variables.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-look-result-1"
+    },
+    "node_id": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "variables": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "$ref": "common.schema.json#/$defs/Positive"
+      }
+    },
+    "status": {
+      "enum": [
+        "chosen",
+        "no_eligible",
+        "budget",
+        "failed"
+      ]
+    },
+    "info": {
+      "$ref": "common.schema.json#/$defs/OpenObject"
+    }
+  },
+  "required": [
+    "format",
+    "node_id",
+    "variables",
+    "status",
+    "info"
+  ],
+  "additionalProperties": false
+}

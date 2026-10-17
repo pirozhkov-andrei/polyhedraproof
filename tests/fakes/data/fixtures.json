@@ -1,0 +1,136 @@
+{
+  "format": "polyhedraproof-test-fixtures-1",
+  "note": "Tiny CNF, proof and model fixtures of the fake-tool harness. checker = the observed output of the pinned cake_lpr on the file; model_error = the SPECIFICATION §4.8 code of the single defect of the model output. Observed with: cadical 3.0.1 / cake_lpr a36874a8 built from docker/test/tools.json",
+  "fixtures": [
+    {
+      "file": "bad-hint.lrat",
+      "sha256": "8593a21d1116c65447e137101db82c74c9949397306ec7b70937c6dac3d4ca58",
+      "kind": "proof",
+      "cnf": "unsat.cnf",
+      "valid": false,
+      "origin": "unsat.lrat with hint 2 removed",
+      "checker": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": "c Checking failed at line: 0. Reason: pivot must be non-zero\n"
+      }
+    },
+    {
+      "file": "empty.lrat",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "proof",
+      "cnf": "unsat.cnf",
+      "valid": false,
+      "origin": "empty proof",
+      "checker": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": "c empty clause not derived at end of proof\n"
+      }
+    },
+    {
+      "file": "model-conflicting.txt",
+      "sha256": "98b748a42da9d0f6e50121cbf58a2ebd64708ee720332c2af01167cfa83212fa",
+      "kind": "model",
+      "cnf": "sat.cnf",
+      "model_error": "conflicting",
+      "origin": "hand-written"
+    },
+    {
+      "file": "model-missing.txt",
+      "sha256": "2217106c4668f1a7c1dc25daef5631b13f0f5c888c3838e65730cec29fffcd9b",
+      "kind": "model",
+      "cnf": "sat.cnf",
+      "model_error": "missing",
+      "origin": "hand-written"
+    },
+    {
+      "file": "model-out-of-range.txt",
+      "sha256": "03866dd985e5769bb5f2804e840d03ea7751096111bd3b6b3f18e170e3748db8",
+      "kind": "model",
+      "cnf": "sat.cnf",
+      "model_error": "out_of_range",
+      "origin": "hand-written"
+    },
+    {
+      "file": "model-syntax.txt",
+      "sha256": "b947ea809ee1faf4db0421f3b3d27021c6c5bbdf0320d004b62b0b508f4b2bfd",
+      "kind": "model",
+      "cnf": "sat.cnf",
+      "model_error": "syntax",
+      "origin": "hand-written"
+    },
+    {
+      "file": "model-violated.txt",
+      "sha256": "19f1ea3c1e0b89ab85bf87a0e46e946043c85704c08f7a0756998bcf1269e45d",
+      "kind": "model",
+      "cnf": "sat.cnf",
+      "model_error": "violated",
+      "origin": "hand-written"
+    },
+    {
+      "file": "model-wrapped.txt",
+      "sha256": "efdbd3eba938f9acda57a63c8d21ce0925ef876c55c8493f366fbdf14fcdcfc1",
+      "kind": "model",
+      "cnf": "sat.cnf",
+      "model_error": null,
+      "literals": [
+        -1,
+        2,
+        3
+      ],
+      "origin": "hand-written: comments, several v lines, a repeated identical value"
+    },
+    {
+      "file": "sat.cnf",
+      "sha256": "bb64313593cdcc20026099bc26c6ce52465b188a68d4b77798d66827935331e2",
+      "kind": "cnf",
+      "satisfiable": true
+    },
+    {
+      "file": "sat.model",
+      "sha256": "2d08fd1565c6c509a09b1eae8b45b27b632222467ae1cf46c9edda2cd510c6ee",
+      "kind": "model",
+      "cnf": "sat.cnf",
+      "model_error": null,
+      "literals": [
+        1,
+        2,
+        3
+      ],
+      "origin": "cadical -q sat.cnf, exit 10"
+    },
+    {
+      "file": "unsat.blrat",
+      "sha256": "8cd7608dabe9d3657bb3270cd5a679a5b006f753f4eaf378ab90e9f7dc279370",
+      "kind": "proof",
+      "cnf": "unsat.cnf",
+      "valid": true,
+      "origin": "cadical --lrat unsat.cnf (binary LRAT)",
+      "checker": {
+        "exit": 0,
+        "stdout": "s VERIFIED UNSAT\n",
+        "stderr": ""
+      }
+    },
+    {
+      "file": "unsat.cnf",
+      "sha256": "ac42a371b5a124286c410ed5dfa2e3be7ee7d5b1feac6f08e7e1715f0c3669a8",
+      "kind": "cnf",
+      "satisfiable": false
+    },
+    {
+      "file": "unsat.lrat",
+      "sha256": "2e9bf73f333fd3624376d1eb676ce8d6240ba39924936c22bc1a522bfb01b8cc",
+      "kind": "proof",
+      "cnf": "unsat.cnf",
+      "valid": true,
+      "origin": "cadical --lrat --no-binary unsat.cnf",
+      "checker": {
+        "exit": 0,
+        "stdout": "s VERIFIED UNSAT\n",
+        "stderr": ""
+      }
+    }
+  ]
+}

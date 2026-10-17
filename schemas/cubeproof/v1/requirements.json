@@ -1,0 +1,1147 @@
+{
+  "format": "cubeproof-requirements-1",
+  "title": "cubeproof v1 requirement matrix",
+  "description": "Rules of the specification (docs/SPECIFICATION.md) that the JSON schemas of this directory cannot express. Where the text of the specification admits more than one reading, the row records the reading that holds and its origin is reading-1 to reading-10 or, for a conventional choice, routine-1 to routine-8; origin spec is the text itself. Each row names its section, origin, the components that rely on it, consequence per reading context and how the contract corpus (tests/contracts/corpus) exercises it. Contexts: journal = certify/run/audit reading a journal (integrity unless stated); campaign = reading a campaign and its bundles (input); document = any reader of a standalone document; audit = the audit plan reader. Consequences: input, integrity and resource errors make certify exit 4 without a certificate (reading 6); reject = the reader refuses the document; anomaly = listed in the certificate and otherwise ignored.",
+  "conventions": [
+    "Strings compare by Unicode code point (Python str order); for ASCII and hexadecimal text this is byte order. J(argv) compares as UTF-8 bytes, which gives the same order.",
+    "A list called sorted is strictly increasing in its key: sorted and without duplicates.",
+    "Ref order is (journal hex, seq); certificate orders are those of reading 4.",
+    "Where a rule lists several problems, a reader reports the first in the listed order (W problems: empty, too_long, repeated, out_of_range, in_cube; reading 5).",
+    "Journal lines are validated in the order of SPECIFICATION §7.1: canonical bytes (json.*), schema, self, seq, prev; then journal.header and journal.campaign for the first record, then purpose and record rules.",
+    "A nonempty suffix without LF after the last complete line is a torn tail: certify ignores it and reports torn_tail_bytes. A complete line that fails any rule is an integrity error, also when it is the last line.",
+    "A journal file with no complete line (empty, or only a torn header) is input error journal.no_header. A first complete line that fails validation is an integrity error of the failing rule; a valid first record that is not a header is integrity error journal.header.",
+    "Copies of one journal (same header ID): the longest complete record sequence is used once; every other copy must be a prefix of it (journal.fork). The certificate entry reports records and bytes (complete lines with LF) of that sequence and, as torn_tail_bytes, the smallest torn tail among the copies with that many records.",
+    "Certify reads the campaign and its bundles first (input errors), then each journal (SPECIFICATION §7.1 order), then copies and workers (journal.fork, journal.worker). A reader limit (limit.*) is a resource error. Every error exits 4 without a certificate and names its kind: input, integrity or resource (reading 6).",
+    "Certificate exit codes: PROVED 0, OPEN 1, MODEL_FOUND 2, INCONSISTENT 4 (the certificate is still produced).",
+    "Admission (SPECIFICATION §10.1): checker hash in admit.checker_sha256 and, when admit.solvers is a list, {sha256, argv} of the snapshot solver in it; also for route unit. Snapshot = latest header/resume preceding the attempt in its journal.",
+    "not_admitted has one entry per non-admitted attempt of any outcome; reason checker_not_admitted if the checker hash is not admitted, else solver_not_admitted (reading 5).",
+    "Anomalies, for admitted and non-admitted records (reading 5): check_rejected {} per CHECK_REJECTED attempt; invalid_model {model_error} per INVALID_MODEL attempt that is not a valid model; mislabelled_model {} for an INVALID_MODEL whose complete assignment satisfies F and the cube units (it is also listed in models); malformed_split {problem} per journal split whose W has a problem (problem without the 'split.' prefix); that split is ignored.",
+    "Closure is literal (routine reading 8): a requested root is closed only by its own admitted VERIFIED_UNSAT or by a closed split at it, never by a closed ancestor.",
+    "OpenNode reason is null for states pending and model.",
+    "Status coverage fractions are reduced: power 0 with numerator 0 or 1, otherwise an odd numerator not above 2^power.",
+    "Schema patterns are ECMA-262 regular expressions (JSON Schema 2020-12) that must match the whole string: each starts with ^ and ends with (?![\\s\\S]) (end of input) instead of $, so that validators built on ECMA-262, on Python re.search or on re.fullmatch agree; in particular no pattern accepts a final LF that its body does not allow."
+  ],
+  "requirements": [
+    {
+      "id": "json.utf8",
+      "section": "4.1",
+      "origin": "spec",
+      "statement": "Bytes are strict UTF-8 (no encoded surrogates, overlong forms or invalid bytes).",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "json.bom",
+      "section": "4.1",
+      "origin": "spec",
+      "statement": "No byte order mark.",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "json.syntax",
+      "section": "4.1",
+      "origin": "spec",
+      "statement": "One RFC 8259 JSON value. A complete journal line that is not JSON is an integrity error, not a torn tail (SPECIFICATION §7.1).",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "json.duplicate_key",
+      "section": "4.1",
+      "origin": "spec",
+      "statement": "No object has two equal keys.",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "json.number",
+      "section": "4.1",
+      "origin": "spec",
+      "statement": "Numbers are integers: no fraction, exponent, NaN or Infinity.",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "json.integer_range",
+      "section": "4.1",
+      "origin": "spec",
+      "statement": "Every integer is in [-(2^63-1), 2^63-1].",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "json.surrogate",
+      "section": "4.1",
+      "origin": "spec",
+      "statement": "No string or key contains an unpaired surrogate (escaped or not).",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "json.canonical",
+      "section": "4.1",
+      "origin": "spec",
+      "statement": "A document is exactly J(x) followed by one LF; a journal line is exactly J(record) followed by LF. Number spelling, key order, separators and escapes are therefore fixed.",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "limit.depth",
+      "section": "4.1",
+      "origin": "routine-2",
+      "statement": "Nesting depth is at most 32 (a scalar has depth 0, each array or object adds 1). Exceeding the default reader limit is a resource error, never evidence ignored.",
+      "violation": {"journal": "resource", "campaign": "resource", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "limit.line",
+      "section": "4.7",
+      "origin": "routine",
+      "statement": "A journal line J(record), without its LF, is at most 8 MiB (8388608 bytes). Exceeding the default reader limit is a resource error.",
+      "violation": {"journal": "resource"},
+      "consumers": ["journal", "certifier", "independent-certifier"],
+      "fixtures": "dynamic:test_dynamic_line_limit"
+    },
+    {
+      "id": "limit.document",
+      "section": "4.1",
+      "origin": "routine",
+      "statement": "A campaign or shard document J(x), without its LF, is at most 64 MiB. Exceeding the default reader limit is a resource error.",
+      "violation": {"campaign": "resource", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "handoff"],
+      "fixtures": "dynamic:test_dynamic_document_limit"
+    },
+    {
+      "id": "schema",
+      "section": "4.1",
+      "origin": "spec",
+      "statement": "The value validates against its v1 schema: JSON types (an integer is never a boolean), every field present (nullable ones with null), no unknown field outside open objects, enums, patterns and integer bounds. A journal record is validated against the definition named by its type.",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier", "status", "cli", "audit"],
+      "fixtures": "static"
+    },
+    {
+      "id": "record.flat",
+      "section": "4.7",
+      "origin": "routine-1",
+      "statement": "Journal records are flat: payload fields sit beside format, seq, prev, self, type and utc.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier"],
+      "fixtures": "implied:schema"
+    },
+    {
+      "id": "relpath.backslash",
+      "section": "4.1",
+      "origin": "reading-7",
+      "statement": "A RelPath contains no backslash (in addition to no empty, '.' or '..' component, leading '/', drive prefix or NUL).",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "implied:schema"
+    },
+    {
+      "id": "utc.calendar",
+      "section": "4.1",
+      "origin": "routine-4",
+      "statement": "A UTC string is a valid instant of the proleptic Gregorian calendar: month 01-12, day within the month (leap years), hour 00-23, minute and second 00-59.",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier", "status"],
+      "fixtures": "static"
+    },
+    {
+      "id": "path.containment",
+      "section": "4.1",
+      "origin": "spec",
+      "statement": "A bundle path resolves inside the campaign directory without any symlink component, and formula.cnf and manifest.json are regular files.",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "dynamic:test_dynamic_path_containment_symlinked_bundle"
+    },
+    {
+      "id": "dimacs.header",
+      "section": "3.1",
+      "origin": "spec",
+      "statement": "The first line is exactly 'p cnf V M' with canonical nonnegative decimals and one space each, ending in LF.",
+      "violation": {"campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "dimacs.clause",
+      "section": "3.1",
+      "origin": "spec",
+      "statement": "Every clause line is canonical: nonzero decimal literals without plus sign or leading zero joined by one space and followed by ' 0', or exactly ' 0' for the empty clause; LF terminated; no comment, blank line, CR, tab or extra space.",
+      "violation": {"campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "dimacs.count",
+      "section": "3.1",
+      "origin": "spec",
+      "statement": "There are exactly M clause lines.",
+      "violation": {"campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "dimacs.range",
+      "section": "3.1",
+      "origin": "spec",
+      "statement": "Every literal satisfies abs(literal) <= V.",
+      "violation": {"campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "cube.canonical",
+      "section": "3.2",
+      "origin": "spec",
+      "statement": "A cube is sorted strictly by absolute value: each variable at most once (no repeated or contradictory literal).",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "cube.range",
+      "section": "3.2",
+      "origin": "spec",
+      "statement": "Every cube literal is in range of its formula: abs(literal) <= V.",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "split.empty",
+      "section": "3.2",
+      "origin": "reading-5",
+      "statement": "W is nonempty (problem 'empty').",
+      "violation": {"journal": "anomaly", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "splitters"],
+      "fixtures": "static"
+    },
+    {
+      "id": "split.too_long",
+      "section": "3.2",
+      "origin": "reading-5",
+      "statement": "len(W) <= 20 (K_MAX; problem 'too_long').",
+      "violation": {"journal": "anomaly", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "splitters"],
+      "fixtures": "static"
+    },
+    {
+      "id": "split.repeated",
+      "section": "3.2",
+      "origin": "reading-5",
+      "statement": "The variables of W are distinct (problem 'repeated').",
+      "violation": {"journal": "anomaly", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "splitters"],
+      "fixtures": "static"
+    },
+    {
+      "id": "split.out_of_range",
+      "section": "3.2",
+      "origin": "reading-5",
+      "statement": "Every variable of W is <= V (positivity is schema; problem 'out_of_range').",
+      "violation": {"journal": "anomaly", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "splitters"],
+      "fixtures": "static"
+    },
+    {
+      "id": "split.in_cube",
+      "section": "3.2",
+      "origin": "reading-5",
+      "statement": "No variable of W occurs (with either sign) in the parent cube (problem 'in_cube').",
+      "violation": {"journal": "anomaly", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "splitters"],
+      "fixtures": "static"
+    },
+    {
+      "id": "bundle.files",
+      "section": "4.2",
+      "origin": "spec",
+      "statement": "The bundle directory of every campaign formula contains manifest.json and formula.cnf.",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "bundle.formula_sha256",
+      "section": "4.2",
+      "origin": "spec",
+      "statement": "manifest.formula_sha256 = SHA256(formula.cnf bytes).",
+      "violation": {"campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "bundle.counts",
+      "section": "4.2",
+      "origin": "spec",
+      "statement": "manifest.variables and manifest.clauses equal V and M of the DIMACS header.",
+      "violation": {"campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "bundle.pools",
+      "section": "4.2",
+      "origin": "routine-6",
+      "statement": "Every pool is a sorted list of distinct positive variables <= V; a pool may be empty.",
+      "violation": {"campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "splitters", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "bundle.side_files",
+      "section": "4.2",
+      "origin": "spec",
+      "statement": "side_files is sorted by path (allowed names are schema).",
+      "violation": {"campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "bundle.campaign_hash",
+      "section": "4.4",
+      "origin": "spec",
+      "statement": "The campaign formula entry's formula_sha256 equals its bundle manifest's formula_sha256.",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "names.syntax",
+      "section": "4.2",
+      "origin": "spec",
+      "statement": "names.tsv: UTF-8 lines 'ID<TAB>JSON_STRING<LF>' with ID a canonical positive decimal and JSON_STRING exactly J of a string.",
+      "violation": {"document": "reject"},
+      "consumers": ["contracts", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "names.order",
+      "section": "4.2",
+      "origin": "routine",
+      "statement": "names.tsv lines are sorted strictly by numeric ID (one line per named variable).",
+      "violation": {"document": "reject"},
+      "consumers": ["contracts", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "names.range",
+      "section": "4.2",
+      "origin": "spec",
+      "statement": "Every names.tsv ID is in 1..V.",
+      "violation": {"document": "reject"},
+      "consumers": ["contracts", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "tags.syntax",
+      "section": "4.2",
+      "origin": "spec",
+      "statement": "tags.tsv: UTF-8 lines 'FIRST<TAB>LAST<TAB>JSON_STRING<LF>' with canonical positive decimals and JSON_STRING exactly J of a string.",
+      "violation": {"document": "reject"},
+      "consumers": ["contracts", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "tags.order",
+      "section": "4.2",
+      "origin": "routine",
+      "statement": "tags.tsv lines are sorted strictly by (first, last, tag); ranges may overlap, identical lines may not repeat.",
+      "violation": {"document": "reject"},
+      "consumers": ["contracts", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "tags.range",
+      "section": "4.2",
+      "origin": "spec",
+      "statement": "Every tags.tsv range satisfies 1 <= first <= last <= M (1-based, inclusive).",
+      "violation": {"document": "reject"},
+      "consumers": ["contracts", "neighbourly.cnf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "side.artifact",
+      "section": "4.2",
+      "origin": "spec",
+      "statement": "A side file that is used has the size and SHA-256 of its side_files Artifact.",
+      "violation": {"document": "reject"},
+      "consumers": ["contracts", "application"],
+      "fixtures": "static"
+    },
+    {
+      "id": "policy.leaf_time_keys",
+      "section": "4.3",
+      "origin": "routine-5",
+      "statement": "leaf_time_ms has key 'default'; every other key is a canonical decimal depth.",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "scheduler"],
+      "fixtures": "implied:schema"
+    },
+    {
+      "id": "policy.stack",
+      "section": "4.3",
+      "origin": "spec",
+      "statement": "checker_max_stack_mib >= checker_stack_mib.",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "policy.stream_heap",
+      "section": "4.3",
+      "origin": "spec",
+      "statement": "stream_heap_mib <= checker_max_heap_mib (>= 512 is schema).",
+      "violation": {"journal": "integrity", "campaign": "input", "document": "reject"},
+      "consumers": ["contracts", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.formulas_order",
+      "section": "4.4",
+      "origin": "spec",
+      "statement": "formulas is sorted strictly by key.",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.formula_hash_unique",
+      "section": "4.4",
+      "origin": "spec",
+      "statement": "Formula hashes of the campaign are unique.",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.node_formula",
+      "section": "4.4",
+      "origin": "spec",
+      "statement": "Every Node of the campaign (roots and root_splits) refers to a campaign formula.",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.roots_order",
+      "section": "4.4",
+      "origin": "spec",
+      "statement": "roots is sorted strictly by (formula_sha256, node_id).",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.roots_per_formula",
+      "section": "4.4",
+      "origin": "spec",
+      "statement": "Every campaign formula has at least one requested root.",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.roots_incompatible",
+      "section": "4.4",
+      "origin": "spec",
+      "statement": "Requested roots of one formula are pairwise incompatible (some variable with opposite signs); hence distinct, and an empty-cube root is the only root of its formula.",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.splits_order",
+      "section": "4.4",
+      "origin": "spec",
+      "statement": "root_splits is sorted strictly by split_id (hence distinct).",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.root_split_node",
+      "section": "4.4",
+      "origin": "reading-8",
+      "statement": "The node of a campaign root split is a requested root or the empty cube of a campaign formula; nested campaign splits are rejected.",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.pool",
+      "section": "4.4",
+      "origin": "reading-9",
+      "statement": "If policy.split.pool is a Name, every campaign bundle has a pool of that name.",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.argv",
+      "section": "4.4",
+      "origin": "reading-10",
+      "statement": "tools.solver.argv and every admit.solvers[].argv contain the exact element '--lrat' and every element starts with '-'. The option deny list of the pinned solver is knowledge of the tools layer (writer.argv_deny_list).",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "tools", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.admit_order",
+      "section": "4.4",
+      "origin": "spec",
+      "statement": "admit.checker_sha256 is sorted strictly; a list admit.solvers is sorted strictly by (sha256, J(argv)).",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "campaign.tools_admitted",
+      "section": "4.4",
+      "origin": "spec",
+      "statement": "tools.checker.sha256 is in admit.checker_sha256 and, if admit.solvers is a list, {sha256, argv} of tools.solver is in it.",
+      "violation": {"campaign": "input"},
+      "consumers": ["contracts", "certifier", "independent-certifier", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "shard.nodes",
+      "section": "4.5",
+      "origin": "spec",
+      "statement": "Shard nodes are sorted strictly by (formula_sha256, node_id) and pairwise incompatible within a formula (nonempty is schema).",
+      "violation": {"journal": "integrity", "document": "reject"},
+      "consumers": ["contracts", "journal", "certifier", "independent-certifier", "handoff"],
+      "fixtures": "static"
+    },
+    {
+      "id": "shard.hash",
+      "section": "4.7",
+      "origin": "spec",
+      "statement": "shard_sha256 of a shard or handoff record equals SHA256(J(shard)).",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "handoff"],
+      "fixtures": "static"
+    },
+    {
+      "id": "shard.campaign",
+      "section": "4.5",
+      "origin": "spec",
+      "statement": "An embedded shard or handoff request names the journal's campaign.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "handoff"],
+      "fixtures": "static"
+    },
+    {
+      "id": "handoff.pair",
+      "section": "4.7",
+      "origin": "spec",
+      "statement": "A handoff record has shard and shard_sha256 both null (zero nodes available) or both set.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "handoff"],
+      "fixtures": "static"
+    },
+    {
+      "id": "handoff.count",
+      "section": "7.4",
+      "origin": "spec",
+      "statement": "A handoff shard has at most request.node_count nodes.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "handoff"],
+      "fixtures": "static"
+    },
+    {
+      "id": "handoff.request_unique",
+      "section": "7.1",
+      "origin": "routine",
+      "statement": "A journal has at most one handoff record per request.request_id (SPECIFICATION §7.1: the same request_id is never committed twice; SPECIFICATION §7.4: one handoff per request, a repeated request returns the prior result). Checked like attempt.attempt_id, within one journal.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "handoff"],
+      "fixtures": "static"
+    },
+    {
+      "id": "machinery.manifest_order",
+      "section": "4.6",
+      "origin": "spec",
+      "statement": "source_manifest is sorted strictly by path.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "machinery.packages_sha256",
+      "section": "4.6",
+      "origin": "spec",
+      "statement": "packages_sha256 = SHA256(J(source_manifest)).",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "machinery.cubeproof_sha256",
+      "section": "4.6",
+      "origin": "routine-6",
+      "statement": "cubeproof_sha256 = SHA256(J(entries of source_manifest whose first path component is 'cubeproof')), in manifest order.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "process.exit_signal",
+      "section": "4.6",
+      "origin": "spec",
+      "statement": "exit and signal are not both set.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "tools", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "process.not_started",
+      "section": "4.6",
+      "origin": "spec",
+      "statement": "A process that did not start has exit null and signal null.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "tools", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "process.tail_size",
+      "section": "4.6",
+      "origin": "routine-3",
+      "statement": "stdout_tail and stderr_tail are at most 16 KiB (16384 bytes) each, counted as UTF-8 bytes of the decoded text.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "tools", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "journal.no_header",
+      "section": "7.1",
+      "origin": "reading-6",
+      "statement": "An included journal file has at least one complete line (an empty file or a torn header alone is an input error).",
+      "violation": {"journal": "input"},
+      "consumers": ["journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "journal.header",
+      "section": "4.7",
+      "origin": "spec",
+      "statement": "The record at seq 0 is a header and no other record is a header.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "journal.self",
+      "section": "7.1",
+      "origin": "spec",
+      "statement": "self = SHA256(J(record without self)).",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "journal.seq",
+      "section": "7.1",
+      "origin": "spec",
+      "statement": "seq is contiguous from 0 (the n-th complete line has seq n-1).",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "journal.prev",
+      "section": "7.1",
+      "origin": "spec",
+      "statement": "prev is 64 zeros at seq 0, else the previous record's self.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "journal.campaign",
+      "section": "10.1",
+      "origin": "reading-6",
+      "statement": "The header's campaign is the certified campaign's ID; a foreign campaign is an input error, never silently ignored.",
+      "violation": {"journal": "input"},
+      "consumers": ["journal", "certifier", "independent-certifier", "audit"],
+      "fixtures": "static"
+    },
+    {
+      "id": "journal.purpose",
+      "section": "4.7",
+      "origin": "spec",
+      "statement": "Purpose run excludes audit_* records; purpose audit allows only header, resume, repair, attempt and audit_* records.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "audit"],
+      "fixtures": "static"
+    },
+    {
+      "id": "journal.worker",
+      "section": "10.1",
+      "origin": "spec",
+      "statement": "One worker Name has one header ID across the certified journals.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "journal.fork",
+      "section": "10.1",
+      "origin": "spec",
+      "statement": "Of two files with the same header ID, one complete record sequence is a prefix of the other.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "record.formula",
+      "section": "4.7",
+      "origin": "spec",
+      "statement": "Every Node of every record (split, attempt, node_stop, node_reopen, shard and handoff nodes, audit targets) refers to a campaign formula; checked for all records, admitted or not.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "record.node_id",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "Every node_id field (attempt, audit target, certificate entries) equals node_id of its Node.",
+      "violation": {"journal": "integrity", "document": "reject"},
+      "consumers": ["journal", "certifier", "independent-certifier", "audit"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.policy_sha256",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "policy_sha256 = SHA256(J(policy)) of the latest header/resume preceding the attempt in its journal.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.attempt_id",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "attempt_id is unique within the journal.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.cnf_sha256",
+      "section": "10.1",
+      "origin": "reading-3",
+      "statement": "cnf_sha256 = SHA256(CNF(F, cube)) recomputed from the verified bundle, for every attempt.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.reason",
+      "section": "4.8",
+      "origin": "reading-1",
+      "statement": "reason is null for VERIFIED_UNSAT and MODEL; EXHAUSTED: proof_size, time, check_time, check_memory, check_stack or solver_memory; TOOL_FAILED: launch, binary_changed, io, file_changed, crash, protocol or relay; CHECK_REJECTED: rejected; INVALID_MODEL: equal to model_error.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "tools", "certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.reason_vocabulary",
+      "section": "6.3",
+      "origin": "reading-2",
+      "statement": "The reason vocabulary is closed: any other value is a schema violation; a new code needs a specification change.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "tools", "certifier", "independent-certifier", "leaf"],
+      "fixtures": "implied:schema,attempt.reason"
+    },
+    {
+      "id": "attempt.solver",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "solver is null exactly for route unit.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.relay",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "relay is non-null exactly when proof_mode is stream and route is cdcl.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "stream"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.proof_pair",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "proof_bytes and proof_sha256 are both null or both set.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.stream_proof",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "With a relay, set proof fields require a complete transfer (solver_eof, all_written, error null) and equal relay.bytes and relay.sha256; partial counts never masquerade as a proof.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "stream"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.model_shape",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "MODEL and INVALID_MODEL have null proof fields and no checks; with route cdcl the solver exited 10.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "unit", "certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.model_error",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "MODEL: model_error null, assignment set. INVALID_MODEL: model_error set; violated requires an assignment, the parse errors missing, conflicting, out_of_range and syntax require assignment null. Other outcomes: both null.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "unit", "certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.assignment",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "An assignment is canonical padded standard base64 of exactly ceil(V/8) bytes (V of the attempt's formula), variable i at bit (i-1)%8 of byte (i-1)//8, unused high bits zero; V=0 is the empty string.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "unit", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.model_false",
+      "section": "10.4",
+      "origin": "spec",
+      "statement": "A MODEL assignment satisfies every clause of F and every cube unit; a false claimed model is an integrity error, also when not admitted.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["unit", "certifier", "independent-certifier"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.retained",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "retained is non-null only for VERIFIED_UNSAT in proof_mode retain, and then its sha256 and bytes equal proof_sha256 and proof_bytes.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "retain", "audit"],
+      "fixtures": "static"
+    },
+    {
+      "id": "attempt.quarantined",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "quarantined is non-null only for CHECK_REJECTED in a file proof mode (transient or retain); stream quarantine is metadata-only.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["journal", "certifier", "independent-certifier", "retain", "stream"],
+      "fixtures": "static"
+    },
+    {
+      "id": "success.proof",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "An admitted VERIFIED_UNSAT has proof_bytes and proof_sha256 set. A non-admitted one violating any success.* rule is only listed in not_admitted.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "success.checks",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "An admitted VERIFIED_UNSAT has at least one check.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "success.checker_output",
+      "section": "6.3",
+      "origin": "reading-3",
+      "statement": "The last check of an admitted VERIFIED_UNSAT has exit 0, signal null, stdout_bytes 17, stdout_truncated false and stdout_tail exactly 's VERIFIED UNSAT\\n'.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["tools", "certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "success.solver",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "An admitted VERIFIED_UNSAT with route cdcl has solver.started true, exit 20 and signal null.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["tools", "certifier", "independent-certifier", "leaf"],
+      "fixtures": "static"
+    },
+    {
+      "id": "success.relay",
+      "section": "6.4",
+      "origin": "reading-3",
+      "statement": "An admitted stream VERIFIED_UNSAT has a complete relay (solver_eof, all_written, error null) equal to the proof fields.",
+      "violation": {"journal": "integrity"},
+      "consumers": ["certifier", "independent-certifier", "stream"],
+      "fixtures": "implied:attempt.stream_proof,success.proof"
+    },
+    {
+      "id": "certificate.order",
+      "section": "4.9",
+      "origin": "reading-4",
+      "statement": "Certificate arrays are sorted strictly: journals by id; formulas by formula_sha256; roots by node_id; used_attempts by node_id; machinery by (journal, snapshot_seq); not_admitted and models by record Ref; anomalies by (record Ref, code); open and formula_open by (formula_sha256, node_id).",
+      "violation": {"document": "reject"},
+      "consumers": ["certifier", "independent-certifier", "audit", "application"],
+      "fixtures": "static"
+    },
+    {
+      "id": "certificate.summary",
+      "section": "4.9",
+      "origin": "spec",
+      "statement": "An open summary (formula not proved, root not closed) has zero counts, max_cube_size 0 and a null root; a closed one has at least one leaf and a non-null Merkle root.",
+      "violation": {"document": "reject"},
+      "consumers": ["certifier", "independent-certifier", "audit", "application"],
+      "fixtures": "static"
+    },
+    {
+      "id": "evidence.order",
+      "section": "4.9",
+      "origin": "routine",
+      "statement": "In an evidence manifest, bundles are sorted strictly by manifest.path and journals by path.",
+      "violation": {"document": "reject"},
+      "consumers": ["cli", "audit", "application"],
+      "fixtures": "static"
+    },
+    {
+      "id": "audit.plan_order",
+      "section": "11.1",
+      "origin": "spec",
+      "statement": "Ignoring header, resume and repair records, an audit journal starts with audit_begin, then audit_target records with ordinals 0..n-1 in order, then audit_ready; afterwards only attempt and audit_result records.",
+      "violation": {"audit": "integrity"},
+      "consumers": ["audit"],
+      "fixtures": "static"
+    },
+    {
+      "id": "audit.targets_hash",
+      "section": "11.1",
+      "origin": "spec",
+      "statement": "audit_begin and audit_ready carry target_count = n and targets_sha256 = SHA256 of the concatenated J(target)+LF in ordinal order.",
+      "violation": {"audit": "integrity"},
+      "consumers": ["audit"],
+      "fixtures": "static"
+    },
+    {
+      "id": "audit.result_unique",
+      "section": "11.2",
+      "origin": "spec",
+      "statement": "At most one audit_result per target.",
+      "violation": {"audit": "integrity"},
+      "consumers": ["audit"],
+      "fixtures": "static"
+    },
+    {
+      "id": "audit.result_ref",
+      "section": "11.2",
+      "origin": "spec",
+      "statement": "An audit_result names a planned target and refers to an earlier attempt record of the same journal.",
+      "violation": {"audit": "integrity"},
+      "consumers": ["audit"],
+      "fixtures": "static"
+    },
+    {
+      "id": "audit_report.counts",
+      "section": "11.2",
+      "origin": "spec",
+      "statement": "counts maps every audit_result status to the number of results with that status.",
+      "violation": {"document": "reject"},
+      "consumers": ["audit"],
+      "fixtures": "static"
+    },
+    {
+      "id": "audit_report.selected",
+      "section": "11.2",
+      "origin": "spec",
+      "statement": "selected = number of results + number of pending targets, and selected <= population.",
+      "violation": {"document": "reject"},
+      "consumers": ["audit"],
+      "fixtures": "static"
+    },
+    {
+      "id": "status.order",
+      "section": "12.3",
+      "origin": "routine",
+      "statement": "Status lists are sorted strictly: reservations and active by task_id, node_counts by (state, depth), models and anomalies by Ref, coverage by (formula_sha256, node_id).",
+      "violation": {"document": "reject"},
+      "consumers": ["status"],
+      "fixtures": "static"
+    },
+    {
+      "id": "status.coverage",
+      "section": "12.3",
+      "origin": "routine-8",
+      "statement": "A coverage fraction numerator/2^power is reduced and at most 1.",
+      "violation": {"document": "reject"},
+      "consumers": ["status"],
+      "fixtures": "static"
+    },
+    {
+      "id": "weights.unknown",
+      "section": "12.1",
+      "origin": "spec",
+      "statement": "Weights costs name only known planned node IDs.",
+      "violation": {"document": "reject"},
+      "consumers": ["cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "roots.nodes",
+      "section": "12.1",
+      "origin": "spec",
+      "statement": "A roots document lists nodes sorted strictly by (formula_sha256, node_id) and pairwise incompatible within a formula (SPECIFICATION §4.4 constraints).",
+      "violation": {"document": "reject"},
+      "consumers": ["cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "prefixes.order",
+      "section": "12.1",
+      "origin": "spec",
+      "statement": "A prefixes document lists splits sorted strictly by split_id; each W is well-formed (split.*).",
+      "violation": {"document": "reject"},
+      "consumers": ["splitters", "cli"],
+      "fixtures": "static"
+    },
+    {
+      "id": "look.request_fields",
+      "section": "9.3",
+      "origin": "routine-7",
+      "statement": "A lookahead request has exactly format, formula_path, formula_sha256, cube, k, pool, probe_limit and wall_ms.",
+      "violation": {"document": "reject"},
+      "consumers": ["splitters"],
+      "fixtures": "implied:schema"
+    },
+    {
+      "id": "look.pool",
+      "section": "9.3",
+      "origin": "spec",
+      "statement": "A lookahead request pool is null or a sorted list of distinct variables.",
+      "violation": {"document": "reject"},
+      "consumers": ["splitters"],
+      "fixtures": "static"
+    },
+    {
+      "id": "look.variables",
+      "section": "9.1",
+      "origin": "spec",
+      "statement": "A lookahead result lists distinct variables (at most 20 is schema); the coordinator still validates W against the parent (split.*).",
+      "violation": {"document": "reject"},
+      "consumers": ["splitters"],
+      "fixtures": "static"
+    }
+  ],
+  "writer_obligations": [
+    {
+      "id": "writer.preceding_checks",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "Checks preceding the accepting check of a VERIFIED_UNSAT are arena exhaustions; readers do not check this."
+    },
+    {
+      "id": "writer.limits",
+      "section": "4.8",
+      "origin": "reading-3",
+      "statement": "limits records the actual limits (check_time_ms: policy base if no proof reached checking, else the fitted time); readers do not check the values."
+    },
+    {
+      "id": "writer.proof_mode",
+      "section": "4.3",
+      "origin": "routine",
+      "statement": "An attempt's proof_mode is that of its effective policy (unit proofs keep the configured mode); readers do not compare them."
+    },
+    {
+      "id": "writer.stop_policy",
+      "section": "4.7",
+      "origin": "routine",
+      "statement": "node_stop and node_reopen carry the policy hash of the latest header/resume; readers do not compare it."
+    },
+    {
+      "id": "writer.resume_first",
+      "section": "4.7",
+      "origin": "spec",
+      "statement": "A resume record precedes new activity on every restart."
+    },
+    {
+      "id": "writer.request_bytes",
+      "section": "4.5",
+      "origin": "spec",
+      "statement": "Repeated handoff request IDs have identical bytes (SPECIFICATION §4.5). The same attempt_id or request_id is never committed twice (SPECIFICATION §7.1). Readers check the second sentence only within one journal, as attempt.attempt_id and handoff.request_unique."
+    },
+    {
+      "id": "writer.repair",
+      "section": "7.1",
+      "origin": "spec",
+      "statement": "A repair record describes the torn suffix truncated under lock; readers cannot verify removed bytes."
+    },
+    {
+      "id": "writer.retained_path",
+      "section": "7.2",
+      "origin": "spec",
+      "statement": "A retained proof is published as proofs/<node_id>-<proof_sha256>.lrat before the record is committed; verify-retained checks the files, certify does not."
+    },
+    {
+      "id": "writer.id128",
+      "section": "4.1",
+      "origin": "spec",
+      "statement": "Id128 values come from OS randomness."
+    },
+    {
+      "id": "writer.argv_deny_list",
+      "section": "4.4",
+      "origin": "reading-10",
+      "statement": "Options that disable proof production or set a competing termination limit for the pinned CaDiCaL are rejected by a deny list owned by the tools layer; the contract corpus freezes only campaign.argv."
+    },
+    {
+      "id": "writer.line_size",
+      "section": "4.7",
+      "origin": "spec",
+      "statement": "Writers divide large node lists into several shards/handoffs so that every line stays within 8 MiB."
+    },
+    {
+      "id": "writer.machinery",
+      "section": "4.6",
+      "origin": "spec",
+      "statement": "Binary hashes identify the actual regular files, checked at startup and before each spawn; sources and binaries are not modified during a run."
+    },
+    {
+      "id": "writer.resources",
+      "section": "4.7",
+      "origin": "spec",
+      "statement": "ResourceSnapshot records observation and is not an admission condition."
+    },
+    {
+      "id": "writer.quarantine_bytes",
+      "section": "7.2",
+      "origin": "spec",
+      "statement": "A quarantined artifact holds the rejected proof bytes and is published before the record; certify does not open it."
+    }
+  ]
+}

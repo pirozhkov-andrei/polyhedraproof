@@ -1,0 +1,5 @@
+c a comment line
+s SATISFIABLE
+v -1 2
+v 2 3
+v 0

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-look-request-1 (SPECIFICATION §9.3)",
+  "description": "Helper input, one J object on stdin. Pool order is requirement look.pool.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-look-request-1"
+    },
+    "formula_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "formula_sha256": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "cube": {
+      "$ref": "common.schema.json#/$defs/Cube"
+    },
+    "k": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20
+    },
+    "pool": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/Positive"
+          }
+        }
+      ]
+    },
+    "probe_limit": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "wall_ms": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "common.schema.json#/$defs/Positive"
+        }
+      ]
+    }
+  },
+  "required": [
+    "format",
+    "formula_path",
+    "formula_sha256",
+    "cube",
+    "k",
+    "pool",
+    "probe_limit",
+    "wall_ms"
+  ],
+  "additionalProperties": false
+}

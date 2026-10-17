@@ -1,0 +1,143 @@
+{
+ "cases": [
+  {
+   "assignment": "",
+   "true": [],
+   "variables": 0
+  },
+  {
+   "assignment": "AA==",
+   "true": [],
+   "variables": 1
+  },
+  {
+   "assignment": "AQ==",
+   "true": [
+    1
+   ],
+   "variables": 1
+  },
+  {
+   "assignment": "BQ==",
+   "true": [
+    1,
+    3
+   ],
+   "variables": 3
+  },
+  {
+   "assignment": "Ag==",
+   "true": [
+    2
+   ],
+   "variables": 3
+  },
+  {
+   "assignment": "AA==",
+   "true": [],
+   "variables": 3
+  },
+  {
+   "assignment": "gA==",
+   "true": [
+    8
+   ],
+   "variables": 8
+  },
+  {
+   "assignment": "/w==",
+   "true": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "variables": 8
+  },
+  {
+   "assignment": "AAE=",
+   "true": [
+    9
+   ],
+   "variables": 9
+  },
+  {
+   "assignment": "AQE=",
+   "true": [
+    1,
+    9
+   ],
+   "variables": 9
+  },
+  {
+   "assignment": "AAA=",
+   "true": [],
+   "variables": 16
+  },
+  {
+   "assignment": "AAAB",
+   "true": [
+    17
+   ],
+   "variables": 17
+  }
+ ],
+ "format": "cubeproof-vectors-assignment-1",
+ "invalid": [
+  {
+   "assignment": "Bw",
+   "variables": 3,
+   "why": "missing padding"
+  },
+  {
+   "assignment": "CA==",
+   "variables": 3,
+   "why": "unused high bit set"
+  },
+  {
+   "assignment": "BR==",
+   "variables": 3,
+   "why": "nonzero padding bits"
+  },
+  {
+   "assignment": "AA==",
+   "variables": 9,
+   "why": "one byte for V=9"
+  },
+  {
+   "assignment": "AA==",
+   "variables": 0,
+   "why": "one byte for V=0"
+  },
+  {
+   "assignment": "BQ==\n",
+   "variables": 3,
+   "why": "trailing newline"
+  },
+  {
+   "assignment": "-w==",
+   "variables": 3,
+   "why": "not the standard alphabet"
+  },
+  {
+   "assignment": "BQ=",
+   "variables": 3,
+   "why": "bad padding"
+  },
+  {
+   "assignment": "B Q==",
+   "variables": 3,
+   "why": "space"
+  },
+  {
+   "assignment": "gA",
+   "variables": 8,
+   "why": "missing padding"
+  }
+ ],
+ "note": "Padded standard base64 of ceil(V/8) bytes; variable i is bit (i-1)%8 of byte (i-1)//8, LSB first; unused high bits are zero (SPECIFICATION §4.8)."
+}

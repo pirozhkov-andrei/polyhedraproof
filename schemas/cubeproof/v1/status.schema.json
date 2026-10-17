@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-status-1 (SPECIFICATION §12.3)",
+  "description": "A derived monitor interface, not evidence. Readers ignore unknown info/counter names and reject unknown top-level fields. Sort keys and reduced coverage fractions are requirements status.order and status.coverage.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-status-1"
+    },
+    "campaign": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "journal": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "head": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "policy_sha256": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "worker": {
+      "$ref": "common.schema.json#/$defs/Name"
+    },
+    "seq": {
+      "$ref": "common.schema.json#/$defs/NonNegative"
+    },
+    "utc": {
+      "$ref": "common.schema.json#/$defs/UTC"
+    },
+    "lifecycle": {
+      "enum": [
+        "running",
+        "draining",
+        "stopped"
+      ]
+    },
+    "resources": {
+      "$ref": "common.schema.json#/$defs/ResourceSnapshot"
+    },
+    "reservations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "$ref": "common.schema.json#/$defs/Id128"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "cpu_milli": {
+            "$ref": "common.schema.json#/$defs/NonNegative"
+          },
+          "memory_bytes": {
+            "$ref": "common.schema.json#/$defs/NonNegative"
+          },
+          "disk": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "bytes": {
+                  "$ref": "common.schema.json#/$defs/NonNegative"
+                }
+              },
+              "required": [
+                "id",
+                "bytes"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "task_id",
+          "stage",
+          "cpu_milli",
+          "memory_bytes",
+          "disk"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "node_counts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string"
+          },
+          "depth": {
+            "$ref": "common.schema.json#/$defs/NonNegative"
+          },
+          "count": {
+            "$ref": "common.schema.json#/$defs/NonNegative"
+          }
+        },
+        "required": [
+          "state",
+          "depth",
+          "count"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "active": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "$ref": "common.schema.json#/$defs/Id128"
+          },
+          "node_id": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "common.schema.json#/$defs/Hash"
+              }
+            ]
+          },
+          "stage": {
+            "type": "string"
+          },
+          "elapsed_ms": {
+            "$ref": "common.schema.json#/$defs/NonNegative"
+          }
+        },
+        "required": [
+          "task_id",
+          "node_id",
+          "stage",
+          "elapsed_ms"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "oldest_elapsed_ms": {
+      "$ref": "common.schema.json#/$defs/NonNegative"
+    },
+    "counters": {
+      "description": "Diagnostics only; names are printable ASCII.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[ -~]+(?![\\s\\S])"
+      },
+      "additionalProperties": {
+        "$ref": "common.schema.json#/$defs/NonNegative"
+      }
+    },
+    "export": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "head": {
+              "$ref": "common.schema.json#/$defs/Hash"
+            },
+            "seq": {
+              "$ref": "common.schema.json#/$defs/NonNegative"
+            },
+            "utc": {
+              "$ref": "common.schema.json#/$defs/UTC"
+            },
+            "lag_ms": {
+              "$ref": "common.schema.json#/$defs/NonNegative"
+            }
+          },
+          "required": [
+            "head",
+            "seq",
+            "utc",
+            "lag_ms"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "models": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "common.schema.json#/$defs/Ref"
+      }
+    },
+    "anomalies": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "common.schema.json#/$defs/Ref"
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "node": {
+            "$ref": "common.schema.json#/$defs/Node"
+          },
+          "closed_numerator": {
+            "type": "string",
+            "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])"
+          },
+          "denominator_power_two": {
+            "$ref": "common.schema.json#/$defs/NonNegative"
+          }
+        },
+        "required": [
+          "node",
+          "closed_numerator",
+          "denominator_power_two"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "eta_ms": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        }
+      ]
+    },
+    "info": {
+      "$ref": "common.schema.json#/$defs/OpenObject"
+    }
+  },
+  "required": [
+    "format",
+    "campaign",
+    "journal",
+    "head",
+    "policy_sha256",
+    "worker",
+    "seq",
+    "utc",
+    "lifecycle",
+    "resources",
+    "reservations",
+    "node_counts",
+    "active",
+    "oldest_elapsed_ms",
+    "counters",
+    "export",
+    "models",
+    "anomalies",
+    "coverage",
+    "eta_ms",
+    "info"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,205 @@
+{
+ "audit_sample": {
+  "n": 5,
+  "note": "--sample N --seed S: the N smallest (SHA256(S NUL node_id), node_id), then ordered by node_id (SPECIFICATION §11.1).",
+  "population": [
+   "40bdda4bb631bdf48141c2ca6beffdcc0f687339722f618111821ac510ae19ec",
+   "47d5735fad3c129b06221ce7734a8e3b98b6b93b4a2dc1f2a3455a6e0950c413",
+   "4eea80488f436d1adcce176906bbe88838053a8716d8ef8ee12d432078c394b4",
+   "59c654211865780c46f311bfc356757fe5cc9f547c400636776b840b0dbcd429",
+   "634e8cb9465061b6f5f5da7a4a38550bb24ecc95f50f1036a19db2ca56ce24b3",
+   "6adf3aadaf5821ce52fcec08e9f7f42fdf09736975933453d62614eede1c44e3",
+   "742e8f2941186a86b7f7e3c4386b3d29cb0629cf5b9e78501cb63a98058c6bd1",
+   "9de4714e67983cc51bec50ac96bc0b78ace24cd172b34e873c796c892fb37dca",
+   "a0cf240d64dccc513b81b6b1cec11182c4f2c71ba18d79056b534b1f929f30a0",
+   "a6c396b2bee289fc402100f50e75f841b4e8a69465a710ad08022d67d44c2f51",
+   "b133c231abf46ea81ad0cb82366375d5f5526f4165f656da7304313d22dfc397",
+   "b36aee826a09e45c7ce38ee92835cb8120da9c498bf527d9f19892eb5420ad4f"
+  ],
+  "ranked": [
+   {
+    "key": "0b58dbe38b52d6958c697817f40c7ed5d16aa11167cc522cb7993b1b7dc158ab",
+    "node_id": "a0cf240d64dccc513b81b6b1cec11182c4f2c71ba18d79056b534b1f929f30a0"
+   },
+   {
+    "key": "11cd9db72144e88fcdb06670a5fab08c3db52283a508fcb618efbd3ad227c4c6",
+    "node_id": "9de4714e67983cc51bec50ac96bc0b78ace24cd172b34e873c796c892fb37dca"
+   },
+   {
+    "key": "22fc0e88b5f8b94991ce931323704492b525012a2bd71faa6b9928d667e18ad0",
+    "node_id": "b133c231abf46ea81ad0cb82366375d5f5526f4165f656da7304313d22dfc397"
+   },
+   {
+    "key": "2c037af7dbfd4527195bac39ef939dfe3f24a236d983ca98222079c05af6ac50",
+    "node_id": "59c654211865780c46f311bfc356757fe5cc9f547c400636776b840b0dbcd429"
+   },
+   {
+    "key": "7b44066ec6c46ad4bf8be3d5697a338643ea4b10b7b0908b7173f31e97933599",
+    "node_id": "634e8cb9465061b6f5f5da7a4a38550bb24ecc95f50f1036a19db2ca56ce24b3"
+   },
+   {
+    "key": "87d5343c4ff8d2b91e58d300c32aec96b124a4f064b08df1c85ad8a8f134db48",
+    "node_id": "6adf3aadaf5821ce52fcec08e9f7f42fdf09736975933453d62614eede1c44e3"
+   },
+   {
+    "key": "abfb188cc01c46527de012696c034de602d3833d9aa04c1d4b05259aae1f1e1b",
+    "node_id": "b36aee826a09e45c7ce38ee92835cb8120da9c498bf527d9f19892eb5420ad4f"
+   },
+   {
+    "key": "c5292afe921d598ea27d8673832afc1927274a8da328627922bf929e18bfdec1",
+    "node_id": "a6c396b2bee289fc402100f50e75f841b4e8a69465a710ad08022d67d44c2f51"
+   },
+   {
+    "key": "d6cf62e2bb560f9ac30ae88de8ebd609d39ce100cf18e02e855a7846653d0364",
+    "node_id": "40bdda4bb631bdf48141c2ca6beffdcc0f687339722f618111821ac510ae19ec"
+   },
+   {
+    "key": "d8a19f3d900c5c4192f25add8c1a12231848fb2bb1113cd5148321d233bbca38",
+    "node_id": "4eea80488f436d1adcce176906bbe88838053a8716d8ef8ee12d432078c394b4"
+   },
+   {
+    "key": "e925f0a1f469f570b9559e96b5154c2ba993f511cab1af037c9c8de182f9e445",
+    "node_id": "47d5735fad3c129b06221ce7734a8e3b98b6b93b4a2dc1f2a3455a6e0950c413"
+   },
+   {
+    "key": "efec7bdb16cd48629efbf140eb97fb6deeb6fb92c3b739dcef6587afcd8fdf89",
+    "node_id": "742e8f2941186a86b7f7e3c4386b3d29cb0629cf5b9e78501cb63a98058c6bd1"
+   }
+  ],
+  "seed": "60d7f476175de248c7dc19d6fbb6bcec7f6c7ade21200e1d020af04174d932af",
+  "selected": [
+   "59c654211865780c46f311bfc356757fe5cc9f547c400636776b840b0dbcd429",
+   "634e8cb9465061b6f5f5da7a4a38550bb24ecc95f50f1036a19db2ca56ce24b3",
+   "9de4714e67983cc51bec50ac96bc0b78ace24cd172b34e873c796c892fb37dca",
+   "a0cf240d64dccc513b81b6b1cec11182c4f2c71ba18d79056b534b1f929f30a0",
+   "b133c231abf46ea81ad0cb82366375d5f5526f4165f656da7304313d22dfc397"
+  ]
+ },
+ "format": "cubeproof-vectors-selection-1",
+ "targets": {
+  "note": "targets_sha256 = SHA256 of concatenated J(target)+LF in target order; a target's identity hash is SHA256(J(target)) (SPECIFICATION §11.1).",
+  "target_hashes": [
+   "7cffdc01527e8942fd7b09df8157a4faeec8eda14ccb93961cdd5c32ed250ad3",
+   "1d6460d65d302738f44da29f915da86acb9b6cbde42104cb3375aaf04e6e3f13"
+  ],
+  "targets": [
+   {
+    "cnf_sha256": "bdb7d1b534a516cb5ba9b34c2f82396f19feddeaba73a693b0c89125d9679b7a",
+    "machinery": {
+     "checker": {
+      "path": "/opt/tools/bin/cake_lpr",
+      "sha256": "cb07a41e1dbd374a9ce87fb7860c564ac8e49659974253a61f9d96d3f338ef0f"
+     },
+     "cubeproof_sha256": "1077ed65075b150733b738cc8c5f44018162a7a7c023161dd928f5079c98f735",
+     "helper": null,
+     "packages_sha256": "e5f20d42ac124c52b579e03661603ed3312b65548350b28285c905fe49e6ab11",
+     "runtime": {
+      "image_digest": null,
+      "libc": "glibc 2.39",
+      "platform": "linux-x86_64",
+      "python": "3.12.3"
+     },
+     "solver": {
+      "argv": [
+       "--lrat"
+      ],
+      "path": "/opt/tools/bin/cadical",
+      "sha256": "ed4d6e88b3adcaab6f51494a5c45b3a0d9d653dced766d1ad3d39fe00d907416",
+      "version": "1.9.5"
+     },
+     "source_manifest": [
+      {
+       "path": "cubeproof/__init__.py",
+       "sha256": "e6d1b76211276933852eb84dcab2f14504532eef4aaaac2a6e516aa8d7ffc3ae"
+      },
+      {
+       "path": "cubeproof/evidence/certify.py",
+       "sha256": "4a402433c0bf4f920cd79ce3bf490d480a2a7fc78873742fb46b2967dc77cdd7"
+      },
+      {
+       "path": "faces12_campaign/__init__.py",
+       "sha256": "ddeb9c4488790fd47bc51bb6a3613bd00c5aa4c8c3b93a44699d755d28d4b72e"
+      },
+      {
+       "path": "neighbourly/__init__.py",
+       "sha256": "f1ec3bc0a9014c6ec5b92c85d776079ee5c74dc30327faffd4d09fbe3290d1eb"
+      }
+     ],
+     "unit_algorithm": "unit-v1"
+    },
+    "node": {
+     "cube": [
+      -1
+     ],
+     "formula_sha256": "83ef822c62746022fb52b0d52f6050c2f8a699e171512c9eb61356bda5d553d4"
+    },
+    "node_id": "0f4b60b4b09acc164ecf08dd5002af63b39c42b4fcfc0ad427669b694e324387",
+    "proof_sha256": "f30ebb9dd7f42a083e02f7e5569287646c6411cb1eb4e219f11002c1e8d00656",
+    "route": "cdcl",
+    "source": {
+     "journal": "9b120856cbbcc4e7b6f25df7fecb9ea89c8b3c0cac8c5fa43d82e872bedfed61",
+     "seq": 4
+    }
+   },
+   {
+    "cnf_sha256": "26655321063bbc05f39d094ac442a6232b71074b27c11537354e3be78d8f86d2",
+    "machinery": {
+     "checker": {
+      "path": "/opt/tools/bin/cake_lpr",
+      "sha256": "cb07a41e1dbd374a9ce87fb7860c564ac8e49659974253a61f9d96d3f338ef0f"
+     },
+     "cubeproof_sha256": "1077ed65075b150733b738cc8c5f44018162a7a7c023161dd928f5079c98f735",
+     "helper": null,
+     "packages_sha256": "e5f20d42ac124c52b579e03661603ed3312b65548350b28285c905fe49e6ab11",
+     "runtime": {
+      "image_digest": null,
+      "libc": "glibc 2.39",
+      "platform": "linux-x86_64",
+      "python": "3.12.3"
+     },
+     "solver": {
+      "argv": [
+       "--lrat"
+      ],
+      "path": "/opt/tools/bin/cadical",
+      "sha256": "ed4d6e88b3adcaab6f51494a5c45b3a0d9d653dced766d1ad3d39fe00d907416",
+      "version": "1.9.5"
+     },
+     "source_manifest": [
+      {
+       "path": "cubeproof/__init__.py",
+       "sha256": "e6d1b76211276933852eb84dcab2f14504532eef4aaaac2a6e516aa8d7ffc3ae"
+      },
+      {
+       "path": "cubeproof/evidence/certify.py",
+       "sha256": "4a402433c0bf4f920cd79ce3bf490d480a2a7fc78873742fb46b2967dc77cdd7"
+      },
+      {
+       "path": "faces12_campaign/__init__.py",
+       "sha256": "ddeb9c4488790fd47bc51bb6a3613bd00c5aa4c8c3b93a44699d755d28d4b72e"
+      },
+      {
+       "path": "neighbourly/__init__.py",
+       "sha256": "f1ec3bc0a9014c6ec5b92c85d776079ee5c74dc30327faffd4d09fbe3290d1eb"
+      }
+     ],
+     "unit_algorithm": "unit-v1"
+    },
+    "node": {
+     "cube": [
+      1
+     ],
+     "formula_sha256": "83ef822c62746022fb52b0d52f6050c2f8a699e171512c9eb61356bda5d553d4"
+    },
+    "node_id": "95757059a8564a7fddcbc2d3bff92b5425a2e31ec57681f863fc70f3fbc286ae",
+    "proof_sha256": "b5c0a80b27ce9372ef174b5ef0e34da5559b2bed3859b998f10b19828129ffd7",
+    "route": "cdcl",
+    "source": {
+     "journal": "9b120856cbbcc4e7b6f25df7fecb9ea89c8b3c0cac8c5fa43d82e872bedfed61",
+     "seq": 2
+    }
+   }
+  ],
+  "targets_sha256": "fe5822845a302b65edbd28cc3d7f2292893e79d112009a3e7305a0f65392be27"
+ }
+}

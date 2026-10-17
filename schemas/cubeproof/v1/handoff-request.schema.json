@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-handoff-request-1 (SPECIFICATION §4.5)",
+  "description": "output_name names a file within the configured outbox. Repeated request IDs must have identical bytes (writer obligation of the inbox).",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-handoff-request-1"
+    },
+    "campaign": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "request_id": {
+      "$ref": "common.schema.json#/$defs/Id128"
+    },
+    "node_count": {
+      "$ref": "common.schema.json#/$defs/Positive"
+    },
+    "output_name": {
+      "$ref": "common.schema.json#/$defs/Name"
+    }
+  },
+  "required": [
+    "format",
+    "campaign",
+    "request_id",
+    "node_count",
+    "output_name"
+  ],
+  "additionalProperties": false
+}

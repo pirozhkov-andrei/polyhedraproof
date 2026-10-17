@@ -1,0 +1,10 @@
+{
+  "description": "The planes x = 0, y = 0, z = 0 and x + y + z = 1, which bound the standard tetrahedron; plane k carries face k of tetrahedron.txt.",
+  "plane_convention": "(a, b, c, d) stands for a x + b y + c z + d = 0",
+  "planes": [
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [1, 1, 1, -1]
+  ]
+}

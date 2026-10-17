@@ -1,0 +1,1168 @@
+{
+  "format": "faces12-claims-1",
+  "about": "The claims ledger. Every theorem, lemma, proposition and corollary of paper/faces12-en.tex has an entry; faces12:* entries are claims about the software. `python3 tools/checks/claims_docs.py` renders it into docs/CLAIMS.md and docs/THEORY_MAP.md; `python3 tools/checks/claims_docs.py --check` (make lint) validates it.",
+  "claims": [
+    {
+      "id": "lem:trivalent",
+      "statement": "Every vertex of a neighbourly polyhedron satisfying (H1) has degree three."
+    },
+    {
+      "id": "prop:euler",
+      "statement": "For n = 12: V = 44, E = 66, chi = -10, genus 6.",
+      "code": [
+        "neighbourly.maps.CombinatorialMap.euler_characteristic"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/maps/test_maps_combinatorial.py::test_map_files_load_and_are_the_expected_surfaces",
+          "covers": "maps 1 and 59 have 44 triples, Euler characteristic -10 and are orientable"
+        }
+      ]
+    },
+    {
+      "id": "lem:onereflex",
+      "statement": "At most one of the three corners at a vertex is reflex.",
+      "code": [
+        "neighbourly.enumeration.vertex_profiles.at_most_one_reflex_corner",
+        "neighbourly.encoding.faces.FaceLayers.layer_I"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/enumeration/test_enumeration_tables.py::test_the_vertex_table_admits_only_two_profiles",
+          "covers": "the supplementary octant enumeration of rem:octants; its conventions are documented in THEORY_MAP.md"
+        },
+        {
+          "test": "packages/neighbourly/tests/checks/test_checks_identities.py::test_every_identity_holds_with_the_fixture_planes",
+          "covers": "the same enumeration, as run by the identity checks of `neighbourly.checks`"
+        }
+      ]
+    },
+    {
+      "id": "rem:octants",
+      "statement": "Of the 256 octant sets at a vertex, exactly two profiles are admissible: (1,1,1) on 16 and (1,1,3) on 48.",
+      "code": [
+        "neighbourly.enumeration.vertex_profiles.admissible_profiles"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/enumeration/test_enumeration_tables.py::test_the_vertex_table_admits_only_two_profiles",
+          "covers": "both counts and the set of profiles"
+        }
+      ]
+    },
+    {
+      "id": "def:map",
+      "statement": "A neighbourly map: triples with every pair in exactly two, every link one (n-1)-cycle.",
+      "code": [
+        "neighbourly.maps.CombinatorialMap"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/maps/test_maps_combinatorial.py::test_broken_input_is_not_silently_repaired",
+          "covers": "a repeated vertex, a repeated face in a vertex, a vertex that is not a triple, a missing vertex and a face out of range are refused"
+        },
+        {
+          "test": "packages/neighbourly/tests/maps/test_maps_combinatorial.py::test_tetrahedron_is_a_valid_map",
+          "covers": "the smallest map is accepted"
+        }
+      ]
+    },
+    {
+      "id": "lem:inducedmap",
+      "statement": "A neighbourly polyhedron satisfying (H1)-(H2) induces a neighbourly map."
+    },
+    {
+      "id": "lem:bridge",
+      "statement": "Realizations of neighbourly maps are exactly the neighbourly polyhedra satisfying (H1)-(H3)."
+    },
+    {
+      "id": "lem:oriented",
+      "statement": "Orientable neighbourly maps are the triple systems whose rotations at every vertex are (n-1)-cycles.",
+      "code": [
+        "neighbourly.enumeration.oriented.enumerate_oriented"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/enumeration/test_enumeration_oriented.py::test_small_enumerations_reproduce_their_reference_counts",
+          "covers": "the search built on it finds 1, 2 and 0 labelled maps for n = 4, 7, 10"
+        }
+      ],
+      "limits": "The known small counts corroborate the search; they do not check the lemma."
+    },
+    {
+      "id": "lem:framing",
+      "statement": "The framed maps number sum 2n(n-1)/|Aut(C)|; isomorphism needs at most 2n(n-1) relabellings.",
+      "code": [
+        "neighbourly.enumeration.oriented.canonical",
+        "neighbourly.enumeration.oriented.enumerate_classes"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/enumeration/test_enumeration_oriented.py::test_the_orbit_identity_is_checked_per_class",
+          "covers": "the orbit identity for every class at n = 7"
+        },
+        {
+          "test": "packages/neighbourly/tests/enumeration/test_enumeration_oriented.py::test_canonical_form_agrees_with_brute_force_relabelling",
+          "covers": "the canonical form against all 7! relabellings"
+        }
+      ]
+    },
+    {
+      "id": "thm:59",
+      "statement": "A neighbourly polyhedron with twelve faces induces one of exactly 59 maps.",
+      "established": "Published computer classification, cited in the article",
+      "code": [
+        "neighbourly.enumeration.oriented.enumerate_classes",
+        "neighbourly.corpus12.enumerate_corpus",
+        "neighbourly.corpus12.shipped_classes"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/corpus12/test_corpus12_census.py::test_the_twelve_face_census_reproduces_the_corpus",
+          "covers": "the search finds 12,144 framed maps in 59 classes, equal to the shipped matrices"
+        },
+        {
+          "test": "packages/neighbourly/tests/corpus12/test_corpus12_data.py::test_the_matrices_match_their_sums_and_the_corpus_is_well_formed",
+          "covers": "the 59 matrices are neighbourly, orientable and pairwise non-isomorphic (by canonical form), as `faces12-campaign selftest` also checks"
+        },
+        {
+          "test": "packages/neighbourly/tests/corpus12/test_corpus12_lutz.py::test_the_published_list_is_the_59_maps_relabelled",
+          "covers": "the 59 maps, each once and each under a recorded relabelling of its faces, are the 59 triangulations of the published list of the orientable surface of genus 6 with twelve vertices (F. H. Lutz, The Manifold Page): the relabelled maps in the notation of the list have the SHA-256 recorded for the published file without white space"
+        },
+        {
+          "test": "packages/neighbourly/tests/corpus12/test_corpus12_lutz.py::test_the_automorphism_orders_are_those_of_the_literature",
+          "covers": "the automorphism orders of the 59 maps are distributed as Ellingham and Stephens state (39, 9, 1, 7, 2, 1 classes of orders 1, 2, 3, 4, 6, 12)"
+        }
+      ],
+      "limits": "With Altshuler, Bokowski and Schuchert (1996) only the count agrees: their list was not recovered. The comparison class by class is with the list of the Manifold Page, identified by the SHA-256 of a file that is not in the repository (docs/SOURCES.md). The article invokes the published classification for completeness and gives an exhaustive-search argument for its recomputation. Counts and the orbit identity alone are consistency checks, not completeness proofs."
+    },
+    {
+      "id": "thm:genpos",
+      "statement": "Every realizable neighbourly map has a realization in general position."
+    },
+    {
+      "id": "lem:plstability",
+      "statement": "Small displacements of the vertices of a finite geometric simplicial complex extend affinely to an embedding."
+    },
+    {
+      "id": "lem:step1",
+      "statement": "Nondegeneracy is open."
+    },
+    {
+      "id": "lem:step2",
+      "statement": "No straight angles near a realization."
+    },
+    {
+      "id": "lem:cofactor",
+      "statement": "[0,i,j,k] = -det(n_i,n_j,n_k) and [i,j,k,l] = det(n_i,n_j,n_k) h_l(P_ijk).",
+      "code": [
+        "neighbourly.exact.bracket"
+      ]
+    },
+    {
+      "id": "thm:order",
+      "statement": "Ord(i,j;k,l) = X_0ijk xor X_0ijl xor X_ijkl.",
+      "code": [
+        "neighbourly.encoding.chirotope.ChirotopeLayers.layer_S",
+        "neighbourly.encoding.chirotope.ChirotopeLayers.order_literal"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/checks/test_checks_identities.py::test_every_identity_holds_with_the_fixture_planes",
+          "covers": "the identity itself, computed apart from the encoder, against the exact affine order on the line: 200 random quadruples of random rational planes"
+        },
+        {
+          "test": "packages/neighbourly/tests/encoding/test_encoding_layers.py::test_brackets_and_orders_are_signed_consistently",
+          "covers": "the antisymmetries of the bracket and order literals"
+        }
+      ]
+    },
+    {
+      "id": "rem:cut",
+      "statement": "The 0 in the order formula is the line's point at infinity, which cuts its circular order.",
+      "code": [
+        "neighbourly.encoding.chirotope.ChirotopeLayers.layer_S",
+        "neighbourly.encoding.chirotope.ChirotopeLayers.layer_A"
+      ]
+    },
+    {
+      "id": "def:onb",
+      "statement": "OnB(i,j;u) = Ord(i,j;z0,u) xor Ord(i,j;z1,u).",
+      "code": [
+        "neighbourly.encoding.faces.FaceLayers.boundary_bit"
+      ]
+    },
+    {
+      "id": "lem:onb",
+      "statement": "OnB(i,j;u) = 1 iff P_iju lies inside the edge E(i,j).",
+      "code": [
+        "neighbourly.encoding.faces.FaceLayers.boundary_bit"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/exact/test_exact_controls_nb.py::test_the_boundary_predicate_is_the_exact_interior_point_test",
+          "covers": "every OnB bit of map 1 against the exact interior-point test, on two random plane families"
+        }
+      ]
+    },
+    {
+      "id": "lem:adjacency",
+      "statement": "Two edges of a face are consecutive iff the triple is a real vertex.",
+      "code": [
+        "neighbourly.maps.CombinatorialMap.link_successor",
+        "neighbourly.maps.CombinatorialMap.is_real"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/checks/test_checks_identities.py::test_every_identity_holds_with_the_fixture_planes",
+          "covers": "on map 1, link adjacency and being a real vertex agree for every face and pair"
+        }
+      ],
+      "limits": "The check is combinatorial: it shows that the code's two notions agree. The geometric content is the article's proof."
+    },
+    {
+      "id": "lem:turn",
+      "statement": "[w(f;a,b) < 0] = 1 xor Ord(f,a;x,b) xor Ord(f,b;a,y) xor X_0fab.",
+      "code": [
+        "neighbourly.encoding.faces.FaceLayers.corner_literal"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/exact/test_exact_controls_nb.py::test_the_turn_bit_is_the_sign_of_the_measured_turn_at_every_corner",
+          "covers": "the identity itself, against the measured turn, at every corner of map 1 on two random plane families"
+        }
+      ]
+    },
+    {
+      "id": "lem:sf",
+      "statement": "One orientation bit per face turns the turn bits into reflexness.",
+      "code": [
+        "neighbourly.encoding.faces.FaceLayers.corner_literal",
+        "neighbourly.encoding.formula.Encoder.face_orientation_bits"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/encoding/test_encoding_layers.py::test_corner_literals_are_symmetric_in_their_two_neighbours",
+          "covers": "a corner bit does not depend on the order its neighbours are named in"
+        },
+        {
+          "test": "packages/neighbourly/tests/checks/test_checks_identities.py::test_every_identity_holds_with_the_fixture_planes",
+          "covers": "the same symmetry at all 132 corners of map 1"
+        },
+        {
+          "test": "packages/neighbourly/tests/exact/test_exact_controls_nb.py::test_every_clause_holds_on_a_realized_configuration",
+          "covers": "the reflex corners the formula counts equal the measured ones, face by face, on the tetrahedron and a Szilassi polyhedron"
+        }
+      ]
+    },
+    {
+      "id": "rem:order-matters",
+      "statement": "The corner predicate is symmetric while its formula is antisymmetric.",
+      "code": [
+        "neighbourly.encoding.faces.FaceLayers.corner_literal"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/encoding/test_encoding_layers.py::test_corner_literals_are_symmetric_in_their_two_neighbours",
+          "covers": "the encoder normalizes the pair before applying the formula"
+        }
+      ]
+    },
+    {
+      "id": "lem:parity",
+      "statement": "A crossing parity computes one corner's reflexness from brackets alone.",
+      "code": [
+        "neighbourly.encoding.faces.FaceLayers.layer_I"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/exact/test_exact_controls_nb.py::test_every_clause_holds_on_a_realized_configuration",
+          "covers": "with the orientation bits of an independent geometry, the orientation equations hold on a Szilassi polyhedron"
+        }
+      ],
+      "limits": "In substance one realized configuration, with 7 faces: on the tetrahedron the equation has no terms. Only the one corner per face that the encoder uses. No realization with twelve faces is known."
+    },
+    {
+      "id": "lem:cutorder",
+      "statement": "A tournament satisfies (GP) on all 4-subsets iff its cut order is a strict total order.",
+      "code": [
+        "neighbourly.encoding.chirotope.ChirotopeLayers.layer_A",
+        "neighbourly.enumeration.tournaments.census"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/checks/test_checks_identities.py::test_every_identity_holds_with_the_fixture_planes",
+          "covers": "the lemma itself, computed apart from the encoder, on every tournament with 4, 5 and 6 elements"
+        },
+        {
+          "test": "packages/neighbourly/tests/enumeration/test_enumeration_tables.py::test_a_second_computation_by_cyclic_triangles_agrees",
+          "covers": "the same, by a second test of transitivity (cyclic triangles) written as test code, against `census`"
+        },
+        {
+          "test": "packages/neighbourly/tests/enumeration/test_enumeration_tables.py::test_the_lemma_and_the_counts_on_seven_elements",
+          "covers": "every tournament with 7 elements, by a second test of transitivity (out-degrees)"
+        }
+      ],
+      "limits": "Exhaustive only up to seven elements; the general case is the article's proof. That layer A transcribes the lemma is corroborated by the reference encoder, which shares the encoder's conventions (faces12:reference-encoder)."
+    },
+    {
+      "id": "rem:counts",
+      "statement": "(m-1)! 2^(m-1) tournaments satisfy (GP), only m! are transitive.",
+      "code": [
+        "neighbourly.enumeration.tournaments.census"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/enumeration/test_enumeration_tables.py::test_the_census_reproduces_the_lemma_and_both_counts",
+          "covers": "48/24, 384/120 and 3,840/720 for 4, 5 and 6 elements"
+        },
+        {
+          "test": "packages/neighbourly/tests/enumeration/test_enumeration_tables.py::test_the_lemma_and_the_counts_on_seven_elements",
+          "covers": "46,080/5,040 for 7 elements, as in the table of the article's appendix"
+        }
+      ],
+      "limits": "The counts are checked for 4 to 7 elements; the formulas for general m follow from the lemma."
+    },
+    {
+      "id": "thm:chirotope",
+      "statement": "S, H and A hold exactly for uniform rank-4 chirotopes on 13 elements; every general-position realization satisfies them.",
+      "code": [
+        "neighbourly.encoding.chirotope.ChirotopeLayers.layer_S",
+        "neighbourly.encoding.chirotope.ChirotopeLayers.layer_H",
+        "neighbourly.encoding.chirotope.ChirotopeLayers.layer_A"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/exact/test_exact_controls_nb.py::test_unconditional_layers_hold_on_random_planes",
+          "covers": "no clause of S, H, A is violated on three random plane families (map 1)"
+        }
+      ],
+      "limits": "The samples check the direction from realizations to assignments; the converse is the article's proof."
+    },
+    {
+      "id": "lem:B",
+      "statement": "Every realization in general position satisfies Layer B.",
+      "code": [
+        "neighbourly.encoding.faces.FaceLayers.layer_B"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/exact/test_exact_controls_nb.py::test_every_clause_holds_on_a_realized_configuration",
+          "covers": "no clause of B is violated on a Szilassi polyhedron"
+        },
+        {
+          "test": "packages/neighbourly/tests/encoding/test_encoding_layers.py::test_layer_b_constrains_exactly_the_non_adjacent_pairs",
+          "covers": "the layer constrains exactly the pairs of non-adjacent edges of each face"
+        }
+      ],
+      "limits": "One positive control, with 7 faces: for the tetrahedron layer B is empty. No realization with twelve faces is known."
+    },
+    {
+      "id": "lem:I",
+      "statement": "Every realization in general position satisfies Layer I.",
+      "code": [
+        "neighbourly.encoding.faces.FaceLayers.layer_I"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/exact/test_exact_controls_nb.py::test_every_clause_holds_on_a_realized_configuration",
+          "covers": "no clause of I is violated on the tetrahedron and on a Szilassi polyhedron"
+        },
+        {
+          "test": "packages/neighbourly/tests/checks/test_checks_identities.py::test_every_identity_holds_with_the_fixture_planes",
+          "covers": "Layer I of map 1 has three clauses at each of the 44 vertices over 132 corner bits"
+        }
+      ],
+      "limits": "Positive controls on 4 and 7 faces; no realization with twelve faces is known."
+    },
+    {
+      "id": "lem:gaugegroup",
+      "statement": "Mirroring and reorienting planes map realizations to realizations; the functionals span the dual.",
+      "code": [
+        "neighbourly.encoding.gauge.gauge_targets"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/exact/test_exact_controls_nb.py::test_the_gauge_keeps_a_representative_of_a_realized_configuration",
+          "covers": "for each gauge face of the tetrahedron, a group element moves it to a realization that satisfies the gauged formula"
+        }
+      ],
+      "limits": "Checked on real geometry for the tetrahedron only."
+    },
+    {
+      "id": "cor:gauge",
+      "statement": "n+1 pinned brackets with independent functionals keep one representative per orbit.",
+      "code": [
+        "neighbourly.encoding.gauge.gauge_targets",
+        "neighbourly.encoding.formula.Encoder.add_gauge"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/checks/test_checks_identities.py::test_every_identity_holds_with_the_fixture_planes",
+          "covers": "for gauge face 1, all 2^13 group elements give 2^13 distinct sign patterns; the basis depends only on n and the gauge face, so this holds for all 59 maps"
+        },
+        {
+          "test": "packages/neighbourly/tests/encoding/test_encoding_reference.py::test_every_gauge_basis_spans_all_sign_patterns",
+          "covers": "the same for every gauge face, with the basis equal to the reference encoder's"
+        },
+        {
+          "test": "packages/neighbourly/tests/exact/test_exact_controls_nb.py::test_the_gauge_keeps_a_representative_of_a_realized_configuration",
+          "covers": "on the tetrahedron, with real geometry"
+        },
+        {
+          "test": "tests/reference/test_ref_formula.py::test_the_formula_of_a_map_is_the_formula_of_the_article",
+          "covers": "the thirteen gauge brackets of maps 1, 2 and 59 have rank 13 over GF(2) by an elimination of the reference's own, and the formula without the gauge is invariant under the reorientation group"
+        }
+      ]
+    },
+    {
+      "id": "def:formula",
+      "statement": "The formula: layers S, H, A, B, I and 13 gauge clauses; 52,177 clauses, 5,257 variables for map 1.",
+      "code": [
+        "neighbourly.encoding.formula.Encoder.build",
+        "neighbourly.cnf.dimacs.dimacs_bytes"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/encoding/test_encoding_emission_golden.py::test_the_base_formula_goldens",
+          "covers": "the sizes printed in the article (map 1), and the bytes of maps 1, 2, 59"
+        },
+        {
+          "test": "packages/neighbourly/tests/corpus12/test_corpus12_census.py::test_all_59_base_formulas_keep_their_bytes",
+          "covers": "the bytes of all 59 formulas"
+        },
+        {
+          "test": "tests/reference/test_ref_formula.py::test_each_of_the_59_formulas_is_the_formula_of_the_article",
+          "covers": "for each of the 59 maps, the substantive clauses are exactly those the article prescribes (H 15,840, A 2,880, B 528, vertex clauses of I 132, gauge 13), the other 32,784 clauses are an acyclic list of definitions that forbids no assignment of the brackets, and the GF(2) polynomial of every named variable is the article's formula"
+        }
+      ]
+    },
+    {
+      "id": "thm:necessity",
+      "statement": "If a twelve-face map has a realization, its formula is satisfiable: a general-position realization, after the gauge normalization, satisfies it.",
+      "code": [
+        "neighbourly.encoding.formula.Encoder.build"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/exact/test_exact_controls_nb.py::test_every_clause_holds_on_a_realized_configuration",
+          "covers": "the same encoder, applied to the realized 4- and 7-face maps without the gauge, violates no clause"
+        },
+        {
+          "test": "packages/neighbourly/tests/exact/test_exact_controls_nb.py::test_the_gauge_keeps_a_representative_of_a_realized_configuration",
+          "covers": "the gauged formula, on the tetrahedron"
+        },
+        {
+          "test": "tests/reference/test_ref_realizations.py::test_realizations_with_four_and_seven_faces_satisfy_their_formulas",
+          "covers": "tetrahedra in all 24 labellings and a perturbed Szilassi polyhedron with its mirror, affine, projective and sign-flipped images in several labellings, each moved into gauge geometrically: every clause holds and every variable has the value of its geometric predicate, computed from points and vectors by the reference"
+        },
+        {
+          "test": "tests/reference/test_ref_realizations.py::test_realizations_in_many_labellings_satisfy_their_formulas",
+          "covers": "the same for every 37th of the 5040 labellings of seven faces and for the labellings that carry the polyhedron of the literature onto the packaged map"
+        }
+      ],
+      "limits": "No realization with twelve faces is known, so the theorem itself cannot be tested; the controls exercise the same code on smaller maps."
+    },
+    {
+      "id": "cor:conditional",
+      "statement": "If all 59 formulas are unsatisfiable, no neighbourly polyhedron with twelve faces exists.",
+      "code": [
+        "faces12_campaign.claim.claim"
+      ],
+      "checks": [
+        {
+          "test": "packages/faces12-campaign/tests/test_f12_claim.py::test_a_proved_certificate_gives_conditional_support",
+          "covers": "the claim gate states the conclusion as conditional even for a certificate that proves every formula"
+        },
+        {
+          "test": "packages/faces12-campaign/tests/test_f12_claim.py::test_the_conclusion_is_unconditional_only_with_every_obligation_reviewed",
+          "covers": "an unconditional statement needs every reviewed obligation with its verified artifacts"
+        }
+      ],
+      "limits": "The corollary is conditional. Its hypothesis is faces12:campaign, which is open. Corollary cor:treecover states the same for refuted cube trees (paper: cor:treecover)."
+    },
+    {
+      "id": "prop:cases",
+      "statement": "If every case of a partition is unsatisfiable, so is the formula.",
+      "code": [
+        "cubeproof.split.static.child_cube",
+        "cubeproof.split.static.child_index"
+      ],
+      "checks": [
+        {
+          "test": "packages/cubeproof/tests/split/test_cp_split_static.py::test_case_indexing_matches_the_contract_children",
+          "covers": "case c assigns the bits of c to the splitting variables, and the cases are the children of the split"
+        },
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_scenarios.py::test_split_needs_every_child_closed",
+          "covers": "a split closes its cube only when every child is closed: one missing case keeps it open"
+        }
+      ],
+      "limits": "The fixed-depth special case of the coverage theorem: the 2^d cases are the children of one split of the empty cube (paper: thm:coverage). Trees of cases are covered under thm:coverage and lem:closure."
+    },
+    {
+      "id": "def:cube",
+      "statement": "A cube is a set of literals with no variable twice; a split of a cube by k >= 1 distinct variables outside it has 2^k sign children.",
+      "limits": "The cubeproof package also fixes a canonical form (literals sorted by variable), identities of cubes and splits and the bytes of the CNF of a cube, and bounds k by 20; the shared contract vectors (`tests/contracts/test_contract_vectors.py`) and `packages/cubeproof/tests/cnf/test_cp_cnf_cubecnf.py` check them. The proofs use none of this."
+    },
+    {
+      "id": "lem:split",
+      "statement": "Every assignment that satisfies a cube satisfies exactly one of its children under a split; if every child is refuted, so is the cube.",
+      "limits": "The children of a split in the cubeproof package (bit j of child t gives the sign of the j-th variable) are checked by `tests/contracts/test_contract_vectors.py` and by `test_child_nodes_follow_the_bit_numbering` in `packages/cubeproof/tests/cnf/test_cp_cnf_cubecnf.py`. These test the implementation, not the lemma."
+    },
+    {
+      "id": "def:cubetree",
+      "statement": "A cube tree: a tree of cubes in which every node that is not a leaf carries a split and has exactly its sign children; refuted when every leaf is."
+    },
+    {
+      "id": "thm:coverage",
+      "statement": "The leaves of a cube tree divide its root into disjoint regions; a refuted cube tree refutes its root, and with the empty root the formula.",
+      "limits": "Certification rests on this proof. Software counterpart, not a proof: on random tiny formulas (at most 4 variables) with random split graphs, alternatives and models, the cubeproof certifier is checked by brute force -- proved formulas, closed roots and used leaves are unsatisfiable, and the open lists cover every satisfying assignment exactly once (`test_truthful_random_evidence` in `packages/cubeproof/tests/certify/test_cp_certify_truthful.py`). Exhaustive only for those tiny formulas."
+    },
+    {
+      "id": "lem:closure",
+      "statement": "A cube closed by recorded refutations and splits is the root of a refuted cube tree built from them, whatever alternatives were recorded.",
+      "limits": "Software counterpart, not a proof: the cubeproof certifier's closure and selection (a split needs every child closed, alternative splits, the smallest refutation or closed split selected, requested roots closed only literally) in `packages/cubeproof/tests/certify/`, and the independently written `tools/certify_min.py`, which must produce the same certificates (`tests/independent/test_min_scenarios.py`, `tests/independent/test_min_corpus.py`). Agreement of the two certifiers checks the evaluation of closure, not the honesty of the journals (paper: rem:attestation)."
+    },
+    {
+      "id": "cor:treecover",
+      "statement": "If each of the 59 formulas has a refuted cube tree with the empty root, no neighbourly polyhedron with twelve faces exists.",
+      "limits": "The corollary is conditional. Its hypothesis is faces12:campaign, which is open. A closed nonempty pilot root does not contribute to it (paper: rem:pilotroot)."
+    },
+    {
+      "id": "rem:pilotroot",
+      "statement": "A refuted cube tree with a nonempty root settles only that region, never the formula.",
+      "limits": "Software counterpart: a closed nonempty requested root leaves its formula open, and a closed ancestor does not close a requested root (`test_a_nonempty_pilot_root_closes_alone_while_the_formula_stays_open` and `test_a_closed_ancestor_does_not_close_a_requested_root` in `packages/cubeproof/tests/certify/test_cp_certify_scenarios.py`)."
+    },
+    {
+      "id": "rem:attestation",
+      "statement": "A certificate attests the leaves of its selected tree; only checking a retained proof again or recomputing a leaf verifies it independently of the journals, and a sample verifies only its sample.",
+      "limits": "Whether the leaves have been verified independently is faces12:leaf-verification, which is open."
+    },
+    {
+      "id": "faces12:formula-bytes",
+      "established": "Tested",
+      "statement": "The formula of each of the 59 maps is byte for byte the one pinned in `data/fixtures/formula_hashes.json`.",
+      "code": [
+        "neighbourly.cnf.dimacs.formula_digest",
+        "neighbourly.corpus12.base_formula"
+      ],
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/corpus12/test_corpus12_census.py::test_all_59_base_formulas_keep_their_bytes",
+          "covers": "the 59 formulas emitted by neighbourly have the bytes, counts and SHA-256 of the fixture, of its packaged copy and of the goldens"
+        },
+        {
+          "test": "packages/neighbourly/tests/corpus12/test_corpus12_data.py::test_the_packaged_hash_fixture_is_the_repository_fixture_and_the_goldens",
+          "covers": "the packaged fixture is the repository fixture byte for byte"
+        },
+        {
+          "test": "packages/faces12-campaign/tests/test_f12_formulas.py::test_recomputed_formulas_have_the_fixture_hashes",
+          "covers": "the campaign's formulas are the fixture's"
+        }
+      ]
+    },
+    {
+      "id": "faces12:reference-encoder",
+      "established": "Tested",
+      "statement": "A separately written reference encoder produces the same clauses as the encoder for all 59 maps.",
+      "checks": [
+        {
+          "test": "packages/neighbourly/tests/encoding/test_encoding_reference.py::test_all_shipped_maps_agree_clause_for_clause",
+          "covers": "all 59 maps"
+        },
+        {
+          "test": "packages/neighbourly/tests/encoding/test_encoding_reference.py::test_small_maps_agree_clause_for_clause",
+          "covers": "maps with 4 and 7 faces"
+        },
+        {
+          "test": "packages/neighbourly/tests/encoding/test_encoding_reference.py::test_the_comparison_detects_missing_and_changed_constraints",
+          "covers": "the comparison fails when a constraint is removed or changed"
+        }
+      ],
+      "limits": "`packages/neighbourly/tests/encoding/nb_reference_encoder.py` was written separately from the encoder, from the mathematical definitions, and copies the encoder's conventions on purpose (variable order, XOR chaining, link-cycle start and direction, larger label as z1, cut point, gauge candidate order), so that clause lists can be compared literally. It cannot catch an error in a shared convention or in the mathematics."
+    },
+    {
+      "id": "faces12:formula-is-the-article",
+      "established": "Tested",
+      "statement": "Each of the 59 formulas is the formula of the article (paper: def:formula): no clause is added to what the article prescribes, as judged by a reference written from the article's text without the encoder's conventions.",
+      "checks": [
+        {
+          "test": "tests/reference/test_ref_formula.py::test_the_formula_of_a_map_is_the_formula_of_the_article",
+          "covers": "maps 1, 2 and 59 in the fast tier: exact comparison for all assignments of the brackets, and direct geometry on random arrangements of twelve planes"
+        },
+        {
+          "test": "tests/reference/test_ref_formula.py::test_each_of_the_59_formulas_is_the_formula_of_the_article",
+          "covers": "all 59 maps"
+        },
+        {
+          "test": "tests/reference/test_ref_realizations.py::test_realizations_with_four_and_seven_faces_satisfy_their_formulas",
+          "covers": "genuine realizations with four and seven faces in varying labellings and representatives"
+        }
+      ],
+      "limits": "`tests/reference/ref_paper.py` is a second implementation by the same project, not a formal proof: it shows that the encoder emits the formula the article defines, including the tuples each quantifier ranges over and the signs. It reads from the encoder the clauses, the names of the variables and three choices among sound alternatives (the cut point of layer A, the pinned corner, the gauge brackets) and checks each for admissibility; the tests require the cut point and the pin to be the article's, and the larger end `z1` and the choice of gauge brackets are fixed by the pinned hashes of the formula bytes. That the reference was written from the article before the encoder was read is a statement about its origin that no test can show. It does not show that the article's lemmas are true; for the boundary and corner layers with twelve faces that rests on the proofs (paper: lem:B, lem:I, lem:parity, lem:onereflex), since no realization with twelve faces is known. A clause that every known realization happens to satisfy is caught only by the comparison with the article, which is why that comparison is exact."
+    },
+    {
+      "id": "faces12:acceptance",
+      "established": "Tested",
+      "statement": "A leaf is attested as refuted only when cake_lpr prints exactly `s VERIFIED UNSAT` on stdout and exits 0 on the proof of that leaf, and in stream mode only when the relay also reports the complete transfer; unit-propagation refutations go through the same checker, and the certifiers admit an attempt only with these facts recorded.",
+      "code": [
+        "cubeproof.tools.checker.accepts",
+        "cubeproof.tools.process_outcome.classify",
+        "cubeproof.evidence.certify.admission.success_problem"
+      ],
+      "checks": [
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_checker.py::test_every_wrong_success_output_is_refused",
+          "covers": "a success line with anything around or inside it is refused"
+        },
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_checker.py::test_success_on_stderr_is_not_success",
+          "covers": "the line on stderr is not success"
+        },
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_checker.py::test_success_text_without_the_other_conditions_is_refused",
+          "covers": "the line without exit 0 is not success"
+        },
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_rows.py::test_wrong_success_outputs_are_rejections",
+          "covers": "the same through real pipes"
+        },
+        {
+          "test": "packages/cubeproof/tests/stream/test_cp_stream_outcome.py::test_every_paired_failure_combination",
+          "covers": "a relay failure or an incomplete transfer invalidates an otherwise accepted stream check"
+        },
+        {
+          "test": "packages/cubeproof/tests/leaf/test_cp_leaf_attempt.py::test_a_unit_conflict_is_checked_and_verified_without_a_solver",
+          "covers": "a unit-propagation refutation is checked by the checker before it counts"
+        },
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_scenarios.py::test_admitted_success_fields_are_enforced",
+          "covers": "the certifier refuses an admitted success record without these facts"
+        }
+      ],
+      "limits": "The checks use a fake checker that prints chosen outputs; the pinned cake_lpr is exercised by the test-image tier. A journal record is an attestation of these facts (paper: rem:attestation)."
+    },
+    {
+      "id": "faces12:models",
+      "established": "Tested",
+      "statement": "A satisfiable leaf is reported only with a model checked against the leaf's own clauses; the model is recorded, the node is never split or retried, the run goes on with the other formulas, and the certificate reports the formula as having a model.",
+      "code": [
+        "cubeproof.cnf.model.check_values",
+        "cubeproof.cnf.model.solver_model",
+        "cubeproof.evidence.certify.admission.AttemptRules.model_satisfies"
+      ],
+      "checks": [
+        {
+          "test": "packages/cubeproof/tests/leaf/test_cp_leaf_attempt.py::test_a_solver_model_is_evaluated_and_recorded",
+          "covers": "a solver model is evaluated on the leaf CNF and recorded"
+        },
+        {
+          "test": "packages/cubeproof/tests/leaf/test_cp_leaf_attempt.py::test_invalid_models_are_recorded_with_their_error",
+          "covers": "a model that violates a clause, misses or repeats a variable is an invalid model, not a model"
+        },
+        {
+          "test": "packages/cubeproof/tests/scheduler/test_cp_sched_state.py::test_a_model_is_emitted_and_never_split_or_retried",
+          "covers": "a node with a model is never split or retried"
+        },
+        {
+          "test": "packages/cubeproof/tests/lifecycle/test_cp_life_run.py::test_a_model_outranks_open_work_and_other_formulas_are_still_proved",
+          "covers": "the run goes on and the other formulas are still proved"
+        },
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_scenarios.py::test_a_false_model_is_an_integrity_error_also_when_not_admitted",
+          "covers": "the certifier re-evaluates every recorded model"
+        }
+      ]
+    },
+    {
+      "id": "faces12:journal",
+      "established": "Tested",
+      "statement": "Journals are self-checksummed hash chains (each record carries the hash of the one before it and its own), so an edited, removed, inserted or reordered record is detected, and a torn last line is recognized as a torn tail; a record is validated before it is written, and every reader validates every record it reads.",
+      "code": [
+        "cubeproof.evidence.journal.chain.ChainState",
+        "cubeproof.evidence.journal.reader.JournalReader",
+        "cubeproof.evidence.journal.storage.JournalWriter"
+      ],
+      "checks": [
+        {
+          "test": "packages/cubeproof/tests/journal/test_cp_journal_corruption.py::test_every_single_bit_flip_is_detected",
+          "covers": "a flipped bit anywhere in a journal is detected"
+        },
+        {
+          "test": "packages/cubeproof/tests/journal/test_cp_journal_corruption.py::test_middle_line_corruption_is_an_integrity_error_even_if_resigned",
+          "covers": "a changed record is detected even with its own hash recomputed"
+        },
+        {
+          "test": "packages/cubeproof/tests/journal/test_cp_journal_corruption.py::test_full_suffix_removal_is_detected_only_with_an_anchor",
+          "covers": "cutting records off the end is detected only with a published head"
+        },
+        {
+          "test": "packages/cubeproof/tests/journal/test_cp_journal_corruption.py::test_every_torn_suffix_length",
+          "covers": "every torn last line is a torn tail, never a valid record"
+        },
+        {
+          "test": "packages/cubeproof/tests/journal/test_cp_journal_storage.py::test_invalid_records_are_refused_before_any_byte_is_written",
+          "covers": "an invalid record is never written"
+        },
+        {
+          "test": "packages/cubeproof/tests/journal/test_cp_journal_reader.py::test_self_seq_prev_order_within_a_line",
+          "covers": "the self hash, sequence number and previous hash of every line"
+        }
+      ],
+      "limits": "Cutting records off the end, or rewriting a whole journal, is not detected without a published head (an export or a certificate anchor). A record is an attestation; `cubeproof audit` is what re-establishes a leaf, by recomputing it."
+    },
+    {
+      "id": "faces12:coverage",
+      "established": "Tested",
+      "statement": "`cubeproof certify` reports a formula PROVED only when its empty cube is closed by admitted verified attempts and splits whose children are all closed, recorded in journals of the campaign it certifies. It selects one tree deterministically (the smallest reference or closed split), independent of the order of its inputs; records of machinery the campaign does not admit are listed and not counted, but a valid model they report still makes the formula's verdict MODEL; a closed nonempty root never proves its formula; otherwise it lists the open frontier.",
+      "code": [
+        "cubeproof.evidence.certify.closure.EvidenceGraph",
+        "cubeproof.evidence.certify.admission.admission_reason",
+        "cubeproof.evidence.certify.run.certify"
+      ],
+      "checks": [
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_scenarios.py::test_split_needs_every_child_closed",
+          "covers": "a split closes its cube only with every child closed"
+        },
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_scenarios.py::test_an_attempt_is_preferred_to_a_closed_split_and_the_smallest_ref_wins",
+          "covers": "the selection of the tree"
+        },
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_corpus.py::test_journal_input_order_has_no_effect",
+          "covers": "the certificate does not depend on the order of the journals"
+        },
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_scenarios.py::test_admission_follows_the_latest_snapshot_of_the_journal",
+          "covers": "admission"
+        },
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_scenarios.py::test_nonadmitted_valid_model_binds_and_is_found",
+          "covers": "a model of not admitted machinery still counts against the formula"
+        },
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_scenarios.py::test_a_nonempty_pilot_root_closes_alone_while_the_formula_stays_open",
+          "covers": "a closed nonempty root leaves its formula open"
+        },
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_scenarios.py::test_a_foreign_campaign_is_an_input_error",
+          "covers": "journals of another campaign are refused"
+        },
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_truthful.py::test_truthful_random_evidence",
+          "covers": "on random tiny formulas, what is certified PROVED is unsatisfiable by brute force"
+        }
+      ],
+      "limits": "A certificate attests the leaves of its selected tree (paper: rem:attestation); whether a dishonest admitted writer ran the checker is outside what it can establish. faces12:two-certifiers compares it with the independent certifier."
+    },
+    {
+      "id": "faces12:recheck",
+      "established": "Tested",
+      "statement": "`cubeproof audit` recomputes the used leaves of a certificate, all of them or a deterministic seeded sample, from the journals the certificate is recomputed from: it regenerates each leaf CNF and compares its hash, proves the leaf again and has cake_lpr check the new proof, and in strict mode compares the proof hash with the recorded one. A different valid proof is a mismatch, an unexpected model an inconsistency; a sample says it is a sample; a tampered certificate is refused before anything runs; the audit writes only its own journal and resumes only its own plan.",
+      "code": [
+        "cubeproof.commands.audit.audit_command",
+        "cubeproof.commands.audit_plan.make_plan",
+        "cubeproof.commands.audit_compare.classify_attempt"
+      ],
+      "checks": [
+        {
+          "test": "packages/cubeproof/tests/audit/test_cp_audit_run.py::test_a_real_small_audit_matches",
+          "covers": "a full audit"
+        },
+        {
+          "test": "packages/cubeproof/tests/audit/test_cp_audit_run.py::test_a_sample_is_deterministic_and_reported_as_a_sample",
+          "covers": "a sample"
+        },
+        {
+          "test": "packages/cubeproof/tests/audit/test_cp_audit_run.py::test_a_different_valid_proof_is_a_mismatch",
+          "covers": "strict comparison of proof hashes"
+        },
+        {
+          "test": "packages/cubeproof/tests/audit/test_cp_audit_run.py::test_reprove_never_reads_as_strict_success",
+          "covers": "a reproof is never reported as a reproduction"
+        },
+        {
+          "test": "packages/cubeproof/tests/audit/test_cp_audit_run.py::test_an_unexpected_model_is_an_inconsistency",
+          "covers": "a model where a refutation was recorded"
+        },
+        {
+          "test": "packages/cubeproof/tests/audit/test_cp_audit_run.py::test_a_tampered_certificate_is_refused_before_any_record",
+          "covers": "the certificate is recomputed before anything runs"
+        },
+        {
+          "test": "packages/cubeproof/tests/audit/test_cp_audit_run.py::test_a_changed_selection_on_restart_is_refused",
+          "covers": "a resumed audit keeps its plan"
+        }
+      ],
+      "limits": "The fast tests use fake tools and tiny formulas; the pinned tools are run by the test-image tier (faces12:strict-reproduction). A sample verifies only the leaves it selects."
+    },
+    {
+      "id": "faces12:campaign-freeze",
+      "established": "Tested",
+      "statement": "A campaign document fixes the formulas by the hashes of their bundles, the root splits, the policy and the admitted proof machinery, and its identifier is the hash of its canonical bytes: a change of any of them is another campaign, and journals of another campaign are refused. `faces12-campaign campaign init` verifies the 59 bundles against the pinned formula hashes before it writes a campaign and never replaces one.",
+      "code": [
+        "cubeproof.contracts.campaign.Campaign",
+        "cubeproof.contracts.campaign.check_campaign",
+        "faces12_campaign.campaign.init_campaign"
+      ],
+      "checks": [
+        {
+          "test": "packages/cubeproof/tests/contracts/test_cp_contracts_campaign.py::test_valid_campaign_round_trip_and_identity",
+          "covers": "the identity is the hash of the canonical document"
+        },
+        {
+          "test": "packages/cubeproof/tests/contracts/test_cp_contracts_campaign.py::test_configured_solver_must_be_admitted_with_its_exact_argv",
+          "covers": "the machinery is part of the campaign"
+        },
+        {
+          "test": "packages/cubeproof/tests/certify/test_cp_certify_scenarios.py::test_a_foreign_campaign_is_an_input_error",
+          "covers": "journals of another campaign are refused"
+        },
+        {
+          "test": "packages/faces12-campaign/tests/test_f12_campaign.py::test_bundles_are_verified_before_a_campaign_is_made",
+          "covers": "the bundles are verified first"
+        },
+        {
+          "test": "packages/faces12-campaign/tests/test_f12_campaign.py::test_a_campaign_is_never_overwritten_and_its_prefixes_can_be_reused",
+          "covers": "a campaign file is never replaced"
+        }
+      ],
+      "limits": "The article and `docs/SOURCES.md` are not part of a campaign. Drift of the binaries is caught by their pinned hashes at run time, not by the campaign file."
+    },
+    {
+      "id": "faces12:worker-shutdown",
+      "established": "Tested",
+      "statement": "A run stops cleanly on SIGINT or SIGTERM with exit 130 and a restart continues from its journal; a second signal cuts the grace period; the solver, the checker and anything they start run in their own process groups and die with the run, also when the coordinator is killed outright; a dead I/O service stops the run with exit 5.",
+      "code": [
+        "cubeproof.tools.process.Supervisor",
+        "cubeproof.tools.isolation.Isolation",
+        "cubeproof.coordinator.run.Coordinator"
+      ],
+      "checks": [
+        {
+          "test": "packages/cubeproof/tests/lifecycle/test_cp_life_run.py::test_a_signal_stops_cleanly_with_exit_130_and_a_restart_continues",
+          "covers": "SIGINT and SIGTERM"
+        },
+        {
+          "test": "packages/cubeproof/tests/lifecycle/test_cp_life_run.py::test_a_second_signal_kills_without_the_grace_period",
+          "covers": "a second signal"
+        },
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_supervisor.py::test_the_tool_dies_with_its_coordinator",
+          "covers": "a coordinator killed outright takes its tools along"
+        },
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_supervisor.py::test_the_tool_dies_with_a_coordinator_killed_while_it_launches",
+          "covers": "also when the coordinator is killed while a tool is being launched"
+        },
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_supervisor.py::test_descendants_in_the_group_die_with_the_leader",
+          "covers": "process groups"
+        },
+        {
+          "test": "packages/cubeproof/tests/lifecycle/test_cp_life_run.py::test_a_dead_io_service_stops_the_run_with_exit_five",
+          "covers": "a dead I/O service"
+        }
+      ],
+      "limits": "The parent-death signal is a Linux feature; process execution is supported on Linux only (native, WSL 2 or a container). A stop signal that arrives while the coordinator is shutting down is counted and the shutdown completes."
+    },
+    {
+      "id": "faces12:retained-proofs",
+      "established": "Tested",
+      "statement": "In retain mode a verified proof is published under its own hash before the record that names it, and a restart keeps every referenced proof and removes orphans; `cubeproof verify-retained` checks every retained proof with the pinned checker, without a solver, and counts a missing, changed or rejected proof as a failure.",
+      "code": [
+        "cubeproof.leaf.retain.retain_request",
+        "cubeproof.commands.verify_retained.verify_retained"
+      ],
+      "checks": [
+        {
+          "test": "packages/cubeproof/tests/retain/test_cp_retain_run.py::test_a_retain_run_publishes_every_verified_proof_before_its_record",
+          "covers": "publication before the record"
+        },
+        {
+          "test": "packages/cubeproof/tests/lifecycle/test_cp_life_run.py::test_referenced_artifacts_are_kept_and_orphans_removed_at_startup",
+          "covers": "a restart keeps referenced proofs"
+        },
+        {
+          "test": "packages/cubeproof/tests/audit/test_cp_verify_retained.py::test_every_retained_proof_is_verified",
+          "covers": "every retained proof is checked"
+        },
+        {
+          "test": "packages/cubeproof/tests/audit/test_cp_verify_retained.py::test_a_missing_proof_is_counted_not_skipped",
+          "covers": "a missing proof is a failure"
+        },
+        {
+          "test": "packages/cubeproof/tests/audit/test_cp_verify_retained.py::test_a_rejected_proof_is_an_integrity_failure",
+          "covers": "a rejected proof is a failure"
+        }
+      ],
+      "limits": "The fast tests use fake tools; retained proofs exist only where a campaign ran in retain mode."
+    },
+    {
+      "id": "faces12:budget",
+      "established": "Tested",
+      "statement": "The scheduler admits a task only within the declared memory, CPU and disk budgets, reserving per stage (solve, sealed proof, check, stream); a task the idle machine cannot hold is refused or fails preflight instead of waiting forever; checker arena exhaustion retries only the check with a larger arena; no verdict stops a run: a model or an anomaly is recorded and the other work goes on. Only a check the checker accepts closes a leaf.",
+      "code": [
+        "cubeproof.coordinator.ledger.ResourceBook",
+        "cubeproof.coordinator.resources.idle_fit",
+        "cubeproof.coordinator.resources.preflight",
+        "cubeproof.tools.checker.next_arena"
+      ],
+      "checks": [
+        {
+          "test": "packages/cubeproof/tests/scheduler/test_cp_sched_resources.py::test_memory_budget_is_headroom_minus_reserve_coordinator_and_helpers",
+          "covers": "the memory budget"
+        },
+        {
+          "test": "packages/cubeproof/tests/scheduler/test_cp_sched_ledger.py::test_the_total_budget_binds_even_with_plenty_of_headroom",
+          "covers": "the budget binds"
+        },
+        {
+          "test": "packages/cubeproof/tests/scheduler/test_cp_sched_resources.py::test_a_solver_that_cannot_fit_the_idle_machine_fails_preflight",
+          "covers": "an impossible task fails preflight"
+        },
+        {
+          "test": "packages/cubeproof/tests/scheduler/test_cp_sched_resources.py::test_an_idle_machine_impossible_stream_task_is_rejected_not_waited_for",
+          "covers": "and is never waited for"
+        },
+        {
+          "test": "packages/cubeproof/tests/leaf/test_cp_leaf_attempt.py::test_checker_arena_exhaustion_retries_only_the_check",
+          "covers": "arena retries"
+        },
+        {
+          "test": "packages/cubeproof/tests/lifecycle/test_cp_life_run.py::test_rejected_proofs_are_anomalies_and_the_limit_stops_new_work",
+          "covers": "anomalies are recorded and counted"
+        }
+      ],
+      "limits": "Budgets are reservations against measured or declared capacity, not a promise of physical memory; the operating system can still kill a process. Proof size estimates guide retries and do not guarantee success."
+    },
+    {
+      "id": "faces12:limits",
+      "established": "Tested",
+      "statement": "Solver and checker run in their own process groups under `prlimit` caps, started through `setpriv --pdeathsig KILL`; an oversized proof, a flood of diagnostics or an expired deadline ends the attempt with a recorded cause and never counts as success.",
+      "code": [
+        "cubeproof.tools.isolation.Isolation.wrap",
+        "cubeproof.tools.process.Supervisor"
+      ],
+      "checks": [
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_supervisor.py::test_isolation_wraps_with_setpriv_and_prlimit",
+          "covers": "the wrappers"
+        },
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_rows.py::test_proof_size_by_sigxfsz",
+          "covers": "an oversized proof"
+        },
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_supervisor.py::test_floods_are_drained_and_bounded",
+          "covers": "a flood of diagnostics"
+        },
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_rows.py::test_check_deadline",
+          "covers": "an expired check deadline"
+        },
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_rows.py::test_checker_flood_is_never_success",
+          "covers": "a flood is never success"
+        },
+        {
+          "test": "packages/cubeproof/tests/tools/test_cp_tools_supervisor.py::test_descendants_die_on_deadline",
+          "covers": "the process group dies on the deadline"
+        }
+      ],
+      "limits": "The caps are per process, not a cgroup. The parent-death signal needs util-linux 2.33 or later and covers the tool itself, not a process the tool started (CaDiCaL and cake_lpr start none)."
+    },
+    {
+      "id": "faces12:release-list",
+      "established": "Tested",
+      "statement": "A source archive contains exactly the files of `RELEASE_FILES.txt`, and that list names exactly the files of the checkout.",
+      "code": [
+        "faces12_campaign.release.bundle.build_bundle",
+        "faces12_campaign.release.bundle.release_payloads"
+      ],
+      "checks": [
+        {
+          "test": "packages/faces12-campaign/tests/test_f12_release.py::test_the_archive_is_the_allowlist_and_byte_reproducible",
+          "covers": "the archive is the list, byte-reproducible"
+        },
+        {
+          "test": "packages/faces12-campaign/tests/test_f12_release.py::test_the_allowlist_refuses_bad_entries",
+          "covers": "duplicates, escapes, absolute paths, missing files and symbolic links are refused"
+        },
+        {
+          "test": "tests/architecture/test_release_list.py::test_the_release_list_is_exactly_the_files_of_the_checkout",
+          "covers": "every tracked or untracked, not ignored file of the checkout is listed, every listed file exists, and the list is sorted"
+        },
+        {
+          "test": "tests/architecture/test_release_list.py::test_unlisted_missing_unsorted_and_outside_entries_are_problems",
+          "covers": "the comparison reports an unlisted file, a missing file, an unsorted list and a path outside the tree"
+        },
+        {
+          "test": "tests/architecture/test_release_list.py::test_the_source_release_runs_its_own_fast_suites",
+          "covers": "a copy of the listed files and nothing else passes the fast suites of the three packages"
+        }
+      ],
+      "limits": "The comparison with the checkout needs Git. In an unpacked source release the test checks only that every listed file exists."
+    },
+    {
+      "id": "faces12:docs",
+      "established": "Tested",
+      "statement": "The generated blocks of `docs/CLAIMS.md` and `docs/THEORY_MAP.md` are current; every claim names code and tests that exist and are not skipped; every statement label cited in a released document or source exists; every relative link of a released document resolves; the generated command references of `cubeproof` and `faces12-campaign` equal their parsers.",
+      "code": [
+        "claims_docs.check",
+        "faces12_campaign.release.docs.check"
+      ],
+      "checks": [
+        {
+          "test": "tests/architecture/test_claims_docs.py::test_the_claims_documents_are_consistent",
+          "covers": "the ledger, the labels and the links"
+        },
+        {
+          "test": "tests/architecture/test_claims_docs.py::test_the_statement_numbers_match_a_latex_build",
+          "covers": "the statement numbers of the article"
+        },
+        {
+          "test": "packages/faces12-campaign/tests/test_f12_release.py::test_the_committed_reference_is_the_generated_one",
+          "covers": "the faces12-campaign reference"
+        },
+        {
+          "test": "packages/cubeproof/tests/cli/test_cp_cli_reference.py::test_the_reference_in_the_repository_is_the_generated_one",
+          "covers": "the cubeproof reference"
+        }
+      ],
+      "limits": "It checks names, links and generated text, not whether prose is true. The command lines quoted in the guides are not parsed by a repository test."
+    },
+    {
+      "id": "faces12:quickstart",
+      "established": "Not checked by a repository test",
+      "statement": "The commands of `docs/QUICKSTART.md` run as written.",
+      "limits": "No repository test runs them. The tutorial exercises small controls, formula generation and a toy formula, not a twelve-face proof search."
+    },
+    {
+      "id": "faces12:layers",
+      "established": "Tested by `make test-architecture` (`tools/checks/archcheck.py`, `tests/architecture`)",
+      "statement": "Every import of `cubeproof`, `neighbourly` and `faces12-campaign`, directly and through chains of imports, respects the layer tables; the certifier, the evidence readers, CNF and the contracts reach no process, thread, signal, socket or resource module; only the command line reads the environment, prints or exits; `neighbourly.cnf` reaches only the standard library and reads no package data; `tools/certify_min.py` imports only the standard library.",
+      "limits": "Static analysis of imports: dynamic imports from computed strings are forbidden by the same checks, but behavior is not analysed. The rules say what may be imported, not that the code behind an import is correct."
+    },
+    {
+      "id": "faces12:paper-builds",
+      "established": "Build-time validation",
+      "statement": "The article builder accepts only pdfLaTeX, requires repeated builds to produce identical PDF bytes and rejects unresolved references, missing characters, overfull boxes and bookmark defects.",
+      "limits": "Reproducibility is checked within one TeX installation. Another installation or other fonts need not emit identical bytes; visual inspection remains necessary."
+    },
+    {
+      "id": "faces12:campaign",
+      "open": true,
+      "statement": "For each of the 59 formulas, a cube tree with the empty root is refuted by checked proofs of its leaves (paper: thm:coverage); refuting every case of one fixed partition is the special case of one split (paper: prop:cases).",
+      "limits": "The complete computation has not been carried out: no formula has been closed at its empty cube. Closed nonempty pilot roots do not count (paper: rem:pilotroot). The article establishes a conditional reduction, not a completed nonexistence proof."
+    },
+    {
+      "id": "faces12:leaf-verification",
+      "open": true,
+      "statement": "Every selected leaf of the certificates of the 59 formulas has been verified independently of the journals, by checking a retained proof again or by recomputing the leaf.",
+      "limits": "Not carried out: it presupposes faces12:campaign. A certificate alone is an attestation (paper: rem:attestation). A sample verifies only the leaves it selects, and a new proof made with another solver or execution profile is reported as a reproof, not as a reproduction of the record."
+    },
+    {
+      "id": "faces12:image",
+      "established": "Tested in the release-image tier (`docker/release/validate.sh` builds the image and runs these tests against it)",
+      "statement": "The release image (`docker/release/Dockerfile`, linux/amd64) installs only the three wheels built from the release sources, with no checkout on the import path, and passes its own self-check (non-root user, tools and helper against their build records, cake_lpr and CaDiCaL against the hashes `faces12_campaign.pins` records, installed files against recorded hashes, the application self-test, one tiny proof checked by the pinned checker, writable volumes).",
+      "checks": [
+        {
+          "test": "tests/release/test_release_image.py::test_the_release_stage_installs_built_wheels_only",
+          "covers": "the release stage of the Dockerfile installs the built wheels and copies no source tree"
+        },
+        {
+          "test": "tests/release/test_release_image.py::test_the_image_passes_its_selfcheck",
+          "covers": "the self-check of a built image"
+        },
+        {
+          "test": "tests/release/test_release_image.py::test_the_image_imports_only_installed_code_and_refuses_root_volume_owners",
+          "covers": "no checkout on the import path; volumes owned by root are refused"
+        }
+      ],
+      "limits": "The image tests need Docker and a built image and are skipped otherwise. linux/amd64 only: no other architecture is supported."
+    },
+    {
+      "id": "faces12:two-builds",
+      "established": "Checked by `docker/release/validate.sh` (two builds without cache and a comparison of the recorded hashes), not by a repository test",
+      "statement": "Two clean builds of the release image (`docker/release/validate.sh`, no cache) give the same hashes: the two tools, the helper, their sources, the three wheels, the source archive, the 59 formulas, the digest of every installed file and the release provenance document without its time of recording.",
+      "limits": "Image IDs, layer timestamps and sdists (their gzip header records the build time) differ by construction and are not compared. The build downloads its pinned inputs; the claim is about what was built from them, not that they stay available."
+    },
+    {
+      "id": "faces12:two-certifiers",
+      "established": "Tested",
+      "statement": "`cubeproof certify` and the independently written `tools/certify_min.py` produce the same certificate bytes, used attempts, open lists, verdict and Merkle roots on the frozen contract corpus and on every complete workload of the end-to-end suites (`tests/endtoend`), in every proof mode and after every interruption tested.",
+      "checks": [
+        {
+          "test": "tests/endtoend/single/test_e2e_fake.py::test_a_tiny_workload_closes_and_both_certifiers_agree",
+          "covers": "both certifiers on every tiny complete workload, fake tools"
+        },
+        {
+          "test": "tests/endtoend/single/test_e2e_fake.py::test_an_interrupted_run_resumes_to_the_reference_certificate",
+          "covers": "agreement after an interruption and a restart"
+        },
+        {
+          "test": "tests/endtoend/cluster/test_cluster_fake.py::test_every_proof_mode_gives_the_same_certificate_and_leaf_proofs",
+          "covers": "two workers, every proof mode, one certificate"
+        },
+        {
+          "test": "tests/endtoend/single/test_e2e_pinned.py::test_a_real_proof_tree_closes_and_both_certifiers_agree_on_its_merkle_root",
+          "covers": "agreement on a real proof tree with the pinned tools"
+        },
+        {
+          "test": "tests/endtoend/single/test_e2e_fake.py::test_the_certifier_comparison_sees_differing_bytes_codes_and_compare",
+          "covers": "the comparison itself detects a difference"
+        }
+      ],
+      "limits": "Agreement shows that closure is evaluated the same way twice, not that the journals are honest (paper: rem:attestation). The end-to-end workloads are small: fake tools, pigeonhole formulas, the encodings of two small maps and, in the test-image tier, bounded real runs below one nonempty requested root of a twelve-face formula. The independent certifier shares no code with the main implementation (it imports only the standard library)."
+    },
+    {
+      "id": "faces12:strict-reproduction",
+      "established": "Tested in the test-image tier on small workloads",
+      "statement": "With the pinned CaDiCaL and cake_lpr, a strict audit regenerates the used leaves of the end-to-end workloads and reproduces every recorded proof hash, the three proof modes give one proof hash for every leaf they have in common, and `verify-retained` verifies every retained proof.",
+      "checks": [
+        {
+          "test": "tests/endtoend/cluster/test_cluster_pinned.py::test_every_proof_mode_gives_the_same_certificate_and_leaf_proofs_with_real_tools",
+          "covers": "two workers in every proof mode with the pinned tools: one proof hash per common leaf, a strict audit with every selected leaf `HASH_MATCHED`, every retained proof verified"
+        },
+        {
+          "test": "tests/endtoend/cluster/test_cluster_pinned.py::test_random_crashes_of_two_workers_with_real_tools_recover",
+          "covers": "the same after random crashes of the two workers"
+        }
+      ],
+      "limits": "Determinism of the pinned CaDiCaL is observed, not proved, and only for these small workloads under one execution profile; it is not a statement about other versions, options or platforms. No strict audit of a campaign of the 59 formulas exists (faces12:leaf-verification)."
+    },
+    {
+      "id": "faces12:crash-recovery",
+      "established": "Tested",
+      "statement": "A worker that is killed at any point recovers from its journal: the crash table of the design (journal prefixes at record boundaries with the files the protocol order implies) recovers through the command line in every proof mode, and random kills of two cooperating workers end in the certificate of an uninterrupted reference run; in the tested runs no acknowledged record is lost, and unfinished work is repeated (at least once, not exactly once).",
+      "checks": [
+        {
+          "test": "tests/endtoend/cluster/test_cluster_fake.py::test_a_durable_boundary_recovers_as_the_crash_table_says",
+          "covers": "every row of the crash table, through the command line"
+        },
+        {
+          "test": "tests/endtoend/cluster/test_cluster_fake.py::test_a_durable_boundary_recovers_in_every_proof_mode",
+          "covers": "the durable boundaries in transient, retain and stream mode"
+        },
+        {
+          "test": "tests/endtoend/cluster/test_cluster_fake.py::test_fifty_random_crashes_of_two_workers_recover",
+          "covers": "fifty seeded iterations of random kills of two cooperating workers end in the reference certificate"
+        },
+        {
+          "test": "tests/endtoend/single/test_e2e_fake.py::test_a_process_group_crash_after_n_attempts_resumes_to_the_reference",
+          "covers": "a kill of the process group after n attempts, one worker"
+        }
+      ],
+      "limits": "The tested crashes are kills of the process group and constructed on-disk states. Power loss, failing disks and a real fsync failure are not simulated end to end; the journal and artifact component suites inject faults at append, move and publish points. Journals have no promise beyond the life of their only copy."
+    },
+    {
+      "id": "faces12:citations",
+      "open": true,
+      "statement": "Every citation of the article has been checked against the printed source.",
+      "limits": "All bibliography entries have source records in docs/SOURCES.md. Direct checks include the 2025 Bokowski–Kevin H. search, the published Arseneva definitions, Szilassi 1986, the CakeML correctness statement and Scheucher. Metadata-only or edition-comparison limits remain for the general books, Jungerman–Ringel, the CaDiCaL 2.0 entry and some final journal versions; this is not an audit of every cited proof. The genus-6 minimum-vertex bound is now derived in the article."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+# Run results are never committed
+results/
+
+# build outputs: `make bundle` writes dist/, a package build writes build/
+dist/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.eggs/
+
+# tooling state
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# LaTeX build artefacts; the PDFs themselves are part of the release and are committed
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+
+# Hidden files and directories at the root belong to local tools and editors, except the
+# three configuration files the repository tracks.
+/.*
+!/.gitignore
+!/.gitattributes
+!/.dockerignore

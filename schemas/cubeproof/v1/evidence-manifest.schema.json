@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-evidence-1 (SPECIFICATION §4.9)",
+  "description": "Paths are contained in the evidence directory; arrays are sorted by path (requirement evidence.order).",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-evidence-1"
+    },
+    "campaign": {
+      "$ref": "common.schema.json#/$defs/Artifact"
+    },
+    "bundles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "manifest": {
+            "$ref": "common.schema.json#/$defs/Artifact"
+          },
+          "formula": {
+            "$ref": "common.schema.json#/$defs/Artifact"
+          }
+        },
+        "required": [
+          "manifest",
+          "formula"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "journals": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Artifact"
+      }
+    },
+    "certificate": {
+      "$ref": "common.schema.json#/$defs/Artifact"
+    }
+  },
+  "required": [
+    "format",
+    "campaign",
+    "bundles",
+    "journals",
+    "certificate"
+  ],
+  "additionalProperties": false
+}

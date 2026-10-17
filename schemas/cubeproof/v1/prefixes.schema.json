@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-prefixes-1 (SPECIFICATION §12.1)",
+  "description": "Static prefix input: entries exactly the root_splits entry shape of SPECIFICATION §4.4, sorted by split_id (requirement prefixes.order) and well-formed (split.*). An empty list means no root split.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-prefixes-1"
+    },
+    "splits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "node": {
+            "$ref": "common.schema.json#/$defs/Node"
+          },
+          "variables": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/Positive"
+            }
+          },
+          "splitter": {
+            "$ref": "common.schema.json#/$defs/Splitter"
+          }
+        },
+        "required": [
+          "node",
+          "variables",
+          "splitter"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "format",
+    "splits"
+  ],
+  "additionalProperties": false
+}

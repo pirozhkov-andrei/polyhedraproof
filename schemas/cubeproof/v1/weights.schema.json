@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-weights-1 (SPECIFICATION §12.1)",
+  "description": "costs maps known planned node IDs to positive estimated costs; unknown node IDs are rejected (requirement weights.unknown).",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-weights-1"
+    },
+    "campaign": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "costs": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+      },
+      "additionalProperties": {
+        "$ref": "common.schema.json#/$defs/Positive"
+      }
+    }
+  },
+  "required": [
+    "format",
+    "campaign",
+    "costs"
+  ],
+  "additionalProperties": false
+}

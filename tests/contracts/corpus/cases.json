@@ -1,0 +1,1467 @@
+{
+ "audit_plans": [
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "expect": "valid",
+   "id": "a_valid",
+   "journal": "journals/modes/audit1.jsonl"
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "expect": {
+    "rule": "audit.plan_order"
+   },
+   "id": "a_plan_order",
+   "journal": "journals/audit/plan_order.jsonl"
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "expect": {
+    "rule": "audit.targets_hash"
+   },
+   "id": "a_targets_hash",
+   "journal": "journals/audit/targets_hash.jsonl"
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "expect": {
+    "rule": "audit.result_unique"
+   },
+   "id": "a_result_unique",
+   "journal": "journals/audit/result_unique.jsonl"
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "expect": {
+    "rule": "audit.result_ref"
+   },
+   "id": "a_result_ref",
+   "journal": "journals/audit/result_ref.jsonl"
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "expect": {
+    "rule": "audit.result_ref"
+   },
+   "id": "a_result_later",
+   "journal": "journals/audit/result_later.jsonl"
+  }
+ ],
+ "cases": [
+  {
+   "campaign": "campaigns/pilot/campaign.json",
+   "description": "SPECIFICATION §4.10: a proof of F_sat and [-1] closes only that root",
+   "expect": {
+    "certificate": "certificates/pilot_root.json",
+    "exit": 1
+   },
+   "id": "pilot_root",
+   "journals": [
+    "journals/pilot_root/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/unsat/campaign.json",
+   "description": "SPECIFICATION §4.10: F_unsat with split [1] needs both children",
+   "expect": {
+    "certificate": "certificates/split_full.json",
+    "exit": 0
+   },
+   "id": "split_full",
+   "journals": [
+    "journals/split_full/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/unsat/campaign.json",
+   "description": "One child of the root split is still open",
+   "expect": {
+    "certificate": "certificates/split_incomplete.json",
+    "exit": 1
+   },
+   "id": "split_incomplete",
+   "journals": [
+    "journals/split_incomplete/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/zero/campaign.json",
+   "description": "V=0: the empty clause is refuted, the empty formula has the empty model",
+   "expect": {
+    "certificate": "certificates/zero_vars.json",
+    "exit": 2
+   },
+   "id": "zero_vars",
+   "journals": [
+    "journals/zero_vars/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Campaign split [1], journal split [2] under [-1]; three leaves",
+   "expect": {
+    "certificate": "certificates/base.json",
+    "exit": 0
+   },
+   "id": "base",
+   "journals": [
+    "journals/base/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Two closed root splits (one also in the campaign); attempts beat splits; smallest Ref",
+   "expect": {
+    "certificate": "certificates/alternatives.json",
+    "exit": 0
+   },
+   "id": "alternatives",
+   "journals": [
+    "journals/alternatives/w1.jsonl",
+    "journals/alternatives/w2.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Open frontier under the smallest split_id; labels from each worker's latest stop/reopen",
+   "expect": {
+    "certificate": "certificates/frontier.json",
+    "exit": 1
+   },
+   "id": "frontier",
+   "journals": [
+    "journals/frontier/w1.jsonl",
+    "journals/frontier/w2.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Only each worker's latest node_stop/node_reopen of an emitted node counts: a stop followed by its reopen is pending, a later stop replaces an earlier one",
+   "expect": {
+    "certificate": "certificates/labels.json",
+    "exit": 1
+   },
+   "id": "labels",
+   "journals": [
+    "journals/labels/w1.jsonl",
+    "journals/labels/w2.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Anomalies stay visible and do not invalidate a complete proof tree",
+   "expect": {
+    "certificate": "certificates/anomalies.json",
+    "exit": 0
+   },
+   "id": "anomalies",
+   "journals": [
+    "journals/anomalies/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Retain, stream and audit-purpose evidence; machinery snapshots",
+   "expect": {
+    "certificate": "certificates/modes.json",
+    "exit": 0
+   },
+   "id": "modes",
+   "journals": [
+    "journals/modes/w1.jsonl",
+    "journals/modes/audit1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Prefix copies with torn tails count once; input order is irrelevant",
+   "expect": {
+    "certificate": "certificates/duplicates.json",
+    "exit": 0
+   },
+   "id": "duplicates",
+   "journals": [
+    "journals/duplicates/w1-prefix.jsonl",
+    "journals/duplicates/w1-torn.jsonl",
+    "journals/duplicates/w1.jsonl",
+    "journals/duplicates/w2.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "A complete record without LF is a torn tail: ignored and reported",
+   "expect": {
+    "certificate": "certificates/torn_tail.json",
+    "exit": 0
+   },
+   "id": "torn_tail",
+   "journals": [
+    "journals/torn_tail/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Every outcome and reason in file and stream modes",
+   "expect": {
+    "certificate": "certificates/catalogue.json",
+    "exit": 0
+   },
+   "id": "catalogue",
+   "journals": [
+    "journals/catalogue/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/mixed/campaign.json",
+   "description": "Non-admitted attempts are listed, also with bad success fields; their models and anomalies (check_rejected, invalid_model) bind",
+   "expect": {
+    "certificate": "certificates/nonadmitted.json",
+    "exit": 2
+   },
+   "id": "nonadmitted",
+   "journals": [
+    "journals/nonadmitted/wbad.jsonl",
+    "journals/nonadmitted/wsol.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/mixed/campaign.json",
+   "description": "A node with a valid model is emitted as model although it has a split (SPECIFICATION §10.3)",
+   "expect": {
+    "certificate": "certificates/model_split.json",
+    "exit": 2
+   },
+   "id": "model_split",
+   "journals": [
+    "journals/model_split/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/mixed/campaign.json",
+   "description": "Valid models from cdcl and unit routes; MODEL_FOUND",
+   "expect": {
+    "certificate": "certificates/models.json",
+    "exit": 2
+   },
+   "id": "models",
+   "journals": [
+    "journals/models/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/mixed/campaign.json",
+   "description": "An INVALID_MODEL that satisfies is a model plus an anomaly; one that satisfies every clause but not its cube unit stays an invalid model (SPECIFICATION §10.4: clauses and cube units)",
+   "expect": {
+    "certificate": "certificates/mislabelled.json",
+    "exit": 2
+   },
+   "id": "mislabelled",
+   "journals": [
+    "journals/mislabelled/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/mixed/campaign.json",
+   "description": "A lying admitted attestation and a valid model: INCONSISTENT",
+   "expect": {
+    "certificate": "certificates/inconsistent.json",
+    "exit": 4
+   },
+   "id": "inconsistent",
+   "journals": [
+    "journals/inconsistent/w1.jsonl"
+   ],
+   "lying": true
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "A middle line with extra spaces: valid JSON, not J(record)",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "json.canonical"
+    },
+    "exit": 4
+   },
+   "id": "x_json_canonical",
+   "journals": [
+    "journals/x_json_canonical/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "json.utf8",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "json.utf8"
+    },
+    "exit": 4
+   },
+   "id": "x_json_utf8",
+   "journals": [
+    "journals/x_json_utf8/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "A complete invalid last line is an integrity error, not a torn tail",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "json.syntax"
+    },
+    "exit": 4
+   },
+   "id": "x_json_syntax_last",
+   "journals": [
+    "journals/x_json_syntax_last/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "json.duplicate_key",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "json.duplicate_key"
+    },
+    "exit": 4
+   },
+   "id": "x_json_duplicate_key",
+   "journals": [
+    "journals/x_json_duplicate_key/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "elapsed_ms 12.0; self/prev chain intact for a lenient parser",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "json.number"
+    },
+    "exit": 4
+   },
+   "id": "x_json_number",
+   "journals": [
+    "journals/x_json_number/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "elapsed_ms 2^63; self/prev chain intact for a lenient parser",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "json.integer_range"
+    },
+    "exit": 4
+   },
+   "id": "x_json_integer_range",
+   "journals": [
+    "journals/x_json_integer_range/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "json.surrogate",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "json.surrogate"
+    },
+    "exit": 4
+   },
+   "id": "x_json_surrogate",
+   "journals": [
+    "journals/x_json_surrogate/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "json.bom",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "json.bom"
+    },
+    "exit": 4
+   },
+   "id": "x_json_bom",
+   "journals": [
+    "journals/x_json_bom/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Depth 33: record 1, diagnostics 2, lists 3-33",
+   "expect": {
+    "error": {
+     "kind": "resource",
+     "rule": "limit.depth"
+    },
+    "exit": 4
+   },
+   "id": "x_limit_depth",
+   "journals": [
+    "journals/x_limit_depth/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "schema",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "schema"
+    },
+    "exit": 4
+   },
+   "id": "x_schema_unknown_field",
+   "journals": [
+    "journals/x_schema_unknown_field/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "schema",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "schema"
+    },
+    "exit": 4
+   },
+   "id": "x_schema_missing_field",
+   "journals": [
+    "journals/x_schema_missing_field/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "A boolean is never an integer",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "schema"
+    },
+    "exit": 4
+   },
+   "id": "x_schema_bool",
+   "journals": [
+    "journals/x_schema_bool/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "schema",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "schema"
+    },
+    "exit": 4
+   },
+   "id": "x_schema_record_type",
+   "journals": [
+    "journals/x_schema_record_type/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "journal.self",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "journal.self"
+    },
+    "exit": 4
+   },
+   "id": "x_journal_self",
+   "journals": [
+    "journals/x_journal_self/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "journal.seq",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "journal.seq"
+    },
+    "exit": 4
+   },
+   "id": "x_journal_seq",
+   "journals": [
+    "journals/x_journal_seq/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "journal.prev",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "journal.prev"
+    },
+    "exit": 4
+   },
+   "id": "x_journal_prev",
+   "journals": [
+    "journals/x_journal_prev/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "seq 0 is not a header",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "journal.header"
+    },
+    "exit": 4
+   },
+   "id": "x_journal_header_first",
+   "journals": [
+    "journals/x_journal_header_first/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "journal.header",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "journal.header"
+    },
+    "exit": 4
+   },
+   "id": "x_journal_header_twice",
+   "journals": [
+    "journals/x_journal_header_twice/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "journal.purpose",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "journal.purpose"
+    },
+    "exit": 4
+   },
+   "id": "x_journal_purpose",
+   "journals": [
+    "journals/x_journal_purpose/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Header of another campaign (reading 6)",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "journal.campaign"
+    },
+    "exit": 4
+   },
+   "id": "x_journal_campaign",
+   "journals": [
+    "journals/x_journal_campaign/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "An included empty file (reading 6)",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "journal.no_header"
+    },
+    "exit": 4
+   },
+   "id": "x_journal_no_header_empty",
+   "journals": [
+    "journals/x_journal_no_header_empty/w1.jsonl",
+    "journals/x_journal_no_header_empty/w9.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Only a torn header (reading 6)",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "journal.no_header"
+    },
+    "exit": 4
+   },
+   "id": "x_journal_no_header_torn",
+   "journals": [
+    "journals/x_journal_no_header_torn/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "One worker Name, two header IDs",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "journal.worker"
+    },
+    "exit": 4
+   },
+   "id": "x_journal_worker",
+   "journals": [
+    "journals/x_journal_worker/w1.jsonl",
+    "journals/x_journal_worker/w1-other.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Two copies of one journal diverge",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "journal.fork"
+    },
+    "exit": 4
+   },
+   "id": "x_journal_fork",
+   "journals": [
+    "journals/x_journal_fork/w1.jsonl",
+    "journals/x_journal_fork/w1-fork.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "A node of a formula outside the campaign",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "record.formula"
+    },
+    "exit": 4
+   },
+   "id": "x_record_formula",
+   "journals": [
+    "journals/x_record_formula/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "A split's parent cube must be valid even though W errors are only anomalies",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "cube.canonical"
+    },
+    "exit": 4
+   },
+   "id": "x_cube_canonical",
+   "journals": [
+    "journals/x_cube_canonical/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "cube.range",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "cube.range"
+    },
+    "exit": 4
+   },
+   "id": "x_cube_range",
+   "journals": [
+    "journals/x_cube_range/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "record.node_id",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "record.node_id"
+    },
+    "exit": 4
+   },
+   "id": "x_record_node_id",
+   "journals": [
+    "journals/x_record_node_id/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "attempt.cnf_sha256",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "attempt.cnf_sha256"
+    },
+    "exit": 4
+   },
+   "id": "x_attempt_cnf_sha256",
+   "journals": [
+    "journals/x_attempt_cnf_sha256/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "The policy hash of the header, after a resume changed the policy",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "attempt.policy_sha256"
+    },
+    "exit": 4
+   },
+   "id": "x_attempt_policy_sha256",
+   "journals": [
+    "journals/x_attempt_policy_sha256/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "attempt.attempt_id",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "attempt.attempt_id"
+    },
+    "exit": 4
+   },
+   "id": "x_attempt_attempt_id",
+   "journals": [
+    "journals/x_attempt_attempt_id/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "The torn_tail case with its last line complete: a false MODEL",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "attempt.model_false"
+    },
+    "exit": 4
+   },
+   "id": "x_attempt_model_false",
+   "journals": [
+    "journals/x_attempt_model_false/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/mixed/campaign.json",
+   "description": "A MODEL that satisfies every clause but not its cube unit is false (SPECIFICATION §10.4)",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "attempt.model_false"
+    },
+    "exit": 4
+   },
+   "id": "x_attempt_model_cube",
+   "journals": [
+    "journals/x_attempt_model_cube/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "attempt.reason",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "attempt.reason"
+    },
+    "exit": 4
+   },
+   "id": "x_attempt_reason",
+   "journals": [
+    "journals/x_attempt_reason/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "Two bytes for V=3",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "attempt.assignment"
+    },
+    "exit": 4
+   },
+   "id": "x_attempt_assignment",
+   "journals": [
+    "journals/x_attempt_assignment/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "success.checker_output",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "success.checker_output"
+    },
+    "exit": 4
+   },
+   "id": "x_success_checker_output",
+   "journals": [
+    "journals/x_success_checker_output/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "success.checks",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "success.checks"
+    },
+    "exit": 4
+   },
+   "id": "x_success_checks",
+   "journals": [
+    "journals/x_success_checks/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "success.solver",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "success.solver"
+    },
+    "exit": 4
+   },
+   "id": "x_success_solver",
+   "journals": [
+    "journals/x_success_solver/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "success.proof",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "success.proof"
+    },
+    "exit": 4
+   },
+   "id": "x_success_proof",
+   "journals": [
+    "journals/x_success_proof/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "process.exit_signal",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "process.exit_signal"
+    },
+    "exit": 4
+   },
+   "id": "x_process_exit_signal",
+   "journals": [
+    "journals/x_process_exit_signal/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "shard.hash",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "shard.hash"
+    },
+    "exit": 4
+   },
+   "id": "x_shard_hash",
+   "journals": [
+    "journals/x_shard_hash/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "shard.campaign",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "shard.campaign"
+    },
+    "exit": 4
+   },
+   "id": "x_shard_campaign",
+   "journals": [
+    "journals/x_shard_campaign/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "handoff.count",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "handoff.count"
+    },
+    "exit": 4
+   },
+   "id": "x_handoff_count",
+   "journals": [
+    "journals/x_handoff_count/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "The same request_id committed twice in one journal (SPECIFICATION §7.1, §7.4)",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "handoff.request_unique"
+    },
+    "exit": 4
+   },
+   "id": "x_handoff_request_unique",
+   "journals": [
+    "journals/x_handoff_request_unique/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "The same request_id committed twice with a different request (SPECIFICATION §7.1, §7.4)",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "handoff.request_unique"
+    },
+    "exit": 4
+   },
+   "id": "x_handoff_request_unique_content",
+   "journals": [
+    "journals/x_handoff_request_unique_content/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "utc.calendar",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "utc.calendar"
+    },
+    "exit": 4
+   },
+   "id": "x_utc_calendar",
+   "journals": [
+    "journals/x_utc_calendar/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/campaign.json",
+   "description": "machinery.packages_sha256",
+   "expect": {
+    "error": {
+     "kind": "integrity",
+     "rule": "machinery.packages_sha256"
+    },
+    "exit": 4
+   },
+   "id": "x_machinery_packages",
+   "journals": [
+    "journals/x_machinery_packages/w1.jsonl"
+   ]
+  },
+  {
+   "campaign": "campaigns/all3/invalid-json_canonical.json",
+   "description": "Campaign: json.canonical",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "json.canonical"
+    },
+    "exit": 4
+   },
+   "id": "c_json_canonical",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-schema.json",
+   "description": "Campaign: schema",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "schema"
+    },
+    "exit": 4
+   },
+   "id": "c_schema",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-schema_solvers_empty.json",
+   "description": "Campaign: schema",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "schema"
+    },
+    "exit": 4
+   },
+   "id": "c_schema_solvers_empty",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-utc.json",
+   "description": "Campaign: utc.calendar",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "utc.calendar"
+    },
+    "exit": 4
+   },
+   "id": "c_utc",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-node_formula.json",
+   "description": "Campaign: campaign.node_formula",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.node_formula"
+    },
+    "exit": 4
+   },
+   "id": "c_node_formula",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-cube_canonical.json",
+   "description": "Campaign: cube.canonical",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "cube.canonical"
+    },
+    "exit": 4
+   },
+   "id": "c_cube_canonical",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-cube_range.json",
+   "description": "Campaign: cube.range",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "cube.range"
+    },
+    "exit": 4
+   },
+   "id": "c_cube_range",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-roots_incompatible.json",
+   "description": "Campaign: campaign.roots_incompatible",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.roots_incompatible"
+    },
+    "exit": 4
+   },
+   "id": "c_roots_incompatible",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-roots_order.json",
+   "description": "Campaign: campaign.roots_order",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.roots_order"
+    },
+    "exit": 4
+   },
+   "id": "c_roots_order",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-splits_order.json",
+   "description": "Campaign: campaign.splits_order",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.splits_order"
+    },
+    "exit": 4
+   },
+   "id": "c_splits_order",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-split_empty.json",
+   "description": "Campaign: split.empty",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "split.empty"
+    },
+    "exit": 4
+   },
+   "id": "c_split_empty",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-split_too_long.json",
+   "description": "Campaign: split.too_long",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "split.too_long"
+    },
+    "exit": 4
+   },
+   "id": "c_split_too_long",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-split_repeated.json",
+   "description": "Campaign: split.repeated",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "split.repeated"
+    },
+    "exit": 4
+   },
+   "id": "c_split_repeated",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-split_out_of_range.json",
+   "description": "Campaign: split.out_of_range",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "split.out_of_range"
+    },
+    "exit": 4
+   },
+   "id": "c_split_out_of_range",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-split_in_cube.json",
+   "description": "Campaign: split.in_cube",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "split.in_cube"
+    },
+    "exit": 4
+   },
+   "id": "c_split_in_cube",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-root_split_node.json",
+   "description": "Campaign: campaign.root_split_node",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.root_split_node"
+    },
+    "exit": 4
+   },
+   "id": "c_root_split_node",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-policy_stack.json",
+   "description": "Campaign: policy.stack",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "policy.stack"
+    },
+    "exit": 4
+   },
+   "id": "c_policy_stack",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-pool.json",
+   "description": "Campaign: campaign.pool",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.pool"
+    },
+    "exit": 4
+   },
+   "id": "c_pool",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-argv_lrat.json",
+   "description": "Campaign: campaign.argv",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.argv"
+    },
+    "exit": 4
+   },
+   "id": "c_argv_lrat",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-argv_dash.json",
+   "description": "Campaign: campaign.argv",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.argv"
+    },
+    "exit": 4
+   },
+   "id": "c_argv_dash",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-admit_order.json",
+   "description": "Campaign: campaign.admit_order",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.admit_order"
+    },
+    "exit": 4
+   },
+   "id": "c_admit_order",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-admit_duplicate.json",
+   "description": "Campaign: campaign.admit_order",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.admit_order"
+    },
+    "exit": 4
+   },
+   "id": "c_admit_duplicate",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-tools_admitted.json",
+   "description": "Campaign: campaign.tools_admitted",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.tools_admitted"
+    },
+    "exit": 4
+   },
+   "id": "c_tools_admitted",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-tools_admitted_solver_argv.json",
+   "description": "Campaign: campaign.tools_admitted",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.tools_admitted"
+    },
+    "exit": 4
+   },
+   "id": "c_tools_admitted_solver_argv",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/all3/invalid-tools_admitted_solver_sha256.json",
+   "description": "Campaign: campaign.tools_admitted",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.tools_admitted"
+    },
+    "exit": 4
+   },
+   "id": "c_tools_admitted_solver_sha256",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/mixed/invalid-formulas_order.json",
+   "description": "Campaign: campaign.formulas_order",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.formulas_order"
+    },
+    "exit": 4
+   },
+   "id": "c_formulas_order",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/mixed/invalid-formula_hash_unique.json",
+   "description": "Campaign: campaign.formula_hash_unique",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.formula_hash_unique"
+    },
+    "exit": 4
+   },
+   "id": "c_formula_hash_unique",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/mixed/invalid-roots_per_formula.json",
+   "description": "Campaign: campaign.roots_per_formula",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "campaign.roots_per_formula"
+    },
+    "exit": 4
+   },
+   "id": "c_roots_per_formula",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/bad/files.json",
+   "description": "Bundle: bundle.files",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "bundle.files"
+    },
+    "exit": 4
+   },
+   "id": "b_files",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/bad/formula_sha256.json",
+   "description": "Bundle: bundle.formula_sha256",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "bundle.formula_sha256"
+    },
+    "exit": 4
+   },
+   "id": "b_formula_sha256",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/bad/campaign_hash.json",
+   "description": "Bundle: bundle.campaign_hash",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "bundle.campaign_hash"
+    },
+    "exit": 4
+   },
+   "id": "b_campaign_hash",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/bad/counts.json",
+   "description": "Bundle: bundle.counts",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "bundle.counts"
+    },
+    "exit": 4
+   },
+   "id": "b_counts",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/bad/dimacs.json",
+   "description": "Bundle: dimacs.clause",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "dimacs.clause"
+    },
+    "exit": 4
+   },
+   "id": "b_dimacs",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/bad/manifest_canonical.json",
+   "description": "Bundle: json.canonical",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "json.canonical"
+    },
+    "exit": 4
+   },
+   "id": "b_manifest_canonical",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/bad/manifest_schema.json",
+   "description": "Bundle: schema",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "schema"
+    },
+    "exit": 4
+   },
+   "id": "b_manifest_schema",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/bad/pools.json",
+   "description": "Bundle: bundle.pools",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "bundle.pools"
+    },
+    "exit": 4
+   },
+   "id": "b_pools",
+   "journals": []
+  },
+  {
+   "campaign": "campaigns/bad/side_files.json",
+   "description": "Bundle: bundle.side_files",
+   "expect": {
+    "error": {
+     "kind": "input",
+     "rule": "bundle.side_files"
+    },
+    "exit": 4
+   },
+   "id": "b_side_files",
+   "journals": []
+  }
+ ],
+ "format": "cubeproof-contract-cases-1"
+}

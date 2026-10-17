@@ -1,0 +1,850 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-journal-1 records (SPECIFICATION §4.7, §4.8)",
+  "description": "One journal line is J(record) + LF. Payload fields sit beside the envelope (routine reading 1). A reader selects the definition by the 'type' field; the root accepts any record type. self = SHA256(J(record without self)); chain, header and record rules are requirements journal.*, record.*, attempt.*, success.*.",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/header"
+    },
+    {
+      "$ref": "#/$defs/resume"
+    },
+    {
+      "$ref": "#/$defs/shard"
+    },
+    {
+      "$ref": "#/$defs/split"
+    },
+    {
+      "$ref": "#/$defs/attempt"
+    },
+    {
+      "$ref": "#/$defs/node_stop"
+    },
+    {
+      "$ref": "#/$defs/node_reopen"
+    },
+    {
+      "$ref": "#/$defs/handoff"
+    },
+    {
+      "$ref": "#/$defs/repair"
+    },
+    {
+      "$ref": "#/$defs/audit_begin"
+    },
+    {
+      "$ref": "#/$defs/audit_target"
+    },
+    {
+      "$ref": "#/$defs/audit_ready"
+    },
+    {
+      "$ref": "#/$defs/audit_result"
+    }
+  ],
+  "$defs": {
+    "header": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "header"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "worker": {
+          "$ref": "common.schema.json#/$defs/Name"
+        },
+        "campaign": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "purpose": {
+          "enum": [
+            "run",
+            "audit"
+          ]
+        },
+        "machinery": {
+          "$ref": "common.schema.json#/$defs/Machinery"
+        },
+        "policy": {
+          "$ref": "policy.schema.json"
+        },
+        "resources": {
+          "$ref": "common.schema.json#/$defs/ResourceSnapshot"
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "worker",
+        "campaign",
+        "purpose",
+        "machinery",
+        "policy",
+        "resources"
+      ],
+      "additionalProperties": false
+    },
+    "resume": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "resume"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "machinery": {
+          "$ref": "common.schema.json#/$defs/Machinery"
+        },
+        "policy": {
+          "$ref": "policy.schema.json"
+        },
+        "resources": {
+          "$ref": "common.schema.json#/$defs/ResourceSnapshot"
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "machinery",
+        "policy",
+        "resources"
+      ],
+      "additionalProperties": false
+    },
+    "shard": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "shard"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "shard": {
+          "$ref": "shard.schema.json"
+        },
+        "shard_sha256": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "shard",
+        "shard_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "split": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "split"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "node": {
+          "$ref": "common.schema.json#/$defs/Node"
+        },
+        "variables": {
+          "description": "Semantic errors in W are listed as malformed_split, not integrity errors (SPECIFICATION §10.1).",
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/Positive"
+          }
+        },
+        "splitter": {
+          "$ref": "common.schema.json#/$defs/Splitter"
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "node",
+        "variables",
+        "splitter"
+      ],
+      "additionalProperties": false
+    },
+    "attempt": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "attempt"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "node": {
+          "$ref": "common.schema.json#/$defs/Node"
+        },
+        "node_id": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "attempt_id": {
+          "$ref": "common.schema.json#/$defs/Id128"
+        },
+        "policy_sha256": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "route": {
+          "enum": [
+            "unit",
+            "cdcl"
+          ]
+        },
+        "proof_mode": {
+          "enum": [
+            "transient",
+            "retain",
+            "stream"
+          ]
+        },
+        "outcome": {
+          "enum": [
+            "VERIFIED_UNSAT",
+            "EXHAUSTED",
+            "MODEL",
+            "INVALID_MODEL",
+            "CHECK_REJECTED",
+            "TOOL_FAILED"
+          ]
+        },
+        "reason": {
+          "description": "Closed vocabulary (readings 1 and 2); which code fits which outcome is requirement attempt.reason.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "proof_size",
+                "time",
+                "check_time",
+                "check_memory",
+                "check_stack",
+                "solver_memory",
+                "launch",
+                "binary_changed",
+                "io",
+                "file_changed",
+                "crash",
+                "protocol",
+                "relay",
+                "rejected",
+                "missing",
+                "conflicting",
+                "out_of_range",
+                "syntax",
+                "violated"
+              ]
+            }
+          ]
+        },
+        "cnf_sha256": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "limits": {
+          "$ref": "common.schema.json#/$defs/Limits"
+        },
+        "solver": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "common.schema.json#/$defs/ProcessResult"
+            }
+          ]
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/CheckerCheck"
+          }
+        },
+        "proof_bytes": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "common.schema.json#/$defs/NonNegative"
+            }
+          ]
+        },
+        "proof_sha256": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "common.schema.json#/$defs/Hash"
+            }
+          ]
+        },
+        "relay": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "common.schema.json#/$defs/Relay"
+            }
+          ]
+        },
+        "assignment": {
+          "description": "Padded standard base64 of ceil(V/8) bytes; canonicality and length are requirement attempt.assignment.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?(?![\\s\\S])"
+            }
+          ]
+        },
+        "model_error": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "missing",
+                "conflicting",
+                "out_of_range",
+                "syntax",
+                "violated"
+              ]
+            }
+          ]
+        },
+        "retained": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "common.schema.json#/$defs/Artifact"
+            }
+          ]
+        },
+        "quarantined": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "common.schema.json#/$defs/Artifact"
+            }
+          ]
+        },
+        "diagnostics": {
+          "$ref": "common.schema.json#/$defs/OpenObject"
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "node",
+        "node_id",
+        "attempt_id",
+        "policy_sha256",
+        "route",
+        "proof_mode",
+        "outcome",
+        "reason",
+        "cnf_sha256",
+        "limits",
+        "solver",
+        "checks",
+        "proof_bytes",
+        "proof_sha256",
+        "relay",
+        "assignment",
+        "model_error",
+        "retained",
+        "quarantined",
+        "diagnostics"
+      ],
+      "additionalProperties": false
+    },
+    "node_stop": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "node_stop"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "node": {
+          "$ref": "common.schema.json#/$defs/Node"
+        },
+        "state": {
+          "enum": [
+            "stuck",
+            "tool_blocked",
+            "resource_blocked"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "policy_sha256": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "node",
+        "state",
+        "reason",
+        "policy_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "node_reopen": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "node_reopen"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "node": {
+          "$ref": "common.schema.json#/$defs/Node"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "policy_sha256": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "node",
+        "reason",
+        "policy_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "handoff": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "handoff"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "request": {
+          "$ref": "handoff-request.schema.json"
+        },
+        "shard": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "shard.schema.json"
+            }
+          ]
+        },
+        "shard_sha256": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "common.schema.json#/$defs/Hash"
+            }
+          ]
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "request",
+        "shard",
+        "shard_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "repair": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "repair"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "removed_bytes": {
+          "$ref": "common.schema.json#/$defs/Positive"
+        },
+        "removed_sha256": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "removed_bytes",
+        "removed_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "audit_begin": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "audit_begin"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "certificate_sha256": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "sample_count": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "seed": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "targets_sha256": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "target_count": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "comparison": {
+          "enum": [
+            "strict",
+            "reprove"
+          ]
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "certificate_sha256",
+        "sample_count",
+        "seed",
+        "targets_sha256",
+        "target_count",
+        "comparison"
+      ],
+      "additionalProperties": false
+    },
+    "audit_target": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "audit_target"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "target": {
+          "$ref": "common.schema.json#/$defs/AuditTarget"
+        },
+        "ordinal": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "target",
+        "ordinal"
+      ],
+      "additionalProperties": false
+    },
+    "audit_ready": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "audit_ready"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "targets_sha256": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "target_count": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "targets_sha256",
+        "target_count"
+      ],
+      "additionalProperties": false
+    },
+    "audit_result": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "cubeproof-journal-1"
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "prev": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "self": {
+          "$ref": "common.schema.json#/$defs/Hash"
+        },
+        "type": {
+          "const": "audit_result"
+        },
+        "utc": {
+          "$ref": "common.schema.json#/$defs/UTC"
+        },
+        "target": {
+          "$ref": "common.schema.json#/$defs/AuditTarget"
+        },
+        "attempt": {
+          "$ref": "common.schema.json#/$defs/Ref"
+        },
+        "status": {
+          "enum": [
+            "HASH_MATCHED",
+            "REPROVED_UNSAT",
+            "MISMATCH",
+            "NOT_COMPARABLE",
+            "FAILED",
+            "OPEN"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "format",
+        "seq",
+        "prev",
+        "self",
+        "type",
+        "utc",
+        "target",
+        "attempt",
+        "status",
+        "reason"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

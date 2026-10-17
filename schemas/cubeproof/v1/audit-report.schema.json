@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cubeproof-audit-report-1 (SPECIFICATION §11.2)",
+  "description": "results are in target order; Ref points to the audit_result record. Requirements audit_report.counts and audit_report.selected relate the fields.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "cubeproof-audit-report-1"
+    },
+    "campaign": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "certificate_sha256": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "targets_sha256": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "comparison": {
+      "enum": [
+        "strict",
+        "reprove"
+      ]
+    },
+    "population": {
+      "$ref": "common.schema.json#/$defs/NonNegative"
+    },
+    "selected": {
+      "$ref": "common.schema.json#/$defs/NonNegative"
+    },
+    "seed": {
+      "$ref": "common.schema.json#/$defs/Hash"
+    },
+    "counts": {
+      "type": "object",
+      "properties": {
+        "HASH_MATCHED": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "REPROVED_UNSAT": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "MISMATCH": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "NOT_COMPARABLE": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "FAILED": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        },
+        "OPEN": {
+          "$ref": "common.schema.json#/$defs/NonNegative"
+        }
+      },
+      "required": [
+        "HASH_MATCHED",
+        "REPROVED_UNSAT",
+        "MISMATCH",
+        "NOT_COMPARABLE",
+        "FAILED",
+        "OPEN"
+      ],
+      "additionalProperties": false
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "$ref": "common.schema.json#/$defs/AuditTarget"
+          },
+          "record": {
+            "$ref": "common.schema.json#/$defs/Ref"
+          },
+          "status": {
+            "enum": [
+              "HASH_MATCHED",
+              "REPROVED_UNSAT",
+              "MISMATCH",
+              "NOT_COMPARABLE",
+              "FAILED",
+              "OPEN"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "record",
+          "status",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "pending": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Hash"
+      }
+    }
+  },
+  "required": [
+    "format",
+    "campaign",
+    "certificate_sha256",
+    "targets_sha256",
+    "comparison",
+    "population",
+    "selected",
+    "seed",
+    "counts",
+    "results",
+    "pending"
+  ],
+  "additionalProperties": false
+}

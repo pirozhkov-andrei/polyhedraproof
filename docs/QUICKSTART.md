@@ -64,16 +64,18 @@ minutes.
 ## 4. Try a worker (Docker, Linux image)
 
 Proof production and checking need Linux, util-linux, CaDiCaL and cake_lpr, which the release
-image provides. Build it from a full clone and start the small example campaign (a pigeonhole
-formula; it is not a campaign of the article):
+image provides. Build it from a full clone (the build takes some minutes and needs network
+access for the pinned base image, its Debian packages, the tool sources and the Python build
+tools) and start the small example campaign (a pigeonhole formula; it is not a campaign of the
+article):
 
 ```sh
-make image       # builds faces12-campaign:1.0.0rc1 from docker/release/Dockerfile
-docker run --rm --init --network none faces12-campaign:1.0.0rc1 selfcheck
+make image       # builds faces12-campaign:1.0.0 from docker/release/Dockerfile
+docker run --rm --init --network none faces12-campaign:1.0.0 selfcheck
 mkdir -p "$HOME/faces12 runs/worker 1"
-bash pipeline/faces12-worker.sh example --image faces12-campaign:1.0.0rc1 --io "$HOME/faces12 runs/worker 1"
-bash pipeline/faces12-worker.sh launch --worker w1 --image faces12-campaign:1.0.0rc1 --io "$HOME/faces12 runs/worker 1" -- --jobs 2
-bash pipeline/faces12-worker.sh status --worker w1 --image faces12-campaign:1.0.0rc1
+bash pipeline/faces12-worker.sh example --image faces12-campaign:1.0.0 --io "$HOME/faces12 runs/worker 1"
+bash pipeline/faces12-worker.sh launch --worker w1 --image faces12-campaign:1.0.0 --io "$HOME/faces12 runs/worker 1" -- --jobs 2
+bash pipeline/faces12-worker.sh status --worker w1 --image faces12-campaign:1.0.0
 ```
 
 `selfcheck` verifies the installation and one tiny proof checked by the pinned checker. The
@@ -91,13 +93,13 @@ the audit's results and work directories:
 IO="$HOME/faces12 runs/worker 1"
 docker wait faces12-w1               # prints 0 for a successfully completed example
 JOURNAL=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["file"])' "$IO/export/export.json")
-run() { docker run --rm --init --network none --user "$(id -u):$(id -g)" -v "$IO:/io" faces12-campaign:1.0.0rc1 "$@"; }
+run() { docker run --rm --init --network none --user "$(id -u):$(id -g)" -v "$IO:/io" faces12-campaign:1.0.0 "$@"; }
 run cubeproof certify --campaign /io/campaign.json --journals "/io/export/$JOURNAL" -o /io/certificate.json
 run cubeproof evidence package --campaign /io/campaign.json --journals "/io/export/$JOURNAL" -o /io/evidence
 run cubeproof audit --evidence /io/evidence/evidence.json --sample 3 --results /io/audit/results --work /io/audit/work --worker auditor-1
 ```
 
-The first command prints `PROVED`: the example formula is refuted at its empty cube. That says
+`certify` prints `PROVED`: the example formula is refuted at its empty cube. That says
 nothing about the twelve-face formulas. The audit recomputes three leaves of the certificate
 and exits 0 when each reproduces its recorded proof hash (`HASH_MATCHED`); a sample says nothing
 about the other leaves ([AUDITING](AUDITING.md)).
@@ -117,6 +119,7 @@ the example's container and volumes yourself when you have finished
 - [cubeproof commands](cubeproof/cli-reference.md) and
   [faces12-campaign commands](faces12/cli-reference.md): every option.
 
-Proof-search cost is input-dependent, and no cost figure exists for the computation over the
-59 formulas ([STATUS](../STATUS.md)); the time and memory options bound requested work, they do not
-guarantee that a leaf is refuted.
+Proof-search cost is input-dependent: in the pilot computation the formulas of maps 1 and 2
+took 300 and 348 core-hours, and the 59 formulas are estimated at about 19,000 core-hours
+([STATUS](../STATUS.md#the-pilot-computation)). The time and memory options bound requested
+work, they do not guarantee that a leaf is refuted.

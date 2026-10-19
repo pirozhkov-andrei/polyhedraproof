@@ -29,18 +29,21 @@ formula; it says nothing about satisfiability.
   `lookahead-v1` with `k = 4`; proof mode `transient` unless `--proof-mode` says otherwise;
 - `--prefix 0` has no root split (fully dynamic); `--prefix K` (1 to 20) another initial depth;
 - without `--prefixes` the prefix is computed with the pinned solver, which can take long for each
-  formula (its cost has not been measured). `--prefixes FILE` reuses stored selections instead: a
+  formula (191 s for the formulas of maps 1 and 2 together on a laptop; the others have not been
+  measured). `--prefixes FILE` reuses stored selections instead: a
   `cubeproof-prefixes-1` document whose entries are accepted only if the formula is a campaign
   formula, the split is at the empty cube, the `K` ordered variables are in the bundle's `order`
   pool and the recorded provenance is the pinned algorithm (samples 2, steps 100000, conflicts
   90000, seed 5, pool `order`) run with the solver binary the campaign pins. `campaign prefixes
   --campaign FILE -o FILE` exports the stored prefixes of an existing campaign for such reuse;
-- `--maps 1,2` restricts the campaign to some formulas;
-- `--root MAP:CASE` (for example `--root 2:17`) makes a pilot campaign: the requested root is
-  that case of the map under its stored prefix (bit `j` of the case number gives the sign of
-  the `j`-th prefix variable; the cube is sorted by variable), and the prefix split stays at
-  the empty cube, so the pilot root is one of its children. Closing a pilot root closes that
-  region only (paper: rem:pilotroot): its certificate is OPEN for the map.
+- `--maps 1,2` restricts the campaign to some formulas: a rehearsal campaign, whose journals never
+  count for the campaign of the 59 (the pilot computation in `STATUS.md` was one);
+- `--root MAP:CASE` (for example `--root 2:17`) makes a rehearsal campaign with a pilot root:
+  the requested root is that case of the map under its stored prefix (bit `j` of the case
+  number gives the sign of the `j`-th prefix variable; the cube is sorted by variable), and the
+  prefix split stays at the empty cube, so the pilot root is one of its children. Closing a
+  pilot root closes that region only (paper: rem:pilotroot): its certificate is OPEN for the
+  map.
 
 The solver and checker binaries and the solver options are configuration (`--solver`,
 `--checker`, `--solver-argv`); by default the configured checker is the one admitted.
@@ -57,11 +60,11 @@ always recomputed from journals, and a portable evidence directory is made with
 `model --evidence MANIFEST` (or `--campaign F --journals J...`) recomputes the certificate and
 describes each model in the article's vocabulary: brackets, line orders and orientation bits,
 violated clauses per layer and reflex corners per face. The formula is rebuilt from its
-packaged map before its variables are interpreted. A satisfying assignment of necessary
-conditions is not a geometric realization (paper: rem:noconverse); a model is a candidate to
-be examined. The command exits 2 when the certificate has a model, 0 when it has none, and 4
-when the certificate is INCONSISTENT (a formula both proved and modelled): the inconsistency
-outranks the model.
+packaged map before its variables are interpreted. A model satisfies the clauses of its
+formula, which are necessary conditions only; it is not automatically a geometric realization
+(paper: rem:noconverse) but a candidate to be examined. The command exits 2 when the
+certificate has a model, 0 when it has none, and 4 when the certificate is INCONSISTENT (a
+formula both proved and modelled): the inconsistency outranks the model.
 
 ## The claim
 

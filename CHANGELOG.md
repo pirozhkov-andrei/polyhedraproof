@@ -7,6 +7,43 @@ How versions are numbered and when a campaign may change its release:
 
 ## Unreleased
 
+## 1.0.0 - 2026-10-19
+
+The first release. The code of the packages, the release image and the wrapper is that of
+1.0.0rc1, with which the pilot computation was run; only the version changed. The article is
+the revision of 17 October 2026, released with 1.0.0rc1, and does not report the pilot. The
+complete computation over the 59 formulas has not been carried out, and no nonexistence result
+is claimed ([STATUS](STATUS.md)).
+
+### Added
+
+- **The pilot computation** ([STATUS](STATUS.md#the-pilot-computation)): with release
+  1.0.0rc1, a rehearsal campaign of the formulas of maps 1 and 2 was certified PROVED by both
+  certifiers, with 31,187 leaves, each with a proof checked by cake_lpr, in 648.5 core-hours of
+  solver and checker time, and a strict audit of 50 leaves on a second machine reproduced
+  every proof hash. Its data are published
+  ([doi:10.5281/zenodo.23464843](https://doi.org/10.5281/zenodo.23464843)). It does not count
+  for the result: the two formulas will be computed again in the campaign of the 59.
+- **Continuous integration in the public repository**: `.github/workflows/checks.yml` runs
+  `make lint`, `make test-architecture` and `make test-fast` under Python 3.10 and 3.12 on
+  every push to `main`, every release tag, every pull request and every start by hand, and
+  `make test-all` in the test image on a release tag or when started by hand
+  ([CONTRIBUTING](docs/CONTRIBUTING.md)).
+  `.gitignore` and `.dockerignore` keep `.github`, and a test checks that both keep every
+  hidden entry of the release list.
+- **A DOI**: `CITATION.cff` and the README name the concept DOI of the software on Zenodo,
+  [10.5281/zenodo.23434449](https://doi.org/10.5281/zenodo.23434449), and `CITATION.cff`
+  cites the data of the pilot.
+- The term *rehearsal campaign* in the [GLOSSARY](docs/GLOSSARY.md).
+
+### Changed
+
+- Where the documents said that no cost figure existed, they give the pilot's measurements and
+  the estimate they support for the 59 formulas: about 19,000 core-hours, and about 76 TB of
+  proofs in `retain` mode (STATUS, README, COMPUTE, ENGINEERING, QUICKSTART, RUNNING with the
+  sizing of one formula, TRUST, decision 0011, and the limits of the claims
+  `faces12:campaign` and `faces12:strict-reproduction`).
+
 ## 1.0.0rc1 - 2026-10-17
 
 First public release candidate. It contains the reduction and the tools to carry out the

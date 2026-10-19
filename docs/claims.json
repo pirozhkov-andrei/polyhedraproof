@@ -517,7 +517,7 @@
     {
       "id": "thm:coverage",
       "statement": "The leaves of a cube tree divide its root into disjoint regions; a refuted cube tree refutes its root, and with the empty root the formula.",
-      "limits": "Certification rests on this proof. Software counterpart, not a proof: on random tiny formulas (at most 4 variables) with random split graphs, alternatives and models, the cubeproof certifier is checked by brute force -- proved formulas, closed roots and used leaves are unsatisfiable, and the open lists cover every satisfying assignment exactly once (`test_truthful_random_evidence` in `packages/cubeproof/tests/certify/test_cp_certify_truthful.py`). Exhaustive only for those tiny formulas."
+      "limits": "Certification rests on this proof. Software counterpart, not a proof: on random tiny formulas (at most 4 variables) with random split graphs, alternatives and models, the cubeproof certifier is checked by brute force: proved formulas, closed roots and used leaves are unsatisfiable, and the open lists cover every satisfying assignment exactly once (`test_truthful_random_evidence` in `packages/cubeproof/tests/certify/test_cp_certify_truthful.py`). Exhaustive only for those tiny formulas."
     },
     {
       "id": "lem:closure",
@@ -1044,7 +1044,7 @@
       "id": "faces12:layers",
       "established": "Tested by `make test-architecture` (`tools/checks/archcheck.py`, `tests/architecture`)",
       "statement": "Every import of `cubeproof`, `neighbourly` and `faces12-campaign`, directly and through chains of imports, respects the layer tables; the certifier, the evidence readers, CNF and the contracts reach no process, thread, signal, socket or resource module; only the command line reads the environment, prints or exits; `neighbourly.cnf` reaches only the standard library and reads no package data; `tools/certify_min.py` imports only the standard library.",
-      "limits": "Static analysis of imports: dynamic imports from computed strings are forbidden by the same checks, but behavior is not analysed. The rules say what may be imported, not that the code behind an import is correct."
+      "limits": "Static analysis of imports: dynamic imports from computed strings are forbidden by the same checks, but behavior is not analyzed. The rules say what may be imported, not that the code behind an import is correct."
     },
     {
       "id": "faces12:paper-builds",
@@ -1056,7 +1056,7 @@
       "id": "faces12:campaign",
       "open": true,
       "statement": "For each of the 59 formulas, a cube tree with the empty root is refuted by checked proofs of its leaves (paper: thm:coverage); refuting every case of one fixed partition is the special case of one split (paper: prop:cases).",
-      "limits": "The complete computation has not been carried out: no formula has been closed at its empty cube. Closed nonempty pilot roots do not count (paper: rem:pilotroot). The article establishes a conditional reduction, not a completed nonexistence proof."
+      "limits": "The complete computation has not been carried out: no formula has been closed at its empty cube in a campaign of the 59 formulas. The pilot computation closed the formulas of maps 1 and 2 in a rehearsal campaign (STATUS.md), whose journal cannot be certified with the campaign of the 59; closed nonempty pilot roots do not count either (paper: rem:pilotroot). The article establishes a conditional reduction, not a completed nonexistence proof."
     },
     {
       "id": "faces12:leaf-verification",
@@ -1132,7 +1132,7 @@
           "covers": "the same after random crashes of the two workers"
         }
       ],
-      "limits": "Determinism of the pinned CaDiCaL is observed, not proved, and only for these small workloads under one execution profile; it is not a statement about other versions, options or platforms. No strict audit of a campaign of the 59 formulas exists (faces12:leaf-verification)."
+      "limits": "Determinism of the pinned CaDiCaL is observed, not proved: in these tests for small workloads under one execution profile, and outside the tests once on real formulas, where a strict audit of 50 leaves of the pilot computation reproduced every proof hash on a second machine with the same image (STATUS.md). It is not a statement about other versions, options or platforms. No strict audit of a campaign of the 59 formulas exists (faces12:leaf-verification)."
     },
     {
       "id": "faces12:crash-recovery",

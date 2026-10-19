@@ -1,5 +1,6 @@
 .dockerignore
 .gitattributes
+.github/workflows/checks.yml
 .gitignore
 CHANGELOG.md
 CITATION.cff

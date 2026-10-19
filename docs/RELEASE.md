@@ -10,7 +10,7 @@ result about the mathematical question: what is established is stated in
 
 The version is declared once per distribution (`pyproject.toml` and `__version__` of each
 package, and the pins of the meta-package at the root); the architecture tests fail unless
-all agree. The examples below use 1.0.0rc1.
+all agree. The examples below use 1.0.0.
 
 ## 1. Checks in a source checkout
 
@@ -61,16 +61,16 @@ enter the source archive. Read the list before packaging.
 make bundle
 ```
 
-writes the deterministic archive `dist/polyhedraproof-1.0.0rc1-source.tar.gz` and prints its
+writes the deterministic archive `dist/polyhedraproof-1.0.0-source.tar.gz` and prints its
 SHA-256; it is `python3 -m faces12_campaign release bundle --root . --output FILE --author
-NAME`. The archive has one top-level directory, `polyhedraproof-1.0.0rc1/`, with the listed
+NAME`. The archive has one top-level directory, `polyhedraproof-1.0.0/`, with the listed
 files and the manifest `SOURCE_MANIFEST.json` (format `faces12-source-bundle-1`). Check it
 from the unpacked copy, with an installed copy of the packages:
 
 ```sh
-mkdir -p /tmp/release && tar -xzf dist/polyhedraproof-1.0.0rc1-source.tar.gz -C /tmp/release
+mkdir -p /tmp/release && tar -xzf dist/polyhedraproof-1.0.0-source.tar.gz -C /tmp/release
 export PYTHONDONTWRITEBYTECODE=1    # no unlisted compiled files in the unpacked tree
-python3 -m faces12_campaign release verify --directory /tmp/release/polyhedraproof-1.0.0rc1
+python3 -m faces12_campaign release verify --directory /tmp/release/polyhedraproof-1.0.0
 ```
 
 `release verify` compares every file with the manifest and refuses missing, unlisted or
@@ -78,7 +78,7 @@ changed files and symbolic links. Build the Python distributions from this clean
 each package and the meta-package at the root:
 
 ```sh
-cd /tmp/release/polyhedraproof-1.0.0rc1
+cd /tmp/release/polyhedraproof-1.0.0
 for p in packages/cubeproof packages/neighbourly packages/faces12-campaign .; do
     python3 -m build --outdir dist "$p"
 done
@@ -131,10 +131,10 @@ looked up on `PATH`. The image installs the three wheels it pins; the root distr
 installed by `make test-installed` instead.
 
 ```sh
-make image                      # docker build ... -t faces12-campaign:1.0.0rc1 .
-docker run --rm --init --network none faces12-campaign:1.0.0rc1 selfcheck
-docker run --rm --init --network none faces12-campaign:1.0.0rc1 provenance > provenance.json
-docker run --rm --init --network none faces12-campaign:1.0.0rc1 help
+make image                      # docker build ... -t faces12-campaign:1.0.0 .
+docker run --rm --init --network none faces12-campaign:1.0.0 selfcheck
+docker run --rm --init --network none faces12-campaign:1.0.0 provenance > provenance.json
+docker run --rm --init --network none faces12-campaign:1.0.0 help
 ```
 
 `make image` tags the image `faces12-campaign:VERSION` with the version of the packages; set
@@ -171,9 +171,9 @@ header records the build time) are not compared. It then runs, against the first
 
 The script exits 0 only if every compared hash is identical and all three pass; on success it
 tags the first build `faces12-campaign:VERSION` (or the tag given as second argument). A run
-that skipped the two-worker run can exit 0 but gives no tag. It
-needs `python3` (3.10 or later) with `pytest` on the host. Keep the output directory with
-the release; its `summary.txt` lists the image ID and the hashes of every log.
+that skipped the two-worker run can exit 0 but gives no tag. It needs `python3` (3.10 or
+later) with `pytest` on the host. Keep the output directory with the release; its
+`summary.txt` lists the image ID and the hashes of every log.
 
 The two builds are tagged `faces12-release-validate:ID-1` and `faces12-release-validate:ID-2`.
 `ID` names the run: by default the UTC time, the process ID and the name of the output
@@ -200,24 +200,24 @@ use is the one `docker/test/run.sh build` tags.
 python3 tests/endtoend/cluster/cluster_installed.py IMAGE OUTDIR
 ```
 
-is the check of several workers against the release image, and `validate.sh` runs it on
-the first build (`cluster.log`, `cluster-installed/`). `IMAGE` is a tag or digest of a built
-release image, and `OUTDIR` a directory of its own, best outside the checkout: the script
-replaces it, and an existing `OUTDIR` is deleted first. Two workers of one small campaign (three pigeonhole
-formulas, created and planned for two machines inside the image) run in containers of the
-image, driven only through `pipeline/faces12-worker.sh` and `docker kill`. One worker
-answers a handoff request, each is killed and started again, one is stopped cleanly and
-started, and the container of the other is recreated on its volumes. At the end the exported
-journals must equal the journals in the results volumes; the certifier of the image and the
-main and independent certifiers of the checkout must write byte-identical PROVED
-certificates; and the strict audit of every used leaf and `verify-retained` of the retained
-proofs must pass in the image. It writes `OUTDIR/transcript.log` (every command with its
-output and exit code) and `OUTDIR/result.json` (the facts and a list `problems`), and exits
-0 when that list is empty, 1 otherwise, 2 for a wrong number of arguments. It needs Docker,
-`bash` and `python3` on the host, runs from a checkout or an unpacked source archive, takes
-three to five minutes on an 8-core machine and is not a performance measurement. It removes
-only the containers and volumes of its own two workers (`e2e-installed-a-TAG`,
-`e2e-installed-b-TAG`); `E2E_CLUSTER_KEEP_WORKERS=1` keeps them.
+is the check of several workers against the release image, and `validate.sh` runs it on the
+first build (`cluster.log`, `cluster-installed/`). `IMAGE` is a tag or digest of a built release
+image, and `OUTDIR` a directory of its own, best outside the checkout: the script replaces it,
+and an existing `OUTDIR` is deleted first. Two workers of one small campaign (three pigeonhole
+formulas, created and planned for two machines inside the image) run in containers of the image,
+driven only through `pipeline/faces12-worker.sh` and `docker kill`. One worker answers a handoff
+request, each is killed and started again, one is stopped cleanly and started, and the container
+of the other is recreated on its volumes. At the end the exported journals must equal the
+journals in the results volumes; the certifier of the image and the main and independent
+certifiers of the checkout must write byte-identical PROVED certificates; and the strict audit
+of every used leaf and `verify-retained` of the retained proofs must pass in the image. It
+writes `OUTDIR/transcript.log` (every command with its output and exit code) and
+`OUTDIR/result.json` (the facts and a list `problems`), and exits 0 when that list is empty, 1
+otherwise, 2 for a wrong number of arguments. It needs Docker, `bash` and `python3` on the host,
+runs from a checkout or an unpacked source archive, takes three to five minutes on an 8-core
+machine and is not a performance measurement. It removes only the containers and volumes of its
+own two workers (`e2e-installed-a-TAG`, `e2e-installed-b-TAG`); `E2E_CLUSTER_KEEP_WORKERS=1`
+keeps them.
 
 Build and validate the image from the same clean source as the archive, and keep the
 output directory of `validate.sh` with the release. The checks of steps 1 and 2 do not
@@ -264,9 +264,11 @@ Nothing above publishes anything. For a release `VERSION` (`MAJOR.MINOR.PATCH`, 
    `artifacts.json` of the validated build, the image provenance (`selfcheck` output and the
    image digest), the `summary.txt` of `validate.sh` and the PDF of the article. Keep the image
    itself (`docker save`) with the release; the digest alone does not rebuild it.
-5. Archive the release where it gets a DOI (for example Zenodo) and add the DOI to
-   `CITATION.cff`, and to appendix B of the article when it is next revised, in the next
-   release.
+5. Archive the release on Zenodo as a new version of the software record, whose concept DOI
+   (10.5281/zenodo.23434449, the DOI that stands for every version) is in `CITATION.cff`. A
+   DOI of the version itself can enter that release's `CITATION.cff` only if it was reserved
+   on Zenodo before step 1, since the tagged tree does not change; otherwise it goes into
+   appendix B of the article when the article is next revised.
 
 ## Versions
 
@@ -284,8 +286,9 @@ release. The public interface is the command lines and their exit codes, the for
 The formats carry their own version (`faces12-claim-1`, `faces12-source-bundle-1`, ...), raised
 only when that format changes incompatibly. A campaign is not bound to a release, but every
 session records its cubeproof sources, and a worker restarted on another release is refused
-unless `--accept-code-change` is given ([RUNNING](RUNNING.md#what-may-change-after-a-campaign-is-created)):
-run a campaign on one release, and change it only for a fix that matters to that campaign.
+unless `--accept-code-change` is given
+([RUNNING](RUNNING.md#what-may-change-after-a-campaign-is-created)): run a campaign on one
+release, and change it only for a fix that matters to that campaign.
 
 ## The host wrapper
 

@@ -6,27 +6,29 @@ authors:
   - family-names: Pirozhkov
     given-names: Andrei
     orcid: "https://orcid.org/0009-0008-6901-7843"
-version: 1.0.0rc1
-date-released: 2026-10-17
+version: 1.0.0
+date-released: 2026-10-19
+doi: 10.5281/zenodo.23434449
 license: MIT
 repository-code: "https://github.com/pirozhkov-andrei/polyhedraproof"
 abstract: >-
   Whether a polyhedron with twelve pairwise adjacent planar faces exists is an open question;
   the tetrahedron and the Szilassi polyhedron are the only known polyhedra with every two
-  faces adjacent. A necessary-condition SAT encoding of polyhedra with twelve pairwise adjacent planar
-  faces under the accompanying article's surface and face-intersection hypotheses.
-  Given the article's reduction, checked refutations of all 59 CNF formulas would prove
+  faces adjacent. This software encodes, as 59 CNF formulas, a necessary condition for such a
+  polyhedron under the accompanying article's surface and face-intersection hypotheses.
+  Given the article's reduction, checked refutations of all 59 formulas would prove
   nonexistence in that class. The pipeline has every refuted case checked by the verified
-  LRAT checker cake_lpr.
-  This release does not include, and does not claim, the completed computation.
+  LRAT checker cake_lpr. A pilot computation refuted the formulas of maps 1 and 2 in a
+  rehearsal campaign; this release does not include, and does not claim, the completed
+  computation.
 keywords:
   - polyhedra
   - oriented matroids
   - SAT
   - LRAT
   - formal verification
-# At publication: the DOI of the archived release
-# (docs/RELEASE.md, "Publishing"); the article's arXiv identifier once it has one.
+# doi: the concept DOI of the software on Zenodo, which resolves to its latest version
+# (docs/RELEASE.md, "Publishing"); the article's arXiv identifier goes below once it has one.
 references:
   - type: article
     title: "Twelve pairwise adjacent faces: a chirotope reduction to Boolean unsatisfiability"
@@ -35,3 +37,13 @@ references:
         given-names: Andrei
         orcid: "https://orcid.org/0009-0008-6901-7843"
     notes: "The accompanying article, paper/faces12-en.tex of this release (CC BY 4.0)."
+  - type: data
+    title: "Polyhedraproof 1.0.0rc1 pilot: maps 1 and 2 (journal, certificates, evidence)"
+    authors:
+      - family-names: Pirozhkov
+        given-names: Andrei
+        orcid: "https://orcid.org/0009-0008-6901-7843"
+    doi: 10.5281/zenodo.23464843
+    date-released: 2026-10-19
+    license: CC-BY-4.0
+    notes: "The pilot computation with release 1.0.0rc1: the campaign, journal, evidence, certificates and audit of a rehearsal campaign of the formulas of maps 1 and 2 (STATUS.md)."

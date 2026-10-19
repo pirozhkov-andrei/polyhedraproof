@@ -1532,7 +1532,7 @@ docker run -d --name faces12-WORKER --init --network none
   -v faces12-results-WORKER:/work/results
   -v faces12-work-WORKER:/work/scratch
   -v HOST_IO:/io
-  faces12-campaign:1.0.0rc1 run --campaign /io/campaign.json --shard /io/shard.json
+  faces12-campaign:1.0.0 run --campaign /io/campaign.json --shard /io/shard.json
   --results /work/results --work /work/scratch --worker WORKER
   --inbox /io/inbox --outbox /io/outbox --export /io/export
 ```

@@ -30,8 +30,9 @@ paper/*.fdb_latexmk
 paper/*.synctex.gz
 
 # Hidden files and directories at the root belong to local tools and editors, except the
-# three configuration files the repository tracks.
+# three configuration files the repository tracks and its .github directory (the CI workflow).
 /.*
 !/.gitignore
 !/.gitattributes
 !/.dockerignore
+!/.github/

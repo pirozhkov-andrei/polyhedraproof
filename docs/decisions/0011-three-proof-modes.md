@@ -2,12 +2,13 @@
 
 ## Context
 
-Retaining all proofs can dominate storage; the full campaign requirement is unmeasured.
-Transient gives a checked proof per leaf without
-storing it. Retain adds proof storage for collaborators who have it, and
-publishing before recording means that a committed record never points at a proof that a
-crash could lose. Stream removes the disk high-water mark of large proofs at the price of
-coupling solver and checker time and losing the proof on failure.
+Retaining all proofs can dominate storage: the pilot computation of 1.0.0rc1 wrote 1.2 and
+1.4 TB of checked proofs for the formulas of maps 1 and 2, which extrapolates to about 76 TB
+for the 59 formulas ([STATUS](../../STATUS.md#the-pilot-computation)). Transient gives a
+checked proof per leaf without storing it. Retain adds proof storage for collaborators who
+have it, and publishing before recording means that a committed record never points at a
+proof that a crash could lose. Stream removes the disk high-water mark of large proofs at the
+price of coupling solver and checker time and losing the proof on failure.
 
 ## Decision
 

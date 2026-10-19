@@ -1,5 +1,10 @@
 # Twelve pairwise adjacent faces
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23434449.svg)](https://doi.org/10.5281/zenodo.23434449)
+[![checks](https://img.shields.io/github/actions/workflow/status/pirozhkov-andrei/polyhedraproof/checks.yml?branch=main&label=checks)](https://github.com/pirozhkov-andrei/polyhedraproof/actions/workflows/checks.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+
 **Is there a polyhedron with twelve faces in which every face shares an edge with every other
 face?** Only two polyhedra with this property are known: the tetrahedron (4 faces) and the
 toroidal Szilassi polyhedron (7 faces). Counting with Euler's formula leaves twelve faces, on a
@@ -27,17 +32,21 @@ out so that a third party can check the result without trusting the program that
   solver's answer alone is never accepted.
 - **Engineering.** The hard part is making a long computation independently checkable:
   preserve exactly what was computed, recover after interruption, distribute work without
-  losing cases, and distinguish evidence from a program's claim of success. Self-checksummed
-  journals, work moved between machines as files (no central service), a release image with
-  pinned tools whose two builds are compared, three packages with checked boundaries and no
-  third-party runtime dependencies, `mypy --strict` and more than 6,800 fast tests. The generic
-  prover `cubeproof` accepts formulas unrelated to polyhedra. The
-  [engineering overview](docs/ENGINEERING.md) is a ten-minute technical tour.
+  losing cases, and distinguish evidence from a program's claim of success. The project does
+  this with self-checksummed journals, work moved between machines as files (no central
+  service), a release image with pinned tools whose two builds are compared, three packages
+  with checked boundaries and no third-party runtime dependencies, `mypy --strict` and more
+  than 6,800 fast tests. The generic prover `cubeproof` accepts formulas unrelated to
+  polyhedra. The [engineering overview](docs/ENGINEERING.md) is a ten-minute technical tour.
 
 **Status.** The reduction, the 59 formulas and the tools are implemented and tested. The
 computation over the 59 formulas has not been carried out, so the question remains open and no
 nonexistence result is claimed. If all 59 formulas are refuted, no such polyhedron exists in the
 article's model; a satisfying assignment would be a lead to examine, not by itself a polyhedron.
+A [pilot computation](STATUS.md#the-pilot-computation) refuted the formulas of maps 1 and 2 in a
+rehearsal campaign that does not count for the result: 31,187 leaves, each with a proof checked
+by cake_lpr, in 648.5 core-hours ([data](https://doi.org/10.5281/zenodo.23464843)). From it the
+59 formulas are estimated at about 19,000 core-hours; this is an order-of-magnitude estimate.
 [STATUS](STATUS.md) says what is implemented and tested, what has not been done, and the known
 limitations.
 
@@ -73,12 +82,11 @@ overview.
 ## What help is needed
 
 The project seeks collaborators for a reproducible computation across all 59 maps: CPU
-capacity, independent recomputation of leaves, mathematical review -- and storage. Proofs are
-not stored by default (the storage cost of a full campaign is not yet measured), so a computation is verified by
-recomputing leaves and comparing proof hashes; anyone able to hold proofs would make it possible
-to check them without the solver as well. No cost figure exists for the computation over the
-59 formulas; the default policy constants are starting values fitted to a small number of
-exploratory solver runs. [COMPUTE](docs/COMPUTE.md) explains the workflow and deliverables.
+capacity (about 19,000 core-hours, estimated from the pilot), independent recomputation of
+leaves, mathematical review, and storage. Proofs are not stored by default, because keeping
+them would take about 76 TB; a computation is then verified by recomputing leaves and comparing
+proof hashes, and anyone able to hold proofs would make it possible to check them without the
+solver as well. [COMPUTE](docs/COMPUTE.md) explains the workflow and deliverables.
 
 ## Requirements
 
@@ -121,7 +129,7 @@ Beyond the pages of the table above: [Reference](docs/REFERENCE.md) ·
 [Design decisions](docs/decisions/README.md) · [Release guide](docs/RELEASE.md) ·
 [Reporting a soundness problem](docs/SECURITY.md)
 
-Release **1.0.0rc1**.
+Release **1.0.0**.
 Author: Andrei Pirozhkov ([ORCID 0009-0008-6901-7843](https://orcid.org/0009-0008-6901-7843)).
 [Repository](https://github.com/pirozhkov-andrei/polyhedraproof) · [License](#license) ·
 [Citation metadata](CITATION.cff) · [Changelog](CHANGELOG.md).

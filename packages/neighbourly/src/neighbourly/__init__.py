@@ -8,6 +8,6 @@ only the standard library and its own submodules (specification §2.1 and §13).
 
 from __future__ import annotations
 
-__version__ = "1.0.0rc1"
+__version__ = "1.0.0"
 
 __all__ = ["__version__"]

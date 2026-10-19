@@ -55,8 +55,9 @@ provenance|docs`. Options and exit codes are in the generated
 - Runtime dependencies: the standard library, `cubeproof` and `neighbourly`, declared in the
   package metadata.
 - Layers: command line and API, then commands, then the release, campaign, claim, formulas
-  and model adapters (sharing the constants of `pins`), then the libraries. Only the command line reads the environment, prints or
-  exits. The architecture tests of the repository check these rules.
+  and model adapters (sharing the constants of `pins`), then the libraries. Only the command
+  line reads the environment, prints or exits. The architecture tests of the repository check
+  these rules.
 - The supported platform is Linux x86-64 (native, WSL 2 or a container); process execution
   also needs util-linux (see the running guide).
 

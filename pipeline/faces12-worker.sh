@@ -22,7 +22,7 @@
 #                    worker name of the journal, and the names PREFIX-NAME (container),
 #                    PREFIX-results-NAME and PREFIX-work-NAME (volumes)
 #   --io DIR         host directory mounted at /io: campaign, shards, inbox, outbox, export
-#   --image IMAGE    default $POLYHEDRAPROOF_IMAGE, else faces12-campaign:1.0.0rc1
+#   --image IMAGE    default $POLYHEDRAPROOF_IMAGE, else faces12-campaign:1.0.0
 #   --campaign FILE  below --io (default campaign.json); --shard FILE below --io (optional)
 #   --inbox DIR --outbox DIR --export DIR   below --io (defaults inbox, outbox, export)
 #   --user UID:GID   the user the worker runs as (default: the caller's ids; never 0)
@@ -50,7 +50,7 @@ case "$command" in
 esac
 
 worker= io= campaign=campaign.json shard= inbox=inbox outbox=outbox export=export
-image=${POLYHEDRAPROOF_IMAGE:-faces12-campaign:1.0.0rc1}
+image=${POLYHEDRAPROOF_IMAGE:-faces12-campaign:1.0.0}
 user= prefix=faces12 to= from=
 extra=()
 while [ $# -gt 0 ]; do

@@ -43,6 +43,20 @@ def _tree(root: Path, listed: list[str], present: list[str]) -> None:
         path.write_text("x\n", encoding="utf-8")
 
 
+def test_both_ignore_files_keep_the_hidden_entries_of_the_release() -> None:
+    """A hidden root entry of the release list (``.gitignore``, ``.github``, ...) is excepted
+    from the rule for hidden root entries in ``.gitignore``, or git would not track it, and in
+    ``.dockerignore``, or the source archive built inside the release image would miss it
+    (``release.missing``)."""
+    hidden = sorted({n.split("/")[0] for n in release_view.listed_files(ROOT) if n[0] == "."})
+    assert ".github" in hidden, hidden
+    gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+    dockerignore = (ROOT / ".dockerignore").read_text(encoding="utf-8").splitlines()
+    for name in hidden:
+        assert {f"!/{name}", f"!/{name}/"} & set(gitignore), f".gitignore drops {name}"
+        assert {f"!{name}", f"!{name}/"} & set(dockerignore), f".dockerignore drops {name}"
+
+
 def test_a_checkout_that_git_cannot_list_is_a_problem(tmp_path: Path) -> None:
     """A failing git inside a checkout must not pass as "no problem" (e.g. dubious ownership)."""
     _tree(tmp_path, [release_view.LISTING], [])

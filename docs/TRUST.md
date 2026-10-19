@@ -90,9 +90,9 @@ proof, and the software only implements its premises.
 `cubeproof certify` returns one of four verdicts. `PROVED`: every campaign formula's empty
 cube is closed and no valid model exists. `MODEL_FOUND`: a valid model exists. `OPEN`:
 neither. `INCONSISTENT`: a formula is both modelled and closed, which means that the
-computation contradicts itself, and it exits with an integrity failure. A model is a Boolean
-assignment of necessary conditions; it is not automatically a geometric realization
-(paper: rem:noconverse).
+computation contradicts itself, and it exits with an integrity failure. A model satisfies the
+clauses of its formula, which are necessary conditions only; it is not automatically a
+geometric realization (paper: rem:noconverse).
 
 ## What a journal and a certificate attest
 
@@ -158,13 +158,15 @@ Two routes exist, both checked by a person who holds the evidence, not by the wr
    [AUDITING](AUDITING.md) explains the choices.
 
 A campaign keeps no proofs in `transient` mode (the default) or `stream` mode: retaining every
-proof can dominate storage, and the full campaign's storage requirement is unmeasured ([decision 0011](decisions/0011-three-proof-modes.md)).
-Strict reproduction rests on determinism of the pinned CaDiCaL under one execution profile.
-It is tested on the small workloads of the test-image tier, in file and stream modes
-([STATUS](../STATUS.md)), and is not a theorem for other versions or platforms. A strict
-audit that does not reproduce a proof reports `MISMATCH`, which has to be explained before
-the campaign is relied on; a new proof under another profile is reported separately as a
-reproof (SPECIFICATION §11.3).
+proof can dominate storage, about 76 TB for the 59 formulas by the pilot's estimate
+([decision 0011](decisions/0011-three-proof-modes.md),
+[STATUS](../STATUS.md#the-pilot-computation)). Strict reproduction rests on determinism of the
+pinned CaDiCaL under one execution profile. It is tested on the small workloads of the
+test-image tier, in file and stream modes, and the pilot's strict audit reproduced 50 proofs of
+twelve-face leaves on a second machine ([STATUS](../STATUS.md)); it is not a theorem for other
+versions or platforms. A strict audit that does not reproduce a proof reports `MISMATCH`, which
+has to be explained before the campaign is relied on; a new proof under another profile is
+reported separately as a reproof (SPECIFICATION §11.3).
 
 ## What is not claimed
 
@@ -172,5 +174,6 @@ reproof (SPECIFICATION §11.3).
   ([STATUS](../STATUS.md)).
 - No claim that a sample audit verifies unsampled leaves, that a journal is authentic, or
   that a bounded run which leaves a formula open says anything about satisfiability.
-- No cost figure for the computation over the 59 formulas ([STATUS](../STATUS.md)).
+- No measured cost of the computation over the 59 formulas: the pilot measured two, and the
+  estimate for the others is an extrapolation ([STATUS](../STATUS.md#the-pilot-computation)).
 - No security against hostile workers (above).

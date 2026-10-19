@@ -9,8 +9,11 @@ shard, handoff, admission and frontier are defined in the [GLOSSARY](GLOSSARY.md
 
 **No campaign of the 59 formulas has been run.** The procedure is tested on small workloads,
 with fake tools and, in the test-image tier, with the pinned CaDiCaL and cake_lpr
-([STATUS](../STATUS.md)). No cost figure exists for the computation over the 59 formulas; the
-numbers in the policy table below are starting values.
+([STATUS](../STATUS.md)). The procedure was run with release 1.0.0rc1 on two of the formulas,
+in the rehearsal campaign of the [pilot computation](../STATUS.md#the-pilot-computation): one
+worker with 124 jobs closed both in 5.5 hours and 648.5 core-hours, and [one formula on one
+machine](#one-formula-on-one-machine) gives its measurements. The numbers in the policy table
+below are starting values.
 
 ## Support matrix
 
@@ -18,8 +21,8 @@ Supported platform: Linux x86-64 (native, WSL 2 or a container).
 
 | What | Needs |
 |---|---|
-| Formula libraries (`neighbourly`, `neighbourly.cnf`) and `faces12-campaign selftest`, `formulas`, `maps` | Python only |
-| Read-only certification (`cubeproof certify`, the independent `tools/certify_min.py`, reading an evidence package) | Python only |
+| Formula libraries (`neighbourly`, `neighbourly.cnf`) and `faces12-campaign selftest`, `formulas`, `maps` | Python 3.10 or newer, nothing else |
+| Read-only certification (`cubeproof certify`, the independent `tools/certify_min.py`, reading an evidence package) | Python 3.10 or newer, nothing else |
 | Process execution and journal writing: `run`, `audit`, `verify-retained`, `journal repair` | util-linux (`prlimit`, `setpriv`) and working POSIX `flock` and `fsync` |
 | Release image | `linux/amd64` only: cake_lpr is verified machine code for x86-64. No other architecture is supported |
 | Host wrapper `pipeline/faces12-worker.sh` | `bash` and Docker |
@@ -34,12 +37,13 @@ directory, not on `/mnt/c`.
 
 ## Full campaign on one host
 
-This is the complete path for **all 59 formulas**, using one Linux x86-64 host or
-WSL 2 with Docker. It starts an actual proof search, of unknown total duration and
-cost. First complete the small example in [QUICKSTART](QUICKSTART.md). You need Git,
-Python 3.10+, `make`, Docker access as a non-root user, and local Linux disk space.
-In WSL 2 keep the checkout and `IO` below the Linux home directory, not `/mnt/c` or
-a network share. The worker's live state stays in Docker volumes.
+This is the complete path for **all 59 formulas**, using one Linux x86-64 host or WSL 2 with
+Docker. It starts an actual proof search: about 19,000 core-hours by the estimate of the [pilot
+computation](../STATUS.md#the-pilot-computation), an order of magnitude only, that is about 25
+days with 32 jobs. First complete the small example in [QUICKSTART](QUICKSTART.md). You need
+Git, Python 3.10+, `make`, Docker access as a non-root user, and local Linux disk space. In
+WSL 2 keep the checkout and `IO` below the Linux home directory, not `/mnt/c` or a network
+share. The worker's live state stays in Docker volumes.
 
 ### 1. Prepare and identify the image
 
@@ -48,7 +52,7 @@ root. No host Python package installation is needed for the Docker commands belo
 
 ```sh
 make image
-IMAGE=$(docker image inspect --format '{{.Id}}' faces12-campaign:1.0.0rc1)
+IMAGE=$(docker image inspect --format '{{.Id}}' faces12-campaign:1.0.0)
 IO="$HOME/faces12-full"
 mkdir -p "$IO"
 printf '%s\n' "$IMAGE" > "$IO/image-id.txt"
@@ -83,10 +87,10 @@ f12 campaign prefixes --campaign /io/campaign.json -o /io/prefixes.json
 
 Replace `Your name` with the campaign author's name. Formula generation checks all
 59 pinned hashes. Initialization selects twelve prefix variables per formula,
-giving 4,096 initial regions per formula, 241,664 in total; it can take hours and
+giving 4096 initial regions per formula, 241,664 in total; it can take hours and
 currently prints its result only when finished. Keep `campaign.json`, `prefixes.json`
 and the entire `formulas/` directory. Do not add `--maps` or `--root`: those create
-partial or pilot campaigns. `--prefix 0` is a valid fully dynamic alternative,
+rehearsal campaigns. `--prefix 0` is a valid fully dynamic alternative,
 chosen at initialization, but is a different campaign identity. Select `retain`
 here if you intend to archive proofs; this walkthrough uses `transient` throughout.
 `campaign-init.json` keeps what `campaign init` printed: the campaign ID (the SHA-256 of
@@ -169,7 +173,9 @@ f12 cubeproof audit --evidence /io/evidence/evidence.json --all \
     --results /io/audit-all/results --work /io/audit-all/work --worker audit-all
 ```
 
-This may be as expensive as the original computation. Run it on the auditor's own
+This costs most of what the original computation cost: it recomputes every used leaf, without
+the attempts that reached their time limit (in the pilot, 473 of the 648.5 core-hours went to
+the used leaves). Run it on the auditor's own
 machine with the preserved image, immutable evidence and fresh audit directories;
 the local command above also works as a rehearsal. `--all` covers every used leaf;
 `--sample N` does not. Strict audit succeeds only if all selected proofs are checked
@@ -200,7 +206,7 @@ One container is one worker. The host wrapper `pipeline/faces12-worker.sh` hides
 details. It controls Docker only: process execution, journals and audits run in Linux inside
 the container. The image is `faces12-campaign:VERSION` (built by `docker/release/Dockerfile`,
 validated by `docker/release/validate.sh`; [RELEASE](RELEASE.md)); name the one you built with
-`--image` or `POLYHEDRAPROOF_IMAGE` (default `faces12-campaign:1.0.0rc1`).
+`--image` or `POLYHEDRAPROOF_IMAGE` (default `faces12-campaign:1.0.0`).
 
 ```sh
 W="bash pipeline/faces12-worker.sh"
@@ -252,7 +258,7 @@ the run is refused (`run.policy_changed`).
 
 The first launch without `--shard` owns every requested root of the campaign, expanded by its
 root splits, and persists that ownership. For the campaign of the 59 formulas with its default
-root split that is 241 664 nodes: they are recorded as several shards (`initial-1`, `initial-2`,
+root split that is 241,664 nodes: they are recorded as several shards (`initial-1`, `initial-2`,
 ...), because one journal line holds about fifty thousand, and the start of such a worker takes
 a few minutes. A later launch never reconstructs ownership from a
 changed command line: an identical shard is harmless, a different one is validated and
@@ -288,7 +294,7 @@ need Docker, the release image you built and validated, and a checkout of this r
 wrapper; `IO` is an absolute host path.
 
 ```sh
-IMAGE=faces12-campaign:1.0.0rc1                  # the tag of the validated image
+IMAGE=faces12-campaign:1.0.0                  # the tag of the validated image
 IO=/data/faces12/io                           # inputs, shards and the exported journal
 mkdir -p "$IO"                                # or Docker creates it, owned by root
 export POLYHEDRAPROOF_IMAGE="$IMAGE"          # the wrapper's default image
@@ -310,8 +316,9 @@ $W stop   --worker map01-a                    # a clean stop
 $W start  --worker map01-a                    # resumes from the journal, also after a reboot
 ```
 
-`campaign init` computes the proof prefix of every formula with the pinned solver: 2 min 14 s
-for the formula of map 1 on a laptop, the other 58 have not been measured, so allow some hours.
+`campaign init` computes the proof prefix of every formula with the pinned solver: on a laptop
+2 min 14 s for the formula of map 1 and 191 s for those of maps 1 and 2 together; the other 57
+have not been measured, so allow some hours.
 It prints nothing while it works and writes the campaign only at the end, so an interruption
 loses all of it: run that line where a closed terminal does not end it (`tmux`, `nohup`). No
 test creates the campaign of the 59 formulas with the real tools; this is its first run.
@@ -353,17 +360,19 @@ flight and is lowered to the free space with a note; it does not reserve anythin
 space for all of them (below) has to be free there, and again where `backup --to` writes its
 archive.
 
-**Sizing.** One hour with `--jobs 4` on the formula of map 1 (a laptop, release image, `retain`)
-closed 90 of the 92 cases it attempted at the first attempt and split the other two after the
-900 s limit. A closed case took a median of 21 s and at most 823 s of solver time, the check
-about a seventh of that; a proof had a median of 54 MB and at most 1.4 GB, 153 MB on average.
-For this formula that is of the order of 120 core hours, and 0.6 TB if the proofs were
-retained, if the remaining cases are like the sampled ones, which a sample of 92 does not show:
-the cost of the cases that have to be split further was not measured, and no other formula was.
-In the modes `transient` and `retain` a job runs the solver and then the checker, never both
-(`stream` runs them together): the solver is limited to 1 GiB, and a check was given 1.1 to
-1.6 GiB (a heap of 0.5 to 1 GiB, 256 MiB of stack and 320 MiB of margin); a job can use up to
-the proof cap (4 GiB) of work disk.
+**Sizing.** In the [pilot computation](../STATUS.md#the-pilot-computation) the formula of map 1
+took 300 core-hours of solver and checker time and the formula of map 2 took 348: 13,981 and
+17,206 leaves, after 659 and 874 splits, the deepest at 32 and 40 literals. In each formula
+96 % of the 4096 cases closed at their first attempt; the attempts that reached their time
+limit before a split took about a quarter of the processor time. With `--jobs 8` one formula
+is therefore of the order of 40 hours, if it is like these two; no other formula has been
+measured. Checking took about a sixth of the solver time of the leaves. A proof had a median of
+35 MB, 82 MB on average and at most 1.14 GB, so the proofs of one formula take 1.2 to 1.4 TB
+if they are retained. In the modes `transient` and `retain` a job runs the solver and then the
+checker, never both (`stream` runs them together): the solver is limited to 1 GiB, and in the
+pilot a check was given 1.1 or 1.6 GiB (a heap of 512 MiB, or 1 GiB for 197 large proofs, with
+256 MiB of stack and 320 MiB of margin). A solver used at most 166 MiB there, and a check at
+most 1.0 GiB. A job can use up to the proof cap (4 GiB) of work disk.
 
 ## The workflow, step by step
 
@@ -375,8 +384,8 @@ The packages install no console scripts: outside the image run them as `python3 
 and `python3 -m faces12_campaign`; the image's entry point accepts the names `cubeproof` and
 `faces12-campaign` (`docker run ... IMAGE cubeproof run ...`), and this page writes the commands
 that way (a command without a program name, such as `formulas` or `campaign init`, goes to
-`faces12-campaign`). Inside the image they fill in `--solver`, `--checker` and `--helper`; outside it, give
-them explicitly: nothing is searched on `PATH`.
+`faces12-campaign`). Inside the image they fill in `--solver`, `--checker` and `--helper`;
+outside it, give them explicitly: nothing is searched on `PATH`.
 
 1. **Write the formulas.** `faces12-campaign formulas -o formulas` writes the 59 bundles
    and refuses to continue unless each formula has its published hash. Add `--check` to
@@ -401,12 +410,13 @@ them explicitly: nothing is searched on `PATH`.
    proof-prefix split (`proof-prefix-v1`) as root split, then the dynamic splitter `lookahead-v1`
    with k = 4, in `transient` proof mode (`--proof-mode retain|stream` chooses another). Without
    `--prefixes` the prefix is computed with the pinned solver, which can take long for each formula
-   (2 min 14 s for the formula of map 1 on a laptop; the others have not been measured);
+   (on a laptop 2 min 14 s for the formula of map 1, 191 s for those of maps 1 and 2 together;
+   the others have not been measured);
    `--prefixes FILE` reuses stored selections that validate
    against the pinned algorithm and solver. The campaign file is immutable and its ID is the
-   SHA-256 of the document without its final line feed; the hashes of the tools are measured and recorded, and every worker must run
-   exactly those tools. Keep the campaign file with its bundle directories: they stay below its
-   directory.
+   SHA-256 of the document without its final line feed; the hashes of the tools are measured
+   and recorded, and every worker must run exactly those tools. Keep the campaign file with its
+   bundle directories: they stay below its directory.
 3. **Plan machines** (optional: one worker that is started without `--shard` owns
    everything). `cubeproof shard --campaign campaign.json --machines 3
    -o shards` writes `shard-1.json` to `shard-3.json`, a disjoint cover of the requested
@@ -448,15 +458,15 @@ A campaign embeds a complete policy (SPECIFICATION §4.3). These are the default
 `default_policy` (`cubeproof.contracts.policy`). They are starting values: the coefficients of
 the heap estimate were fitted to checker heap use observed in exploratory runs, and the arena
 ladder (a check that exhausts its arena is repeated with the arena doubled) corrects a misfit
-(SPECIFICATION §8.3). `--policy FILE` of `campaign init` embeds
-another complete policy.
+(SPECIFICATION §8.3); in the pilot computation no check needed it, and no node was blocked.
+`--policy FILE` of `campaign init` embeds another complete policy.
 
 | Setting | Default |
 |---|---|
 | Solver time for a leaf | 900 s at depth 12 (a cube of 12 literals), 300 s at every other depth |
 | Proof cap; solver address space | 4 GiB; 1 GiB |
 | Checker heap; checker stack | estimated from the proof size, at least 512 MiB, doubled after an exhaustion up to 8192 MiB; 256 MiB, doubled up to 2048 MiB |
-| Checker time | 600 s plus 60 s for each 100 MB of proof |
+| Checker time | 600 s, or 60 s for each started 100 MB of proof when that is more |
 | Splitter | `lookahead-v1`, k = 4; cubes of at most 60 literals |
 | Tool retries; machine failure limit; anomaly limit | 3; 5; 3 |
 | Quarantine quota (file proofs the checker rejected) | 20 GiB |
@@ -570,10 +580,9 @@ Two copies of a journal can leave the machine:
 - **Exports.** With `--export DIR` the worker copies a committed prefix of its journal, checks
   its hash chain, then publishes a descriptor with the exported position and head
   (`export.json`) last; the default interval is 60 seconds, and there is one more at a clean
-  stop. `status` shows the
-  export lag. An export is a backup with that lag as its recovery point objective, not a
-  synchronous replica, and it lies in the host directory `/io/export`, usually on the same
-  disk as the volumes: copy it, with its checksums, to separate storage.
+  stop. `status` shows the export lag. An export is a backup with that lag as its recovery
+  point objective, not a synchronous replica, and it lies in the host directory `/io/export`,
+  usually on the same disk as the volumes: copy it, with its checksums, to separate storage.
 - **Backups of the results volume.** `bash pipeline/faces12-worker.sh backup --worker w1
   --to DIR` (worker stopped) writes `faces12-results-w1-UTC.tar` and its `.sha256`;
   `restore --worker w1 --from ARCHIVE` (worker stopped) fills an *empty* results volume after

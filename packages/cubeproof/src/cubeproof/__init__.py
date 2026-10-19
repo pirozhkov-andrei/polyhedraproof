@@ -8,6 +8,6 @@ the Python standard library and on external pinned tools only; it never imports
 
 from __future__ import annotations
 
-__version__ = "1.0.0rc1"
+__version__ = "1.0.0"
 
 __all__ = ["__version__"]

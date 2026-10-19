@@ -15,6 +15,6 @@ proof prefixes), :mod:`faces12_campaign.claim` (the claim gate),
 
 from __future__ import annotations
 
-__version__ = "1.0.0rc1"
+__version__ = "1.0.0"
 
 __all__ = ["__version__"]

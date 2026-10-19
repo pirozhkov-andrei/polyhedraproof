@@ -223,8 +223,8 @@ cubeproof audit --campaign FILE --certificate CERT --journals JOURNAL...   (or -
 - **Targets.** The population is the `used_attempts` of the recomputed certificate. `--all`
   selects all; `--sample N` (N > 0) the N smallest `(SHA256(seed + NUL + node_id), node_id)`,
   ordered by node_id, N clamped to the population. The default seed is the certificate's
-  SHA-256; an explicit `--seed` lets a sample be fixed before the certificate exists. A 5%
-  sample is `ceil(population/20)`.
+  document hash (its SHA-256 without the final line feed); an explicit `--seed` lets a sample be
+  fixed before the certificate exists. A 5% sample is `ceil(population/20)`.
 - **Plan.** `audit_begin`, one `audit_target` per ordinal and `audit_ready` are committed to the
   audit's own journal `<results>/journal.jsonl` (header purpose `audit`) before any attempt. A
   restart in the same results directory regenerates the plan from the snapshots and refuses any

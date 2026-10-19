@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "faces12-campaign"
-version = "1.0.0rc1"
+version = "1.0.0"
 description = "The twelve pairwise-adjacent faces campaign: 59 formulas, claim gate and release integration"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -20,8 +20,8 @@ classifiers = [
 ]
 # Exactly the two libraries of the same release (specification §2.1).
 dependencies = [
-    "cubeproof==1.0.0rc1",
-    "neighbourly==1.0.0rc1",
+    "cubeproof==1.0.0",
+    "neighbourly==1.0.0",
 ]
 
 [project.urls]

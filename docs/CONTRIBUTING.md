@@ -51,12 +51,16 @@ Each target has one stable meaning.
 | `make test-installed` | `tests/release` with the slow tier: wheels and sdists built and installed in clean environments outside the checkout |
 | `make test-all` | every supported test including the `slow` and `image` tiers; it refuses to start outside the Linux test image |
 
-There is no hosted continuous integration: the checks are run locally, and a change is
-proposed only after they pass. Before proposing a change run `make lint`,
-`make test-architecture` and `make test-fast`.
-Run `make test-release-view` when files were added, moved or removed, `make test-installed`
-when packaging, package data, entry points, `pipeline/` or `docker/` scripts changed, and `make test-all` in the test image
-when process execution, the tools or the proof path changed:
+The public repository runs `.github/workflows/checks.yml` on GitHub's runners: on every push
+to `main` or of a release tag, every pull request and every start by hand, `make lint`,
+`make test-architecture` and `make test-fast` under Python 3.10 and 3.12; on a release tag, or
+when started by hand, also `make test-all` in the test image. In a private copy of the
+repository its jobs are skipped. It repeats the local checks and does not replace them: a
+change is proposed only after they pass locally. Before proposing a change run `make lint`,
+`make test-architecture` and `make test-fast`. Run `make test-release-view` when files were
+added, moved or removed, `make test-installed` when packaging, package data, entry points,
+`pipeline/` or `docker/` scripts changed, and `make test-all` in the test image when process
+execution, the tools or the proof path changed:
 
 ```sh
 bash docker/test/run.sh build   # the test image with the pinned CaDiCaL and cake_lpr
@@ -96,7 +100,7 @@ that the bytes changed, which is the question to answer.
 
 `tests/architecture` checks what the architecture requires of the packages: `cubeproof`
 and `neighbourly` import neither each other nor the application; layers depend only
-downwards, also through chains of imports and package initialisers; the certifier reaches no
+downwards, also through chains of imports and package initializers; the certifier reaches no
 process, thread or resource code, nor the process functions of `os`; `neighbourly.cnf`
 imports only itself and the standard library and reads no package data; only a command line
 reads the environment, prints, writes to the standard streams or exits. Each rule is tested

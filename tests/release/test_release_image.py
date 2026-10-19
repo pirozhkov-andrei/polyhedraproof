@@ -8,7 +8,7 @@ in place of ``docker`` and ``python3`` (no image is built). The tests marked ``i
 run a built release image; they need Docker and ``POLYHEDRAPROOF_RELEASE_IMAGE`` naming the image
 (``docker/release/validate.sh`` sets it for the image it has just built)::
 
-    POLYHEDRAPROOF_RELEASE_IMAGE=faces12-campaign:1.0.0rc1 \\
+    POLYHEDRAPROOF_RELEASE_IMAGE=faces12-campaign:1.0.0 \\
         python3 -m pytest tests/release --run-slow --run-image
 """
 
@@ -168,15 +168,15 @@ def test_the_artifact_manifest_separates_reproduced_and_informational_hashes(
     for kind, name in (("wheels", "a.whl"), ("sdists", "a.tar.gz"), ("source", "s.tar.gz")):
         (tmp_path / kind).mkdir()
         (tmp_path / kind / name).write_bytes(kind.encode())
-    document = artifacts.manifest(tmp_path, "1.0.0rc1", ["build==1"], "3.11")
+    document = artifacts.manifest(tmp_path, "1.0.0", ["build==1"], "3.11")
     assert document["format"] == "faces12-release-artifacts-1"
     assert document["reproducible"] == ["wheels", "source"]
     assert document["informational"] == ["sdists"]
     assert set(document["wheels"]) == {"a.whl"}
     assert document["requirements"] == [
-        "cubeproof==1.0.0rc1",
-        "neighbourly==1.0.0rc1",
-        "faces12-campaign==1.0.0rc1",
+        "cubeproof==1.0.0",
+        "neighbourly==1.0.0",
+        "faces12-campaign==1.0.0",
     ]
 
 

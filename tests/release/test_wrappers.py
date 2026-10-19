@@ -158,7 +158,7 @@ def expected_run(io: Path, worker: str, user: str) -> list[str]:
         "-v", f"faces12-results-{worker}:/work/results",
         "-v", f"faces12-work-{worker}:/work/scratch",
         "-v", f"{io}:/io",
-        "faces12-campaign:1.0.0rc1",
+        "faces12-campaign:1.0.0",
         "run", "--campaign", "/io/campaign.json",
         "--results", "/work/results", "--work", "/work/scratch", "--worker", worker,
         "--inbox", "/io/inbox", "--outbox", "/io/outbox", "--export", "/io/export",

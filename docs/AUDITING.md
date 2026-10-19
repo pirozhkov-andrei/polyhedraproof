@@ -4,8 +4,14 @@ Check the release first, then any published campaign. The release checks establi
 software's tested behavior; a campaign audit checks the evidence of a computation. Why each
 step matters is explained in [TRUST](TRUST.md). No campaign of the 59 formulas has been run
 ([STATUS](../STATUS.md)); the procedure below is what the tools support and what the tests
-exercise on small workloads. The normative rules of certification and audit are in the
-[SPECIFICATION](SPECIFICATION.md) (SPECIFICATION §10, §11).
+exercise on small workloads. The published data of the
+[pilot computation](../STATUS.md#the-pilot-computation), a rehearsal campaign of two formulas,
+include an evidence directory on which steps 1 to 4 of [A campaign](#a-campaign) can be tried,
+with the release image of 1.0.0rc1 that ran it: a strict audit on another release reproves its
+`unit` leaves instead of matching them ([below](#strict-audit-and-reproof)). Steps 5 and 6 do
+not apply: its proofs were not retained, and `claim` refuses a rehearsal campaign. The
+normative rules of certification and audit are in the [SPECIFICATION](SPECIFICATION.md)
+(SPECIFICATION §10, §11).
 
 ## The release
 
@@ -101,7 +107,8 @@ a published number is.
    certificate stays OPEN: that is not a proof of the formula (paper: rem:pilotroot).
 3. **Choose the verification you can afford.** The certificate is an attestation: it says
    what the journals claim, not that anybody checked a proof afterwards. Either route below
-   verifies leaves independently; neither is cheaper than its scope.
+   verifies leaves independently, and the cost of either grows with the number of leaves it
+   covers.
 4. **Recompute leaves** with the tools of the campaign, in the release image whose digest
    you checked (`IMAGE` is the tag or digest of that image):
 
@@ -171,13 +178,13 @@ audit, which then exits 1 for them.
 
 `--sample N` selects the N used leaves with the smallest `SHA-256(seed NUL node_id)`
 (`N` is clamped to the population, and the report states the population and the number
-selected). The default seed is the SHA-256 of the certificate; to fix the selection in advance,
-publish an explicit `--seed` before you start. `--sample` takes a count, not a fraction: a
-sample of 5 % of the leaves is `ceil(population/20)` leaves. A sample verifies the leaves it
-selected and nothing else. The report gives counts, not a statistical bound on the
-rest. Only `--all` with every target `HASH_MATCHED` (strict) or verified (reprove) covers
-the whole certified tree. An audit whose population is empty is not a success: it reports an
-empty, OPEN audit and exits 1.
+selected). The default seed is the document hash of the certificate (above); to fix the
+selection in advance, publish an explicit `--seed` before you start. `--sample` takes a count,
+not a fraction: a sample of 5 % of the leaves is `ceil(population/20)` leaves. A sample
+verifies the leaves it selected and nothing else. The report gives counts, not a statistical
+bound on the rest. Only `--all` with every target `HASH_MATCHED` (strict) or verified
+(reprove) covers the whole certified tree. An audit whose population is empty is not a
+success: it reports an empty, OPEN audit and exits 1.
 
 An audit runs to completion in its own results directory; restarting there continues the
 same plan and refuses a different selection (`audit.plan_changed`): use a new directory for

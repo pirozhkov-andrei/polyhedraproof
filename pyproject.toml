@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "polyhedraproof"
-version = "1.0.0rc1"
+version = "1.0.0"
 description = "A reduction of the twelve pairwise-adjacent faces problem to 59 CNF formulas, with a pipeline for checked refutations"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -21,9 +21,9 @@ classifiers = [
 # distributions of the same release. Their runtime is the standard library; CaDiCaL and
 # cake_lpr provide proof search and checking, util-linux prlimit enforces process limits.
 dependencies = [
-    "cubeproof==1.0.0rc1",
-    "neighbourly==1.0.0rc1",
-    "faces12-campaign==1.0.0rc1",
+    "cubeproof==1.0.0",
+    "neighbourly==1.0.0",
+    "faces12-campaign==1.0.0",
 ]
 
 [project.urls]

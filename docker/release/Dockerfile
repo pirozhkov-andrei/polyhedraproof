@@ -1,7 +1,7 @@
 # The installed release image (specification §14).
 #
-#   docker build --platform linux/amd64 -f docker/release/Dockerfile -t faces12-campaign:1.0.0rc1 .
-#   docker run --rm --init --network none faces12-campaign:1.0.0rc1 selfcheck
+#   docker build --platform linux/amd64 -f docker/release/Dockerfile -t faces12-campaign:1.0.0 .
+#   docker run --rm --init --network none faces12-campaign:1.0.0 selfcheck
 #
 # The image installs built artifacts, never the checkout: the `artifacts` stage builds an
 # sdist of each package, the wheel from that sdist and the deterministic source archive of

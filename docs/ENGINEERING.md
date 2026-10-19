@@ -10,10 +10,11 @@ The article translates the geometric question into 59 finite Boolean problems. A
 checked refutation of all 59 would settle the stated model.
 
 The delivered work is the reduction, formula generator, verification controls and
-computation infrastructure. **The full computation is unfinished.** No runtime,
-cost, production-scale throughput or nonexistence result is claimed. The software
-separates work completed by a worker, coverage of a whole formula, and the
-mathematical conclusion.
+computation infrastructure. **The full computation is unfinished**, and no nonexistence
+result is claimed. A [pilot computation](../STATUS.md#the-pilot-computation) refuted two
+of the 59 formulas in a rehearsal campaign and measured their cost; the cost of the other
+57 is an extrapolation. The software separates work completed by a worker, coverage of a
+whole formula, and the mathematical conclusion.
 
 ## What to inspect in ten minutes
 
@@ -26,6 +27,7 @@ mathematical conclusion.
 | How are resource failures handled? | CPU, memory and disk reservations, bounded subprocesses, adaptive subdivision and explicit open-work outcomes. See [architecture](ARCHITECTURE.md) and [resource policy](RUNNING.md#the-policy). |
 | How are correlated implementation errors addressed? | A separate mathematical encoder checks signs and Boolean identities; exact geometric fixtures exercise realized examples. [Claims](CLAIMS.md) records the tested scope and shared assumptions. |
 | How are releases made inspectable? | An explicit file list, pinned external tools, isolated wheel installation, deterministic source bundles and comparisons of two image builds. See the [release procedure](RELEASE.md). |
+| Has it run at scale? | The pilot ran one worker with 124 parallel jobs on one machine for 5.5 hours on two formulas: 31,187 leaves, each closed by an LRAT proof that cake_lpr checked (2.57 TB of proofs, checked and deleted), 1,533 adaptive splits, no anomaly. Both certifiers wrote the same certificate, and a strict audit on another machine reproduced all 50 sampled proofs byte for byte. Shards, handoff and several workers were not exercised at that scale. The journal, the certificates and the audit are [published](https://doi.org/10.5281/zenodo.23464843). |
 
 ## Code to read first
 
@@ -54,7 +56,8 @@ Proof storage is an explicit tradeoff. The default `transient` mode checks a pro
 and removes it, reducing retained storage but requiring solver recomputation for a
 later independent audit. `retain` permits checking the proof again without rerunning
 the solver; `stream` avoids a proof file. None removes the need to account for every
-case. The full campaign's storage and compute requirements are not yet measured.
+case. Extrapolated from the pilot, the full campaign is estimated at about 19,000
+core-hours, and about 76 TB if its proofs are retained: an order-of-magnitude estimate.
 
 The project uses a formally verified external checker; the Python application and
 the mathematical reduction are not formally verified. A certificate reconstructs

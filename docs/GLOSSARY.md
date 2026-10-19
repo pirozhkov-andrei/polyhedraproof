@@ -135,6 +135,13 @@ prefixes of sampled runs of the pinned solver, and runs only when a campaign is 
 policy, pinned tools and admission. Its ID is the SHA-256 of the document without its final
 line feed, so a change is a new campaign.
 
+**Rehearsal campaign.** A campaign of some of the 59 formulas (`campaign init --maps`) or
+with pilot roots (`--root`). It exercises the procedure and measures cost; its journals can
+never be certified with the campaign of the 59 formulas, and `faces12-campaign claim` refuses
+it. The [pilot computation](../STATUS.md#the-pilot-computation) was a rehearsal campaign of
+the formulas of maps 1 and 2 with empty roots: it had no pilot root, and its certificate is
+PROVED for both formulas.
+
 **Policy.** The limits and choices a campaign embeds: leaf times, proof caps, checker arena,
 splitter, retries, proof mode ([RUNNING](RUNNING.md#the-policy)).
 
@@ -143,8 +150,9 @@ campaign lists solvers, the solver hash and arguments. Admission is not authenti
 the writer ([decision 0013](decisions/0013-admission-and-guarantees.md)).
 
 **Worker, coordinator.** A worker is one named `cubeproof run` with its own results and work
-directories and its own journal. Inside it one coordinator, a process, not a person, runs the event
-loop that starts, reaps and records tools ([decision 0015](decisions/0015-single-event-loop.md)).
+directories and its own journal. Inside it one coordinator, a process, not a person, runs the
+event loop that starts, reaps and records tools
+([decision 0015](decisions/0015-single-event-loop.md)).
 
 **Journal, record.** A worker's append-only file of canonical JSON lines, each with its own
 hash (`self`), the previous hash (`prev`) and a sequence number. A *Ref* names one record as
@@ -155,8 +163,8 @@ hash (`self`), the previous hash (`prev`) and a sequence number. A *Ref* names o
 (`journal repair` does the same); every other damaged line is an integrity failure.
 
 **Head, anchor.** The head is the last complete record's `self` hash. A copy of the head and
-the journal's length, kept elsewhere, is an *anchor*: only against one can the removal of a complete tail be
-detected.
+the journal's length, kept elsewhere, is an *anchor*: only against one can the removal of a
+complete tail be detected.
 
 **Shard.** A list of nodes that one worker owns, as a file (`cubeproof-shard-1`). `shard`
 plans them; a worker commits an acceptance record before it launches a node of a shard.
